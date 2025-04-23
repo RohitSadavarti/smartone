@@ -44,21 +44,18 @@ def get_student_classes():
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT DISTINCT class FROM students ORDER BY class ASC")
     classes = cursor.fetchall()
-    print(f"Fetched classes: {classes}")  # Debugging log
     cursor.close()
-    return jsonify([class_[0] for class_ in classes])  # Return as a list of class names
+    return jsonify([class_[0] for class_ in classes])
 
 @app.route('/subjects', methods=['GET'])
 def get_subjects():
     department = request.args.get('department')
-    class_name = request.args.get('class')  # This is the input parameter name.
-    teacher_name = request.args.get('teacher_name')  # Add teacher_name parameter
+    class_name = request.args.get('class') 
+    teacher_name = request.args.get('teacher_name')
 
-    # Validate the input parameters
     if not department or not class_name or not teacher_name:
         return jsonify({"error": "Parameters 'department', 'class', and 'teacher_name' are required"}), 400
 
-    # Query to fetch subjects based on department, class, and teacher_name
     cursor = mysql.connection.cursor()
     query = """
         SELECT DISTINCT subject 
@@ -69,8 +66,6 @@ def get_subjects():
     cursor.execute(query, (department, class_name, teacher_name))
     subjects = cursor.fetchall()
     cursor.close()
-
-    # Return the subjects in a list format
     return jsonify([subject[0] for subject in subjects])
 
 @app.route('/time-slots', methods=['GET'])
@@ -102,10 +97,8 @@ def get_students():
     cursor.close()
     return jsonify([{"roll_number": student[0], "name": student[1]} for student in students])
 
-
 @app.route('/attendance', methods=['POST'])
 def save_attendance():
-
     data = request.json
     cursor = mysql.connection.cursor()
 
@@ -172,11 +165,12 @@ def get_attendance_data():
         print(f"Error: {e}")
         return jsonify({'message': 'An error occurred while fetching attendance data'}), 500
 
+# Helper function to process Excel file
 def process_excel(file_path):
     workbook = load_workbook(file_path)
     sheet = workbook.active
     data = []
-    for row in sheet.iter_rows(min_row=2, values_only=True):  # Skip header
+    for row in sheet.iter_rows(min_row=2, values_only=True):
         data.append(row)
     return data
 
@@ -223,23 +217,21 @@ def download_attendance_csv():
 @app.route('/student-departments', methods=['GET'])
 def get_student_departments():
     cursor = mysql.connection.cursor()
-    cursor.execute("SELECT DISTINCT department FROM students ORDER BY department ASC    ")
+    cursor.execute("SELECT DISTINCT department FROM students ORDER BY department ASC")
     departments = cursor.fetchall()
     cursor.close()
-    return jsonify([dept[0] for dept in departments])  # Return as a list of departments
+    return jsonify([dept[0] for dept in departments])
 
 # Manual Student Submission
 @app.route('/submit', methods=['POST'])
 def submit_student():
     try:
-        # Get data from the request
         data = request.json
         roll_number = data.get('roll_number')
         name = data.get('name')
         department = data.get('department')
         class_value = data.get('class')
 
-        # Validate data
         if not all([roll_number, name, department, class_value]):
             return jsonify({'success': False, 'message': 'All fields are required'}), 400
 
@@ -251,7 +243,7 @@ def submit_student():
 
         if existing_student:
             cursor.close()
-            return jsonify({'success': False, 'message': 'Roll number already exists'}), 409  # 409 Conflict
+            return jsonify({'success': False, 'message': 'Roll number already exists'}), 409
 
         # Insert into the database
         cursor.execute("""
@@ -276,317 +268,29 @@ def upload_file():
     try:
         file = request.files.get('file')
         if not file or file.filename == '':
-            return jsonify({'message': 'No file selected'}), 400
+            return jsonify({'success': False, 'message': 'No file selected'}), 400
 
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        if not allowed_file(file.filename):
+            return jsonify({'success': False, 'message': 'Invalid file format'}), 400
 
-            # Ensure the upload folder exists
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
 
-            file.save(file_path)
+        # Process file based on extension (excel/csv)
+        file_ext = filename.rsplit('.', 1)[1].lower()
+        if file_ext in ['xlsx', 'xls']:
+            data = process_excel(filepath)
+        elif file_ext == 'csv':
+            with open(filepath, newline='', encoding='utf-8') as f:
+                reader = csv.reader(f)
+                data = [row for row in reader]
 
-            # Parse the file and insert data into the database
-            data = process_excel(file_path)
-            total_records = len(data)
-            valid_records = 0
-            error_records = 0
+        return jsonify({'success': True, 'data': data})
 
-            cursor = mysql.connection.cursor()
-
-            # Track valid and error records
-            valid_data = []
-            error_data = []
-
-            for row in data:
-                try:
-                    roll_number, name, department, class_value = row
-                    # Check if the roll number already exists
-                    cursor.execute("SELECT * FROM Students WHERE roll_number = %s", (roll_number,))
-                    existing_student = cursor.fetchone()
-                    
-                    if existing_student:
-                        error_data.append(row + ('Duplicate roll number',))
-                        error_records += 1
-                        continue  # Skip inserting this record
-
-                    # Insert the record into the Students table
-                    cursor.execute("""
-                        INSERT INTO Students (roll_number, name, department, class)
-                        VALUES (%s, %s, %s, %s)
-                    """, (roll_number, name, department, class_value))
-
-                    valid_data.append(row)
-                    valid_records += 1
-                except Exception as e:
-                    error_data.append(row + (str(e),))
-                    error_records += 1
-
-            mysql.connection.commit()
-            cursor.close()
-
-            # Save the valid and error records to separate tables
-            if valid_data:
-                cursor = mysql.connection.cursor()
-                cursor.executemany("""
-                    INSERT INTO Validrecords (roll_number, name, department, class)
-                    VALUES (%s, %s, %s, %s)
-                """, valid_data)
-                mysql.connection.commit()
-                cursor.close()
-
-            if error_data:
-                cursor = mysql.connection.cursor()
-                cursor.executemany("""
-                    INSERT INTO Errorrecords (roll_number, name, department, class, error_message)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, error_data)
-                mysql.connection.commit()
-                cursor.close()
-
-            # Record upload history
-            upload_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            cursor = mysql.connection.cursor()
-            cursor.execute("""
-                INSERT INTO UploadHistory (uploader_name, total_records, valid_records, error_records, upload_time)
-                VALUES (%s, %s, %s, %s, %s)
-            """, ("Admin", total_records, valid_records, error_records, upload_time))
-            mysql.connection.commit()
-            cursor.close()
-
-            return jsonify({
-                'message': 'File processed successfully.',
-                'total_records': total_records,
-                'valid_records': valid_records,
-                'error_records': error_records
-            }), 200
-        else:
-            return jsonify({'message': 'Invalid file type. Only .xlsx, .xls, and .csv files are allowed.'}), 400
     except Exception as e:
         print(f"Error: {e}")
-        return jsonify({'message': 'An error occurred while processing the file.'}), 500
-
-
-# Route to get upload history and the total records
-@app.route('/upload-history', methods=['GET'])
-def upload_history():
-    try:
-        cursor = mysql.connection.cursor()
-        cursor.execute("""
-            SELECT uploader_name, total_records, valid_records, error_records, upload_time 
-            FROM UploadHistory
-        """)
-        rows = cursor.fetchall()
-        cursor.close()
-
-        history = [
-            {
-                'uploader_name': row[0],
-                'total_records': row[1],
-                'valid_records': row[2],
-                'error_records': row[3],
-                'upload_time': row[4]
-            } for row in rows
-        ]
-        return jsonify(history)
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'message': 'Failed to fetch upload history'}), 500
-
-
-# Route for downloading valid records as CSV
-@app.route('/valid-records-csv', methods=['GET'])
-def download_valid_csv():
-    try:
-        cursor = mysql.connection.cursor()
-        cursor.execute("SELECT roll_number, name, department, class FROM Validrecords")
-        rows = cursor.fetchall()
-        cursor.close()
-
-        if not rows:
-            return jsonify({'message': 'No valid records found'}), 404
-
-        # Generate CSV content
-        output = StringIO()
-        writer = csv.writer(output)
-        writer.writerow(['Roll Number', 'Name', 'Department', 'Class'])
-        writer.writerows(rows)
-        output.seek(0)
-
-        # Return CSV file
-        return Response(
-            output,
-            mimetype='text/csv',
-            headers={'Content-Disposition': 'attachment;filename=valid_records.csv'}
-        )
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'message': 'An error occurred while generating the CSV'}), 500
-
-# Route for downloading error records as CSV
-@app.route('/error-records-csv', methods=['GET'])
-def download_error_csv():
-    try:
-        cursor = mysql.connection.cursor()
-        cursor.execute("SELECT roll_number, name, department, class, error_message FROM Errorrecords")
-        rows = cursor.fetchall()
-        cursor.close()
-
-        if not rows:
-            return jsonify({'message': 'No error records found'}), 404
-
-        # Generate CSV content
-        output = StringIO()
-        writer = csv.writer(output)
-        writer.writerow(['Roll Number', 'Name', 'Department', 'Class', 'Error Message'])
-        writer.writerows(rows)
-        output.seek(0)
-
-        # Return CSV file
-        return Response(
-            output,
-            mimetype='text/csv',
-            headers={'Content-Disposition': 'attachment;filename=error_records.csv'}
-        )
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'message': 'An error occurred while generating the CSV'}), 500
-
-
-@app.route('/upload-history/row-count', methods=['GET'])
-def get_row_count():
-    try:
-        uploader_name = request.args.get('uploader_name', '').strip()  # Value selected from dropdown
-        if not uploader_name:
-            return jsonify({'message': 'Uploader name is required'}), 400
-
-        cursor = mysql.connection.cursor()
-        cursor.execute("""
-            SELECT COUNT(*) 
-            FROM UploadHistory 
-            WHERE uploader_name = %s
-        """, (uploader_name,))
-        row_count = cursor.fetchone()[0]
-        cursor.close()
-
-        return jsonify({'uploader_name': uploader_name, 'row_count': row_count})
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'message': 'An error occurred while fetching row count'}), 500
-
-@app.route('/teachers', methods=['POST'])
-def save_teacher():
-    try:
-        data = request.json
-        teacher_name = data.get('teacher_name')
-        day = data.get('day')
-        subject = data.get('subject')
-        time_slot = data.get('time_slot')
-        department = data.get('department')
-        class_value = data.get('class')
-
-        if not all([teacher_name, day, subject, time_slot, department, class_value]):
-            return jsonify({'message': 'All fields are required'}), 400
-
-        cursor = mysql.connection.cursor()
-        query = """
-            INSERT INTO Teachers (teacher_name, day, subject, time_slot, department, class)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            ON DUPLICATE KEY UPDATE
-                subject = VALUES(subject),
-                time_slot = VALUES(time_slot),
-                department = VALUES(department),
-                class = VALUES(class)
-        """
-        cursor.execute(query, (teacher_name, day, subject, time_slot, department, class_value))
-        mysql.connection.commit()
-        cursor.close()
-
-        return jsonify({'message': 'Teacher data saved or updated successfully'})
-    except Exception as e:
-        print(f"Error saving teacher: {e}")
-        return jsonify({'message': 'Failed to save teacher data'}), 500
-
-
-@app.route('/upload-teachers', methods=['POST'])
-def upload_teachers():
-    try:
-        file = request.files.get('file')
-        if not file or file.filename == '':
-            return jsonify({'message': 'No file selected'}), 400
-
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
-            # Ensure the upload folder exists
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-            file.save(file_path)
-
-            # Parse the file and insert data into the Teachers table
-            data = process_excel(file_path)
-            total_records = len(data)
-            valid_records = 0
-            error_records = 0
-
-            cursor = mysql.connection.cursor()
-
-            # Track valid and error records
-            valid_data = []
-            error_data = []
-
-            for row in data:
-                try:
-                    teacher_name, day, subject, time_slot, department, class_value = row
-
-                    # Insert into Teachers table
-                    cursor.execute("""
-                        INSERT INTO Teachers (teacher_name, day, subject, time_slot, department, class)
-                        VALUES (%s, %s, %s, %s, %s, %s)
-                    """, (teacher_name, day, subject, time_slot, department, class_value))
-
-                    valid_data.append(row)
-                    valid_records += 1
-                except Exception as e:
-                    error_data.append(row + (str(e),))
-                    error_records += 1
-
-            mysql.connection.commit()
-            cursor.close()
-
-            # Save the valid and error records to separate tables for reporting
-            if valid_data:
-                cursor = mysql.connection.cursor()
-                cursor.executemany("""
-                    INSERT INTO ValidTeachers (teacher_name, day, subject, time_slot, department, class)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                """, valid_data)
-                mysql.connection.commit()
-                cursor.close()
-
-            if error_data:
-                cursor = mysql.connection.cursor()
-                cursor.executemany("""
-                    INSERT INTO ErrorTeachers (teacher_name, day, subject, time_slot, department, class, error_message)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                """, error_data)
-                mysql.connection.commit()
-                cursor.close()
-
-            return jsonify({
-                'message': 'File processed successfully.',
-                'total_records': total_records,
-                'valid_records': valid_records,
-                'error_records': error_records
-            }), 200
-        else:
-            return jsonify({'message': 'Invalid file type. Only .xlsx, .xls, and .csv files are allowed.'}), 400
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'message': 'An error occurred while processing the file.'}), 500
-
+        return jsonify({'success': False, 'message': 'Failed to upload file'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
