@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from openpyxl import load_workbook
 from flask import Flask, render_template
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
