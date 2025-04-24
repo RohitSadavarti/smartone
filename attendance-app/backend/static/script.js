@@ -43,14 +43,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Populate departments on page load
-    const departments = await fetchDropdownData('http://127.0.0.1:5000/departments');
+    const departments = await fetchDropdownData('/departments');
     populateDropdown(departmentDropdown, departments);
 
     // Populate teachers when a department is selected
     departmentDropdown.addEventListener('change', async () => {
         const department = departmentDropdown.value;
         if (department) {
-            const teachers = await fetchDropdownData(`http://127.0.0.1:5000/teachers?department=${department}`);
+            const teachers = await fetchDropdownData(`/teachers?department=${department}`);
             populateDropdown(teacherDropdown, teachers);
         } else {
             populateDropdown(teacherDropdown, []);
@@ -61,10 +61,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     teacherDropdown.addEventListener('change', async () => {
         const teacher = teacherDropdown.value;
         if (teacher) {
-//            const subjects = await fetchDropdownData(`http://127.0.0.1:5000/subjects?teacher=${teacher}`);
+//            const subjects = await fetchDropdownData(`/subjects?teacher=${teacher}`);
 //            populateDropdown(subjectDropdown, subjects);
 
-            const classes = await fetchDropdownData(`http://127.0.0.1:5000/student-classes?teacher=${teacher}`);
+            const classes = await fetchDropdownData(`/student-classes?teacher=${teacher}`);
             populateDropdown(classDropdown, classes);
         } else {
 //            populateDropdown(subjectDropdown, []);
@@ -80,7 +80,7 @@ classDropdown.addEventListener('change', async () => {
     const teacherName = teacherDropdown.value;
 
     if (department && className && teacherName) {
-        const subjects = await fetchDropdownData(`http://127.0.0.1:5000/subjects?department=${department}&class=${className}&teacher_name=${teacherName}`);
+        const subjects = await fetchDropdownData(`/subjects?department=${department}&class=${className}&teacher_name=${teacherName}`);
         populateDropdown(subjectDropdown, subjects);
     } else {
         populateDropdown(subjectDropdown, []);
@@ -90,11 +90,11 @@ classDropdown.addEventListener('change', async () => {
 
 
     // Fetch time slots
-    const timeSlots = await fetchDropdownData('http://127.0.0.1:5000/time-slots');
+    const timeSlots = await fetchDropdownData('/time-slots');
     populateDropdown(timeDropdown, timeSlots);
 
     async function fetchAllStudents() {
-        const response = await fetch('http://127.0.0.1:5000/students');
+        const response = await fetch('/students');
         const students = await response.json();
         displayStudents(students);
     }
@@ -165,7 +165,7 @@ classDropdown.addEventListener('change', async () => {
     document.getElementById('search-filters').addEventListener('click', async () => {
         const department = departmentDropdown.value;
         if (department) {
-            const response = await fetch(`http://127.0.0.1:5000/students?department=${department}`);
+            const response = await fetch(`/students?department=${department}`);
             const students = await response.json();
             displayStudents(students);
         } else {
@@ -212,7 +212,7 @@ classDropdown.addEventListener('change', async () => {
         });
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/attendance', {
+            const response = await fetch('/attendance', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ attendance_records: attendanceRecords }),
