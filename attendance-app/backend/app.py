@@ -7,6 +7,7 @@ import mysql.connector
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from openpyxl import load_workbook
+from flask import Flask, render_template
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +19,10 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'Clashe@7494'
 app.config['MYSQL_DB'] = 'college'
+
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 def get_mysql_connection():
     return mysql.connector.connect(
