@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Data Upload</title>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-uplodboxx.css">
+
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar close">
+        <header>
+            <i class='bx bx-chevron-right toggle'></i>
+        </header>
+        <div class="menu-bar">
+            <div class="menu">
+                <li class="search-box">
+                    <i class='bx bx-search icon'></i>
+                    <input type="text" placeholder="Search...">
+                </li>
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="index.html">
+                            <i class='bx bx-home-alt icon'></i>
+                            <span class="text nav-text">Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="https://app.powerbi.com/links/e8UPxrsqMW?ctid=51325e8a-7aea-4e70-af8f-a334b8bb4ddc&pbi_source=linkShare">
+                            <i class='bx bx-bar-chart-alt-2 icon'></i>
+                            <span class="text nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="admin - Students.html" style="background: #004aad;color: #fff;border-radius: 5px;">
+                            <i class='bx bx-download icon'></i>
+                            <span class="text nav-text">Update Data</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="Attendance.html">
+                            <i class='bx bx-pie-chart-alt icon'></i>
+                            <span class="text nav-text">Attendance Tracker</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="index.html">
+                            <i class='bx bx-pencil icon'></i>
+                            <span class="text nav-text">Update Attendance</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="bottom-content">
+                <li>
+                    <a href="#">
+                        <i class='bx bx-log-out icon'></i>
+                        <span class="text nav-text">Logout</span>
+                    </a>
+                </li>
+                <li class="mode">
+                    <div class="sun-moon">
+                        <i class='bx bx-moon icon moon'></i>
+                        <i class='bx bx-sun icon sun'></i>
+                    </div>
+                    <span class="mode-text text">Dark mode</span>
+                    <div class="toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header>
+            <h1>Upload Students Data</h1>
+        </header>
+        <a href="admin - Teacher.html" style="text-decoration: none; color: #fff; padding: 5px 5px; background-color: #007bff; position: absolute;top: 28px;left: 110px;height: 35px;text-align: justify; border-radius: 5px;">
+            Go to Teachers
+        </a>
+        <!-- Manual Entry Form -->
+        <form id="studentForm" class="form">
+            <div class="form-group">
+                <label for="rollNumber">Roll Number:</label>
+                <input type="text" id="rollNumber" name="rollNumber" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="department">Department:</label>
+                <select id="department" name="department" required>
+                    <option value="" disabled selected>Select Department</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="class">Class:</label>
+                <select id="class" name="class" required>
+                    <option value="" disabled selected>Select Class</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">Submit</button>
+        </form>
+
+        <!-- Excel Upload Section -->
+<form id="excelForm" class="form upload-section">
+    <div class="file-upload-container">
+        <label for="excelFile" class="upload-button"></label>
+        <input type="file" id="excelFile" class="file-input" />
+        <button type="submit" class="upload-btn">Upload</button>
+    </div>
+</form>
+        </form>
+
+        <!-- Row Count Selector -->
+        <div class="form-group">
+            <label for="rows-per-page">Rows per page:</label>
+            <select id="rows-per-page">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+
+        <!-- Upload Summary Table -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Uploader Name</th>
+                    <th>Total Records</th>
+                    <th>Valid Records</th>
+                    <th>Error Records</th>
+                    <th>Upload Time</th>
+                </tr>
+            </thead>
+            <tbody id="uploadSummary">
+                <!-- Summary rows will be dynamically added -->
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div id="pagination" class="pagination">
+            <!-- Pagination buttons will be dynamically added -->
+        </div>
+    </div>
+    <div id="popup-box" class="popup hidden">
+        <p id="popupMessage">Student Data Upload Successful</p>
+        <button id="close-popup">Close</button>
+    </div>
+        <script src="sidebar.js"></script>
+    <script src="admin - Students.js"></script>
+</body>
+</html>
