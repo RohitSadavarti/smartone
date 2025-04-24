@@ -24,6 +24,9 @@ app.config['MYSQL_DB'] = 'college'
 @app.route("/")
 def home():
     return render_template("index.html")
+@app.route('/api/data')
+def get_data():
+    return jsonify({"message": "Hello from backend"})
 
 def get_mysql_connection():
     return mysql.connector.connect(
