@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teachers Data Upload</title>
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-
-  <link rel="stylesheet" href="styles.css"> <!-- Consolidated CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="styles.css"> <!-- Consolidated CSS -->
 </head>
 <body>
 
@@ -85,7 +84,7 @@
         <a href="admin - Students.html" style="text-decoration: none; color: #fff; padding: 5px 5px; background-color: #007bff; position: absolute;top: 28px;left: 110px;height: 35px;text-align: justify; border-radius: 5px;">
             Go to Students
         </a>
-        <!-- Manual Entry Form -->
+
         <!-- Manual Entry Form -->
         <form id="teacherForm" class="form">
             <div class="form-group">
@@ -125,8 +124,7 @@
                 </select>
             </div>
             <button type="submit" class="btn">Submit</button>
-        </form>        </form>
-
+        </form>
 
         <!-- Excel Upload Section -->
         <form id="excelForm" class="form upload-section">
@@ -136,48 +134,48 @@
                 <button type="submit" class="upload-btn">Upload</button>
             </div>
         </form>
-                </form>
         
-                <!-- Row Count Selector -->
-                <div class="form-group">
-                    <label for="rows-per-page">Rows per page:</label>
-                    <select id="rows-per-page">
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
-                </div>
-        
-                <!-- Upload Summary Table -->
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Uploader Name</th>
-                            <th>Total Records</th>
-                            <th>Valid Records</th>
-                            <th>Error Records</th>
-                            <th>Upload Time</th>
-                        </tr>
-                    </thead>
-                    <tbody id="uploadSummary">
-                        <!-- Summary rows will be dynamically added -->
-                    </tbody>
-                </table>
-        
-                <!-- Pagination Controls -->
-                <div id="pagination" class="pagination">
-                    <!-- Pagination buttons will be dynamically added -->
-                </div>
-            </div>
-            <div id="popup-box" class="popup hidden">
-                <p id="popupMessage">Student Data Upload Successful</p>
-                <button id="close-popup">Close</button>
-            </div>
-            <script src="/static/sidebar.js"></script>
-             <script src="/static/admin - Teacher.js"></script>
+        <!-- Row Count Selector -->
+        <div class="form-group">
+            <label for="rows-per-page">Rows per page:</label>
+            <select id="rows-per-page">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
 
-    
-        </body>
-        </html>
-        
+        <!-- Upload Summary Table -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Uploader Name</th>
+                    <th>Total Records</th>
+                    <th>Valid Records</th>
+                    <th>Error Records</th>
+                    <th>Upload Time</th>
+                </tr>
+            </thead>
+            <tbody id="uploadSummary">
+                <!-- Summary rows will be dynamically added -->
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div id="pagination" class="pagination">
+            <!-- Pagination buttons will be dynamically added -->
+        </div>
+
+        <div id="popup-box" class="popup hidden">
+            <p id="popupMessage">Student Data Upload Successful</p>
+            <button id="close-popup">Close</button>
+        </div>
+
+    </div>
+
+    <script src="/static/sidebar.js"></script>
+    <script src="/static/admin - Teacher.js"></script>
+
+</body>
+</html>
