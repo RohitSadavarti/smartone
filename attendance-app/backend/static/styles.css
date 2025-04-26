@@ -594,3 +594,56 @@ body.dark .absent-btn:hover {
     appearance: auto;
 }
 
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        z-index: 100;
+    }
+
+    .sidebar.close {
+        width: 100%;
+    }
+
+    .home {
+        left: 0;
+        width: 100%;
+        position: relative;
+    }
+
+    .sidebar.close ~ .home {
+        left: 0;
+        width: 100%;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 10px;
+    }
+
+    form {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        height: auto;
+        margin-left: 10px;
+    }
+
+    select, input[type="date"], input[type="text"], button {
+        width: 100%;
+    }
+
+    table {
+        font-size: 12px;
+        overflow-x: auto;
+        display: block;
+    }
+
+    .upload-section {
+        position: static;
+        margin-top: 10px;
+        justify-content: center;
+    }
+}
