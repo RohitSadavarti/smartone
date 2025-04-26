@@ -26,6 +26,15 @@ app.config['PG_DB'] = 'college_a4wh'  # change to your PostgreSQL database name
 @app.route("/")
 def home():
     return render_template("index.html")
+@app.route("/")
+def attendance_tracker():
+    return render_template("Attendance.html")
+@app.route("/")
+def admin_student():
+    return render_template("Students.html")
+@app.route("/")
+def admin_teacher():
+    return render_template("Teacher.html")
 @app.route('/api/data')
 def get_data():
     return jsonify({"message": "Hello from backend"})
