@@ -32,10 +32,12 @@ def get_data():
 
 def get_pg_connection():
     return psycopg2.connect(
-        host=app.config['PG_HOST'],
-        user=app.config['PG_USER'],
-        password=app.config['PG_PASSWORD'],
-        database=app.config['PG_DB']
+        host="dpg-d068u1juibrs73ebdrg0-a",
+        database="college",
+        user="college_a4wh_user",
+        password="R80LtpTJ5LQ80GDMuzOmfDS2XSOZODXf",
+        port=5432,
+        sslmode='require'
     )
 
 # Routes for Departments, Teachers, Subjects, Time Slots, and Students (Python 1)
