@@ -24,7 +24,7 @@
                 </li>
                 <ul class="menu-links">
                     <li class="nav-link">
-                        <a href="index.html">
+                        <a href="{{ url_for('home') }}">
                             <i class='bx bx-home-alt icon'></i>
                             <span class="text nav-text">Home</span>
                         </a>
@@ -36,19 +36,19 @@
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="admin - Students.html" style="background: #004aad;color: #fff;border-radius: 5px;">
+                       <a href="{{ url_for('admin_student') }}" style="background: #004aad;color: #fff;border-radius: 5px;">
                             <i class='bx bx-download icon'></i>
                             <span class="text nav-text">Update Data</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="Attendance.html">
+                        <a href="{{ url_for('attendance_tracker') }}">
                             <i class='bx bx-pie-chart-alt icon'></i>
                             <span class="text nav-text">Attendance Tracker</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="index.html">
+                        <a href="{{ url_for('home') }}">
                             <i class='bx bx-pencil icon'></i>
                             <span class="text nav-text">Update Attendance</span>
                         </a>
@@ -81,7 +81,7 @@
         <header>
             <h1>Upload Teachers Data</h1>
         </header>
-        <a href="admin - Students.html" style="text-decoration: none; color: #fff; padding: 5px 5px; background-color: #007bff; position: absolute;top: 28px;left: 110px;height: 35px;text-align: justify; border-radius: 5px;">
+        <a href="{{ url_for('admin_student') }}" style="text-decoration: none; color: #fff; padding: 5px 5px; background-color: #007bff; position: absolute;top: 28px;left: 110px;height: 35px;text-align: justify; border-radius: 5px;">
             Go to Students
         </a>
 
