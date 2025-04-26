@@ -608,14 +608,6 @@ body.dark .absent-btn:hover {
         display: none;
     }
 
-    .sidebar .menu-bar {
-        height: auto;
-    }
-
-    .sidebar .menu-bar .mode {
-        display: none;
-    }
-
     .sidebar.close {
         width: 250px;
     }
@@ -625,18 +617,51 @@ body.dark .absent-btn:hover {
         opacity: 1;
     }
 
-    .sidebar.close .menu-bar .mode {
-        display: flex;
-    }
-
     .home, .main-content {
         margin-left: 80px;
         width: calc(100% - 80px);
+        padding: 15px;
+        min-height: auto;
+        position: relative;
     }
 
     .sidebar.close ~ .home,
     .sidebar.close ~ .main-content {
         margin-left: 250px;
         width: calc(100% - 250px);
+    }
+
+    form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 10px;
+        width: 100%;
+    }
+
+    select, input[type="date"], input[type="text"], button {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    table {
+        font-size: 12px;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        width: 100%;
+    }
+
+    .upload-section {
+        position: static;
+        margin-top: 20px;
+        justify-content: center;
+    }
+
+    #popup-box {
+        width: 90%;
+        max-width: 300px;
     }
 }
