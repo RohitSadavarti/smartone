@@ -20,7 +20,7 @@ app.config['ALLOWED_EXTENSIONS'] = {'xlsx', 'xls', 'csv'}
 app.config['PG_HOST'] = 'dpg-d068u1juibrs73ebdrg0-a'
 app.config['PG_USER'] = 'college_a4wh_user'  # change to your PostgreSQL username
 app.config['PG_PASSWORD'] = 'R80LtpTJ5LQ80GDMuzOmfDS2XSOZODXf'  # change to your PostgreSQL password
-app.config['PG_DB'] = 'college'  # change to your PostgreSQL database name
+app.config['PG_DB'] = 'college_a4wh'  # change to your PostgreSQL database name
 
 
 @app.route("/")
@@ -33,7 +33,7 @@ def get_data():
 def get_pg_connection():
     return psycopg2.connect(
         host="dpg-d068u1juibrs73ebdrg0-a",
-        database="college",
+        database="college_a4wh",
         user="college_a4wh_user",
         password="R80LtpTJ5LQ80GDMuzOmfDS2XSOZODXf",
         port=5432,
