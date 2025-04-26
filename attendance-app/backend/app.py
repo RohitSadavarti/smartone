@@ -31,10 +31,10 @@ def attendance_tracker():
     return render_template("Attendance.html")
 @app.route("/")
 def admin_student():
-    return render_template("Students.html")
+    return render_template("admin-students.html")
 @app.route("/")
 def admin_teacher():
-    return render_template("Teacher.html")
+    return render_template("admin-teacher.html")
 @app.route('/api/data')
 def get_data():
     return jsonify({"message": "Hello from backend"})
