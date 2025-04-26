@@ -595,57 +595,63 @@ body.dark .absent-btn:hover {
 }
 
 @media screen and (max-width: 768px) {
+    /* Sidebar when collapsed (default on mobile) */
     .sidebar {
         width: 80px;
-        position: relative;
-        height: auto;
+        position: fixed;
+        height: 100vh;
         z-index: 100;
         overflow-x: hidden;
         transition: width 0.3s;
     }
 
-  .sidebar.close {
-        width: 100%;
+    /* Sidebar when expanded (after clicking toggle) */
+    .sidebar.open {
+        width: 250px;
     }
 
-    .home {
-        left: 0;
-        width: 100%;
+    /* Content when sidebar is collapsed */
+    .home, .main-content {
+        margin-left: 80px;
+        width: calc(100% - 80px);
+        padding: 15px;
+        min-height: auto;
         position: relative;
     }
 
-    .sidebar.close ~ .home {
-        left: 0;
-        width: 100%;
-    }
-
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 10px;
+    /* Content when sidebar is expanded */
+    .sidebar.open ~ .home,
+    .sidebar.open ~ .main-content {
+        margin-left: 250px;
+        width: calc(100% - 250px);
     }
 
     form {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 10px;
-        height: auto;
-        margin-left: 10px;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 10px;
+        width: 100%;
     }
 
     select, input[type="date"], input[type="text"], button {
         width: 100%;
+        box-sizing: border-box;
     }
 
     table {
         font-size: 12px;
-        overflow-x: auto;
         display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        width: 100%;
     }
 
     .upload-section {
         position: static;
-        margin-top: 10px;
+        margin-top: 20px;
         justify-content: center;
     }
 }
