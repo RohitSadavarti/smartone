@@ -596,54 +596,47 @@ body.dark .absent-btn:hover {
 
 @media screen and (max-width: 768px) {
     .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
+        width: 80px;
+        position: fixed;
+        height: 100vh;
         z-index: 100;
+        overflow-x: hidden;
+        transition: width 0.3s;
+    }
+
+    .sidebar .text {
+        display: none;
+    }
+
+    .sidebar .menu-bar {
+        height: auto;
+    }
+
+    .sidebar .menu-bar .mode {
+        display: none;
     }
 
     .sidebar.close {
-        width: 100%;
+        width: 250px;
     }
 
-    .home {
-        left: 0;
-        width: 100%;
-        position: relative;
+    .sidebar.close .text {
+        display: inline;
+        opacity: 1;
     }
 
-    .sidebar.close ~ .home {
-        left: 0;
-        width: 100%;
+    .sidebar.close .menu-bar .mode {
+        display: flex;
     }
 
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 10px;
+    .home, .main-content {
+        margin-left: 80px;
+        width: calc(100% - 80px);
     }
 
-    form {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        height: auto;
-        margin-left: 10px;
-    }
-
-    select, input[type="date"], input[type="text"], button {
-        width: 100%;
-    }
-
-    table {
-        font-size: 12px;
-        overflow-x: auto;
-        display: block;
-    }
-
-    .upload-section {
-        position: static;
-        margin-top: 10px;
-        justify-content: center;
+    .sidebar.close ~ .home,
+    .sidebar.close ~ .main-content {
+        margin-left: 250px;
+        width: calc(100% - 250px);
     }
 }
