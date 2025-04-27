@@ -18,10 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (startDateInput) startDateInput.setAttribute('max', today);
     if (endDateInput) endDateInput.setAttribute('max', today);
 
-    // Define base URL based on the environment (production or local)
-    const baseUrl = window.location.hostname === 'localhost' 
-        ? 'http://127.0.0.1:5000' 
-        : 'https://your-app-name.onrender.com';
+    // Define the base URL for Render-hosted API
+    const baseUrl = 'https://your-app-name.onrender.com'; // Replace with your actual Render app URL
 
     // Fetch and display attendance data
     filterButton?.addEventListener('click', async () => {
