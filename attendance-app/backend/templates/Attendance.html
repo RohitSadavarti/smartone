@@ -92,10 +92,11 @@
 
         <label for="department">Department:</label>
         <select id="department" name="department">
-          <option value="">Select Department</option>
-          <!-- Options populated dynamically -->
+        <option value="">Select Department</option>
+          {% for dept in departments %}
+        <option value="{{ dept }}">{{ dept }}</option>
+        {% endfor %}
         </select>
-
         <label for="class">Class:</label>
         <select id="class" name="class">
           <option value="">Select Class</option>
