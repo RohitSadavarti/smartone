@@ -49,10 +49,9 @@ def get_data():
 def serve_static(filename):
     return send_from_directory('static', filename)
 
-@app.route('/attendance-data')
-def attendance_data():
-    # Your code to fetch and return attendance data
-    return jsonify(data)
+@app.route('/attendance-data', methods=['GET'])
+def get_attendance_data():
+    return jsonify({'data': 'your data'})
 
 def get_pg_connection():
     return psycopg2.connect(
