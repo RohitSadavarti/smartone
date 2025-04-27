@@ -156,7 +156,7 @@ def save_attendance():
         cursor.execute(""" 
             INSERT INTO Attendance (date, roll_number, name, department, class, subject, teacher_name, lecture_time, attendance)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT (roll_number, date) 
+            ON CONFLICT (date, lecture_time, roll_number) 
             DO UPDATE SET attendance = EXCLUDED.attendance
         """, (
             record['date'], 
