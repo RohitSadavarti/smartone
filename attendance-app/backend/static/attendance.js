@@ -20,37 +20,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fetch and display attendance data
     filterButton?.addEventListener('click', async () => {
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
-        const department = departmentDropdown.value;
-        const className = classDropdown.value;
+    const startDate = startDateInput.value;
+    const endDate = endDateInput.value;
+    const department = departmentDropdown.value;
+    const className = classDropdown.value;
 
-        if (!startDate || !endDate) {
-            alert('Please select both start and end dates.');
-            return;
-        }
+    // Check if both start date and end date are selected
+    if (!startDate || !endDate) {
+        alert('Please select both start and end dates.');
+        return;
+    }
 
-        try {
-            const url = new URL('/attendance-data');
-            const params = {
-                start_date: startDate,
-                end_date: endDate,
-            };
+    try {
+        const url = new URL('/attendance-data', window.location.origin); // Ensure correct URL
+        console.log('Request URL:', `${url}?${new URLSearchParams(params).toString()}`);  // Debug URL
 
-            // Add department and class filters to URL parameters if selected
-            if (department && department !== "") params.department = department;
-            if (className && className !== "") params.class = className;
+        const params = {
+            start_date: startDate,
+            end_date: endDate,
+        };
 
-            // Send the request with parameters
-            const response = await fetch(`${url}?${new URLSearchParams(params).toString()}`);
-            if (!response.ok) throw new Error('Failed to fetch data');
-            const data = await response.json();
-            displayAttendanceData(data);
-        } catch (error) {
-            console.error('Error fetching attendance data:', error);
-            alert('Error fetching attendance data. Please check the console for details.');
-        }
-    });
+        // Add department and class filters to URL parameters if selected
+        if (department && department !== "") params.department = department;
+        if (className && className !== "") params.class = className;
+
+        // Send the request with parameters
+        const response = await fetch(`${url}?${new URLSearchParams(params).toString()}`);
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const data = await response.json();
+        displayAttendanceData(data);
+    } catch (error) {
+        console.error('Error fetching attendance data:', error);
+        alert('Error fetching attendance data. Please check the console for details.');
+    }
+});
 
     // Extract CSV data
     extractCsvButton?.addEventListener('click', async () => {
