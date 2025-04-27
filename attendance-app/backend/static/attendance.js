@@ -18,6 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (startDateInput) startDateInput.setAttribute('max', today);
     if (endDateInput) endDateInput.setAttribute('max', today);
 
+    // Define base URL based on the environment (production or local)
+    const baseUrl = window.location.hostname === 'localhost' 
+        ? 'http://127.0.0.1:5000' 
+        : 'https://your-app-name.onrender.com';
+
     // Fetch and display attendance data
     filterButton?.addEventListener('click', async () => {
         const startDate = startDateInput.value;
@@ -31,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const url = new URL('/attendance-data');
+            const url = new URL(`${baseUrl}/attendance-data`);
             const params = {
                 start_date: startDate,
                 end_date: endDate,
@@ -52,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-
     // Extract CSV data
     extractCsvButton?.addEventListener('click', async () => {
         const startDate = startDateInput.value;
@@ -66,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(`/attendance-csv?start_date=${startDate}&end_date=${endDate}`);
+            const response = await fetch(`${baseUrl}/attendance-csv?start_date=${startDate}&end_date=${endDate}`);
             if (response.ok) {
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
@@ -182,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch and populate Department and Class dropdowns
     async function fetchDepartments() {
         try {
-            const response = await fetch('/student-departments');
+            const response = await fetch(`${baseUrl}/student-departments`);
             const departments = await response.json();
             console.log('Departments fetched:', departments);  // Debug log
             departments.forEach(department => {
@@ -194,44 +198,11 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             console.error('Error fetching departments:', error);
         }
-    }filterButton?.addEventListener('click', async () => {
-    const startDate = startDateInput.value;
-    const endDate = endDateInput.value;
-    const department = departmentDropdown.value;
-    const className = classDropdown.value;
-
-    // Check if both start date and end date are selected
-    if (!startDate || !endDate) {
-        alert('Please select both start and end dates.');
-        return;
     }
-
-    try {
-        const url = new URL('/attendance-data');
-        const params = {
-            start_date: startDate,
-            end_date: endDate,
-        };
-
-        // Add department and class filters to URL parameters if selected
-        if (department && department !== "") params.department = department;
-        if (className && className !== "") params.class = className;
-
-        // Send the request with parameters
-        const response = await fetch(`${url}?${new URLSearchParams(params).toString()}`);
-        if (!response.ok) throw new Error('Failed to fetch data');
-        const data = await response.json();
-        displayAttendanceData(data);
-    } catch (error) {
-        console.error('Error fetching attendance data:', error);
-        alert('Error fetching attendance data. Please check the console for details.');
-    }
-});
-
 
     async function fetchClasses() {
         try {
-            const response = await fetch('/student-classes');
+            const response = await fetch(`${baseUrl}/student-classes`);
             const classes = await response.json();
             console.log('Classes fetched:', classes);  // Debug log
             classes.forEach(className => {
