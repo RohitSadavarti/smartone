@@ -45,21 +45,9 @@ def admin_student():
 def admin_teacher():
     return render_template("admin-teacher.html")
 
-
-@app.route('/api/data')
-def get_data():
-    return jsonify({"message": "Hello from backend"})
-
-
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
-
-
-@app.route('/attendance-data', methods=['GET'])
-def get_attendance_data():
-    # Your data-fetching logic or static response
-    return jsonify({'data': 'your data'})
 
 def get_pg_connection():
     return psycopg2.connect(
