@@ -5,7 +5,9 @@ from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 import mysql.connector
 from werkzeug.utils import secure_filename
+import logging
 from datetime import datetime
+from flask import request, jsonify
 from openpyxl import load_workbook
 from flask import Flask, render_template
 from flask_cors import CORS
@@ -189,6 +191,7 @@ def get_attendance_data():
     department = request.args.get('department', '').strip()
     class_name = request.args.get('class', '').strip()
 
+    # Check if start date and end date are provided
     if not start_date or not end_date:
         return jsonify({'message': 'Start date and end date are required'}), 400
 
@@ -200,11 +203,13 @@ def get_attendance_data():
         return jsonify({'message': 'Invalid date format. Use YYYY-MM-DD.'}), 400
 
     try:
+        # Open database connection
         connection = get_pg_connection()
         if connection is None:
             return jsonify({'message': 'Database connection failed'}), 500
         
         with connection.cursor() as cursor:
+            # Base query to fetch attendance data
             query = """
                 SELECT date, roll_number, name, department, class, attendance, lecture_time
                 FROM Attendance
@@ -212,6 +217,7 @@ def get_attendance_data():
             """
             filters = [start_date, end_date]
 
+            # Add filters if department and class are provided
             if department:
                 query += " AND department = %s"
                 filters.append(department)
@@ -220,12 +226,17 @@ def get_attendance_data():
                 query += " AND class = %s"
                 filters.append(class_name)
 
+            # Log the query for debugging
+            logging.debug(f"Executing query: {query} with filters: {filters}")
+
             cursor.execute(query, tuple(filters))
             rows = cursor.fetchall()
 
+            # Check if no records are found
             if not rows:
                 return jsonify([])
 
+            # Process the rows into a list of dictionaries
             result = [
                 {
                     'date': row[0],
@@ -238,13 +249,16 @@ def get_attendance_data():
                 } for row in rows
             ]
 
+            # Log the result size for debugging
+            logging.debug(f"Fetched {len(result)} records.")
+
             connection.close()
             return jsonify(result)
 
     except Exception as e:
+        # Log any exception that occurs
         logging.error(f"Error fetching attendance data: {e}")
         return jsonify({'message': 'An error occurred while fetching attendance data'}), 500
-
 @app.route('/attendance-csv', methods=['GET'])
 def download_attendance_csv():
     start_date = request.args.get('start_date')
