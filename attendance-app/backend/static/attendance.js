@@ -32,9 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-        const url = new URL('/attendance-data', window.location.origin); // Ensure correct URL
-        console.log('Request URL:', `${url}?${new URLSearchParams(params).toString()}`);  // Debug URL
-
+        const url = new URL('/attendance-data');
         const params = {
             start_date: startDate,
             end_date: endDate,
