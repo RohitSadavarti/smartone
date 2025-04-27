@@ -192,48 +192,57 @@ def get_attendance_data():
     if not start_date or not end_date:
         return jsonify({'message': 'Start date and end date are required'}), 400
 
+    # Validate the date format (YYYY-MM-DD)
+    try:
+        start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'message': 'Invalid date format. Use YYYY-MM-DD.'}), 400
+
     try:
         connection = get_pg_connection()
-        cursor = connection.cursor()
-        query = """
-            SELECT date, roll_number, name, department, class, attendance, lecture_time
-            FROM Attendance
-            WHERE date BETWEEN %s AND %s
-        """
-        filters = [start_date, end_date]
+        if connection is None:
+            return jsonify({'message': 'Database connection failed'}), 500
+        
+        with connection.cursor() as cursor:
+            query = """
+                SELECT date, roll_number, name, department, class, attendance, lecture_time
+                FROM Attendance
+                WHERE date BETWEEN %s AND %s
+            """
+            filters = [start_date, end_date]
 
-        if department:
-            query += " AND department = %s"
-            filters.append(department)
+            if department:
+                query += " AND department = %s"
+                filters.append(department)
 
-        if class_name:
-            query += " AND class = %s"
-            filters.append(class_name)
+            if class_name:
+                query += " AND class = %s"
+                filters.append(class_name)
 
-        cursor.execute(query, tuple(filters))
-        rows = cursor.fetchall()
-        cursor.close()
-        connection.close()
+            cursor.execute(query, tuple(filters))
+            rows = cursor.fetchall()
 
-        if not rows:
-            return jsonify([])
+            if not rows:
+                return jsonify([])
 
-        result = [
-            {
-                'date': row[0],
-                'roll_number': row[1],
-                'name': row[2],
-                'department': row[3],
-                'class': row[4],
-                'attendance': row[5],
-                'lecture_time': row[6]
-            } for row in rows
-        ]
+            result = [
+                {
+                    'date': row[0],
+                    'roll_number': row[1],
+                    'name': row[2],
+                    'department': row[3],
+                    'class': row[4],
+                    'attendance': row[5],
+                    'lecture_time': row[6]
+                } for row in rows
+            ]
 
-        return jsonify(result)
+            connection.close()
+            return jsonify(result)
 
     except Exception as e:
-        print(f"Error: {e}")
+        logging.error(f"Error fetching attendance data: {e}")
         return jsonify({'message': 'An error occurred while fetching attendance data'}), 500
 
 @app.route('/attendance-csv', methods=['GET'])
