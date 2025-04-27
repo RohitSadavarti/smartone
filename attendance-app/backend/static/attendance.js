@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const url = new URL('http://127.0.0.1:5000/attendance-data');
+            const url = new URL('/attendance-data');
             const params = {
                 start_date: startDate,
                 end_date: endDate,
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5000/attendance-csv?start_date=${startDate}&end_date=${endDate}`);
+            const response = await fetch(`/attendance-csv?start_date=${startDate}&end_date=${endDate}`);
             if (response.ok) {
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch and populate Department and Class dropdowns
     async function fetchDepartments() {
         try {
-            const response = await fetch('http://127.0.0.1:5000/student-departments');
+            const response = await fetch('/student-departments');
             const departments = await response.json();
             console.log('Departments fetched:', departments);  // Debug log
             departments.forEach(department => {
@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-        const url = new URL('http://127.0.0.1:5000/attendance-data');
+        const url = new URL('/attendance-data');
         const params = {
             start_date: startDate,
             end_date: endDate,
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function fetchClasses() {
         try {
-            const response = await fetch('http://127.0.0.1:5000/student-classes');
+            const response = await fetch('/student-classes');
             const classes = await response.json();
             console.log('Classes fetched:', classes);  // Debug log
             classes.forEach(className => {
