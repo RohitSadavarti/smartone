@@ -11,7 +11,9 @@ from flask import Flask, render_template
 from flask_cors import CORS
 import psycopg2
 from flask import Flask, jsonify
+from flask import Flask, send_from_directory
 app = Flask(__name__)
+
 CORS(app)
 
 # Database configuration
@@ -42,6 +44,10 @@ def admin_teacher():
 @app.route('/api/data')
 def get_data():
     return jsonify({"message": "Hello from backend"})
+
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('static', filename)
 
 def get_pg_connection():
     return psycopg2.connect(
