@@ -25,32 +25,40 @@ app.config['PG_PASSWORD'] = 'R80LtpTJ5LQ80GDMuzOmfDS2XSOZODXf'  # change to your
 app.config['PG_DB'] = 'college_a4wh'  # change to your PostgreSQL database name
 
 
+
 @app.route("/")
 def home():
     return render_template("index.html")
+
 
 @app.route("/attendance")
 def attendance_tracker():
     return render_template("Attendance.html")
 
+
 @app.route("/admin-students")
 def admin_student():
     return render_template("admin-students.html")
+
 
 @app.route("/admin-teacher")
 def admin_teacher():
     return render_template("admin-teacher.html")
 
+
 @app.route('/api/data')
 def get_data():
     return jsonify({"message": "Hello from backend"})
+
 
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
 
+
 @app.route('/attendance-data', methods=['GET'])
 def get_attendance_data():
+    # Your data-fetching logic or static response
     return jsonify({'data': 'your data'})
 
 def get_pg_connection():
