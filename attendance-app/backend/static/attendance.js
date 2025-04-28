@@ -31,19 +31,16 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    try {
-        const url = new URL('/attendance-data');
-        const params = {
+   try {
+        const params = new URLSearchParams({
             start_date: startDate,
             end_date: endDate,
-        };
+        });
 
-        // Add department and class filters to URL parameters if selected
-        if (department && department !== "") params.department = department;
-        if (className && className !== "") params.class = className;
+      if (department) params.append('department', department);
+        if (className) params.append('class', className);
 
-        // Send the request with parameters
-        const response = await fetch(`${url}?${new URLSearchParams(params).toString()}`);
+      const response = await fetch(`/attendance-data?${params.toString()}`);
         if (!response.ok) throw new Error('Failed to fetch data');
         const data = await response.json();
         displayAttendanceData(data);
