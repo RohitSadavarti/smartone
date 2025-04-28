@@ -15,7 +15,7 @@ document.getElementById('teacherForm').addEventListener('submit', async (event) 
     }
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/teachers", {
+        const response = await fetch("/teachers", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -56,7 +56,7 @@ document.getElementById('excelForm').addEventListener('submit', async (event) =>
     formData.append('file', file);
 
     try {
-        const response = await fetch('http://127.0.0.1:5000/upload-file', {
+        const response = await fetch('/upload-file', {
             method: 'POST',
             body: formData,
         });
@@ -86,7 +86,7 @@ document.getElementById("rows-per-page").addEventListener("change", (event) => {
 
 async function fetchUploadHistory() {
     try {
-        const response = await fetch("http://127.0.0.1:5000/upload-history");
+        const response = await fetch("/upload-history");
         const history = await response.json();
 
         // Sort the records by upload_time in descending order
@@ -125,7 +125,7 @@ async function downloadCSV(uploadId, recordType) {
         return;
     }
 
-    const response = await fetch(`http://127.0.0.1:5000/download-upload-history/${uploadId}?type=${recordType}`);
+    const response = await fetch(`/download-upload-history/${uploadId}?type=${recordType}`);
     if (response.ok) {
         const blob = await response.blob();
         const link = document.createElement('a');
@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Populate Department dropdown
     await fetchAndPopulateDropdown(
-        "http://127.0.0.1:5000/departments",
+        "/departments",
         departmentDropdown,
         "Select Department"
     );
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (selectedDepartment) {
             await fetchAndPopulateDropdown(
-                `http://127.0.0.1:5000/student-classes?department=${selectedDepartment}`,
+                `/student-classes?department=${selectedDepartment}`,
                 classDropdown,
                 "Select Class"
             );
