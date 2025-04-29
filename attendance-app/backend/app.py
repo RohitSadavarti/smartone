@@ -444,9 +444,9 @@ def upload_file():
             # Insert upload summary
             upload_time = datetime.now()
             cursor.execute("""
-                INSERT INTO UploadHistory (uploader_name, total_records, valid_records, error_records, upload_time)
-                VALUES (%s, %s, %s, %s, %s)
-            """, ("Admin", total_records, valid_records, error_records, upload_time))
+    INSERT INTO UploadHistory (uploader_name, total_records, valid_records, error_records, upload_time)
+    VALUES (%s, %s, %s, %s, %s)
+""", ("Admin", total_records, valid_records, error_records, upload_time))
 
             # Commit everything
             connection.commit()
