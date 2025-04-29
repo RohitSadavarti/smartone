@@ -388,7 +388,7 @@ def upload_file():
 
             file.save(file_path)
 
-            # Parse the file and prepare for database insertion
+            # Parse the file
             data = process_excel(file_path)
             total_records = len(data)
             valid_records = 0
@@ -404,21 +404,22 @@ def upload_file():
                 try:
                     roll_number, name, department, class_value = row
 
-                    # Check if the roll number already exists
+                    # Check if student already exists
                     cursor.execute("SELECT 1 FROM Students WHERE roll_number = %s", (roll_number,))
-                    existing_student = cursor.fetchone()
+                    existing = cursor.fetchone()
 
-                    if existing_student:
-                        error_data.append((roll_number, name, department, class_value, 'Duplicate roll number'))
+                    if existing:
+                        # Already exists
+                        error_data.append((roll_number, name, department, class_value, "Duplicate Roll Number"))
                         error_records += 1
-                        continue  # Skip this record
+                        continue
 
-                    # Insert into Students table
+                    # Insert into Students
                     cursor.execute("""
                         INSERT INTO Students (roll_number, name, department, class)
                         VALUES (%s, %s, %s, %s)
                     """, (roll_number, name, department, class_value))
-
+                    
                     valid_data.append((roll_number, name, department, class_value))
                     valid_records += 1
 
@@ -426,28 +427,28 @@ def upload_file():
                     error_data.append((roll_number, name, department, class_value, str(e)))
                     error_records += 1
 
-            # Insert valid records into Validrecords table
+            # Insert into Validrecords
             if valid_data:
                 cursor.executemany("""
                     INSERT INTO Validrecords (roll_number, name, department, class)
                     VALUES (%s, %s, %s, %s)
                 """, valid_data)
 
-            # Insert error records into Errorrecords table
+            # Insert into Errorrecords
             if error_data:
                 cursor.executemany("""
                     INSERT INTO Errorrecords (roll_number, name, department, class, error_message)
                     VALUES (%s, %s, %s, %s, %s)
                 """, error_data)
 
-            # Record upload history
-            upload_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # Insert upload summary
+            upload_time = datetime.now()
             cursor.execute("""
                 INSERT INTO UploadHistory (uploader_name, total_records, valid_records, error_records, upload_time)
                 VALUES (%s, %s, %s, %s, %s)
             """, ("Admin", total_records, valid_records, error_records, upload_time))
 
-            # Finally commit everything once
+            # Commit everything
             connection.commit()
             cursor.close()
             connection.close()
@@ -460,10 +461,10 @@ def upload_file():
             }), 200
 
         else:
-            return jsonify({'message': 'Invalid file type. Only .xlsx, .xls, and .csv files are allowed.'}), 400
+            return jsonify({'message': 'Invalid file type.'}), 400
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error while uploading file: {e}")
         return jsonify({'message': 'An error occurred while processing the file.'}), 500
 
 
