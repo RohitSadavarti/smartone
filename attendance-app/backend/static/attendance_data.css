@@ -142,3 +142,42 @@ div#search-input-container {
     white-space: nowrap;
   }
 }
+@media screen and (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 10px;
+  }
+
+  form#filter-form {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  form#filter-form label,
+  form#filter-form select,
+  form#filter-form input[type="date"],
+  form#filter-form button {
+    width: 100%;
+  }
+
+  div#search-input-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #search-input,
+  #search,
+  #clear-search {
+    width: 100%;
+  }
+
+  #attendance-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-size: 14px;
+  }
+}
+
