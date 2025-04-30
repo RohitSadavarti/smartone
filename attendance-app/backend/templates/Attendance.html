@@ -90,24 +90,28 @@
 
     <form id="filter-form">
       <div>
-        <label for="start-date">Start Date:</label>
-        <input type="date" id="start-date" name="start_date">
-
-        <label for="end-date">End Date:</label>
-        <input type="date" id="end-date" name="end_date">
-
-        <label for="department">Department:</label>
-        <select id="department" name="department">
-        <option value="">Select Department</option>
-          {% for dept in departments %}
+    <label for="start-date">Start Date:</label>
+    <input type="date" id="start-date" name="start_date">
+  </div>
+        <div>
+    <label for="end-date">End Date:</label>
+    <input type="date" id="end-date" name="end_date">
+  </div>
+        <div>
+    <label for="department">Department:</label>
+    <select id="department" name="department">
+      <option value="">Select Department</option>
+      {% for dept in departments %}
         <option value="{{ dept }}">{{ dept }}</option>
-        {% endfor %}
-        </select>
-        <label for="class">Class:</label>
-        <select id="class" name="class">
-          <option value="">Select Class</option>
-          <!-- Options populated dynamically -->
-        </select>
+      {% endfor %}
+    </select>
+  </div>
+        <div>
+    <label for="class">Class:</label>
+    <select id="class" name="class">
+      <option value="">Select Class</option>
+    </select>
+  </div>
 
         <button type="button" id="filter-data">Filter</button>
         <button type="button" id="extract-csv">Download</button>
