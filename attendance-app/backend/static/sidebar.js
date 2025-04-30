@@ -47,3 +47,9 @@ function toggleSidebar() {
   sidebar.classList.toggle("open");
   backdrop.classList.toggle("show");
 }
+
+function toggleSubMenu(el) {
+  const parent = el.closest('.has-submenu');
+  parent.classList.toggle('active');
+}
+
