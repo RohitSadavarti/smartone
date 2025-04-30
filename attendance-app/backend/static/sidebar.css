@@ -230,7 +230,7 @@ body.dark .sidebar .toggle {
         top: 0;
         left: 0;
         height: 100vh;
-        background: var(--sidebar-color); /* or your preferred bg */
+        background: white /* or your preferred bg */
         z-index: 1000; /* On top of other content */
         overflow-y: auto;
         transform: translateX(-100%); /* Hide by default */
