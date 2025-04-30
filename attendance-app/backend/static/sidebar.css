@@ -223,6 +223,33 @@ body.dark .sidebar .toggle {
     transform: rotate(0);
 }
 
+.has-submenu .submenu {
+  display: none;
+  padding-left: 30px;
+  margin-top: 5px;
+  flex-direction: column;
+}
+
+.has-submenu.active .submenu {
+  display: flex;
+}
+
+.has-submenu .submenu li a {
+  font-size: 15px;
+  color: #fff;
+  padding: 6px 0;
+  display: block;
+  text-decoration: none;
+}
+
+.has-submenu .submenu li a:hover {
+  text-decoration: underline;
+}
+
+body.dark .has-submenu .submenu li a {
+  color: #fff;
+}
+
 @media screen and (max-width: 768px) {
     .sidebar {
         width: 250px; /* Full sidebar width */
@@ -291,4 +318,30 @@ body.dark .sidebar.open li.search-box input {
 
 body.dark .sidebar.open li a:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+.has-submenu .submenu {
+  display: none;
+  padding-left: 30px;
+  margin-top: 5px;
+  flex-direction: column;
+}
+
+.has-submenu.active .submenu {
+  display: flex;
+}
+
+.has-submenu .submenu li a {
+  font-size: 15px;
+  color: #fff;
+  padding: 6px 0;
+  display: block;
+  text-decoration: none;
+}
+
+.has-submenu .submenu li a:hover {
+  text-decoration: underline;
+}
+
+body.dark .has-submenu .submenu li a {
+  color: #fff;
 }
