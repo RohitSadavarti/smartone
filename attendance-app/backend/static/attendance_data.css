@@ -150,27 +150,26 @@ div#search-input-container {
   }
 
   form#filter-form {
+    display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 15px;
+    gap: 10px;
   }
 
-  form#filter-form label,
-  form#filter-form select,
+  form#filter-form label {
+    margin-bottom: 4px;
+    font-weight: bold;
+  }
+
   form#filter-form input[type="date"],
+  form#filter-form select,
   form#filter-form button {
     width: 100%;
+    margin-bottom: 12px;
   }
 
-  div#search-input-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  #search-input,
-  #search,
-  #clear-search {
-    width: 100%;
+  button {
+    margin-top: 0; /* Avoid extra space on mobile */
   }
 
   #attendance-table {
@@ -180,4 +179,3 @@ div#search-input-container {
     font-size: 14px;
   }
 }
-
