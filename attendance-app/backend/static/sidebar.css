@@ -238,7 +238,8 @@ body.dark .sidebar .toggle {
     }
 
     .sidebar.open {
-        transform: translateX(0); /* Slide in when open */
+        transform: translateX(0);
+        background: purple;/* Slide in when open */
     }
 
     .home,
@@ -261,4 +262,19 @@ body.dark .sidebar .toggle {
     .sidebar.open + .sidebar-toggle-backdrop {
         display: block;
     }
+}
+
+.sidebar.open .text,
+.sidebar.open .icon,
+.sidebar.open li a,
+.sidebar.open li.search-box input {
+  color: white !important;
+}
+.sidebar.open li.search-box {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar.open li a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white !important;
 }
