@@ -278,3 +278,17 @@ body.dark .sidebar .toggle {
   background-color: rgba(255, 255, 255, 0.2);
   color: white !important;
 }
+body.dark .sidebar.open {
+  background-color: black !important;
+}
+
+body.dark .sidebar.open .text,
+body.dark .sidebar.open .icon,
+body.dark .sidebar.open li a,
+body.dark .sidebar.open li.search-box input {
+  color: white !important;
+}
+
+body.dark .sidebar.open li a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
