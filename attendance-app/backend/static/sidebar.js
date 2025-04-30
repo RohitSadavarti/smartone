@@ -22,3 +22,14 @@ modeSwitch.addEventListener("click", () => {
     modeText.innerText = "Dark mode";
   }
 });
+
+function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.querySelector('.sidebar-toggle-backdrop').classList.toggle('show');
+}
+
+function closeSidebar() {
+    document.querySelector('.sidebar').classList.remove('open');
+    document.querySelector('.sidebar-toggle-backdrop').classList.remove('show');
+}
+
