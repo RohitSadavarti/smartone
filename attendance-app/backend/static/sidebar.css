@@ -225,15 +225,40 @@ body.dark .sidebar .toggle {
 
 @media screen and (max-width: 768px) {
     .sidebar {
-        width: 80px;
-        position: relative;
-        height: auto;
-        z-index: 100;
-        overflow-x: hidden;
-        transition: width 0.3s;
+        width: 250px; /* Full sidebar width */
+        position: fixed; /* Overlay it over the screen */
+        top: 0;
+        left: 0;
+        height: 100vh;
+        background: var(--sidebar-color); /* or your preferred bg */
+        z-index: 1000; /* On top of other content */
+        overflow-y: auto;
+        transform: translateX(-100%); /* Hide by default */
+        transition: transform 0.3s ease;
     }
 
-    .sidebar.close {
+    .sidebar.open {
+        transform: translateX(0); /* Slide in when open */
+    }
+
+    .home,
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .sidebar-toggle-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.3);
+        z-index: 999;
+    }
+
+    .sidebar.open + .sidebar-toggle-backdrop {
+        display: block;
     }
 }
