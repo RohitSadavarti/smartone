@@ -143,33 +143,46 @@ div#search-input-container {
   }
 }
 @media screen and (max-width: 768px) {
-  form#filter-form {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 10px;
+  }
+
+ form#filter-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
     margin-left: 10px;
     margin-right: 10px;
   }
-
-  form#filter-form div {
+form#filter-form div {
     display: flex;
     flex-direction: column;
   }
 
+
   form#filter-form label {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     font-weight: bold;
   }
 
-  form#filter-form input,
+  form#filter-form input[type="date"],
   form#filter-form select,
   form#filter-form button {
     width: 100%;
-    padding: 8px;
-    font-size: 1rem;
+    margin-bottom: 12px;
   }
 
-  form#filter-form button {
-    margin-top: 10px;
+  button {
+    margin-top: 0; /* Avoid extra space on mobile */
+  }
+
+  #attendance-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-size: 14px;
   }
 }
+
