@@ -21,10 +21,10 @@ CORS(app)
 # Database configuration
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIONS'] = {'xlsx', 'xls', 'csv'}
-app.config['PG_HOST'] = 'dpg-d068u1juibrs73ebdrg0-a'
-app.config['PG_USER'] = 'college_a4wh_user'  # change to your PostgreSQL username
-app.config['PG_PASSWORD'] = 'R80LtpTJ5LQ80GDMuzOmfDS2XSOZODXf'  # change to your PostgreSQL password
-app.config['PG_DB'] = 'college_a4wh'  # change to your PostgreSQL database name
+app.config['PG_HOST'] = 'dpg-d1nodrjipnbc73au2ra0-a'
+app.config['PG_USER'] = 'smartone_db_user'  # change to your PostgreSQL username
+app.config['PG_PASSWORD'] = 'rJAlus2ILRfJkNG3yeUkRctIrRC0efe4'  # change to your PostgreSQL password
+app.config['PG_DB'] = 'smartone_db'  # change to your PostgreSQL database name
 
 
 
