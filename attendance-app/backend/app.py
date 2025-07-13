@@ -25,7 +25,7 @@ app.config['PG_HOST'] = 'dpg-d1nodrjipnbc73au2ra0-a'
 app.config['PG_USER'] = 'smartone_db_user'  # change to your PostgreSQL username
 app.config['PG_PASSWORD'] = 'rJAlus2ILRfJkNG3yeUkRctIrRC0efe4'  # change to your PostgreSQL password
 app.config['PG_DB'] = 'smartone_db'  # change to your PostgreSQL database name
-
+app.config['sslmode']='require'
 
 
 @app.route("/")
