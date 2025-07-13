@@ -21,7 +21,7 @@ CORS(app)
 # Database configuration
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIONS'] = {'xlsx', 'xls', 'csv'}
-app.config['PG_HOST'] = 'dpg-d1nodrjipnbc73au2ra0-a.oregon-postgres.render.com'
+app.config['PG_HOST'] = 'dpg-d1nodrjipnbc73au2ra0-a'
 app.config['PG_USER'] = 'smartone_db_user'  # change to your PostgreSQL username
 app.config['PG_PASSWORD'] = 'rJAlus2ILRfJkNG3yeUkRctIrRC0efe4'  # change to your PostgreSQL password
 app.config['PG_DB'] = 'smartone_db'  # change to your PostgreSQL database name
@@ -53,10 +53,10 @@ def serve_static(filename):
 
 def get_pg_connection():
     return psycopg2.connect(
-        host="dpg-d068u1juibrs73ebdrg0-a",
-        database="college_a4wh",
-        user="college_a4wh_user",
-        password="R80LtpTJ5LQ80GDMuzOmfDS2XSOZODXf",
+        host="dpg-d1nodrjipnbc73au2ra0-a",
+        database="smartone_db",
+        user="smartone_db_user",
+        password="rJAlus2ILRfJkNG3yeUkRctIrRC0efe4",
         port=5432,
         sslmode='require'
     )
