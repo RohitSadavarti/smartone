@@ -161,17 +161,29 @@ classDropdown.addEventListener('change', async () => {
 
     await fetchAllStudents();
 
-    // Filter students by department
-    document.getElementById('search-filters').addEventListener('click', async () => {
-        const department = departmentDropdown.value;
-        if (department) {
-            const response = await fetch(`/students?department=${department}`);
-            const students = await response.json();
-            displayStudents(students);
-        } else {
-            alert('Please select a department.');
-        }
-    });
+    // Filter students by department + class
+document.getElementById('search-filters').addEventListener('click', async () => {
+    const department = departmentDropdown.value;
+    const className = classDropdown.value;
+
+    if (!department || !className) {
+        alert('Please select both department and class.');
+        return;
+    }
+
+    const queryString = new URLSearchParams({
+        department: department,
+        class: className
+    }).toString();
+
+    try {
+        const response = await fetch(`/students?${queryString}`);
+        const students = await response.json();
+        displayStudents(students);
+    } catch (error) {
+        console.error('Error fetching filtered students:', error);
+    }
+});
 
     // Save attendance
     saveAttendanceButton.addEventListener('click', async () => {
