@@ -135,6 +135,8 @@ def get_time_slots():
 def get_students():
     query_param = request.args.get('query', '').strip()
     department = request.args.get('department', '').strip()
+    student_class = request.args.get('class', '').strip()  # NEW: Get class from request
+
     connection = get_pg_connection()
     cursor = connection.cursor()
 
@@ -144,14 +146,31 @@ def get_students():
             FROM Students 
             WHERE roll_number LIKE %s OR name LIKE %s
         """, (f"%{query_param}%", f"%{query_param}%"))
+    elif department and student_class:
+        cursor.execute("""
+            SELECT roll_number, name 
+            FROM Students 
+            WHERE department = %s AND class = %s
+        """, (department, student_class))
     elif department:
-        cursor.execute("SELECT roll_number, name FROM Students WHERE department = %s", (department,))
+        cursor.execute("""
+            SELECT roll_number, name 
+            FROM Students 
+            WHERE department = %s
+        """, (department,))
+    elif student_class:
+        cursor.execute("""
+            SELECT roll_number, name 
+            FROM Students 
+            WHERE class = %s
+        """, (student_class,))
     else:
         cursor.execute("SELECT roll_number, name FROM Students")
 
     students = cursor.fetchall()
     cursor.close()
     connection.close()
+
     return jsonify([{"roll_number": student[0], "name": student[1]} for student in students])
 
 @app.route('/attendance', methods=['POST'])
