@@ -135,7 +135,9 @@ def get_time_slots():
 def get_students():
     query_param = request.args.get('query', '').strip()
     department = request.args.get('department', '').strip()
-    student_class = request.args.get('class', '').strip()  # NEW: Get class from request
+    student_class = request.args.get('class', '').strip()
+
+    print(f"Received Filters: query={query_param}, department={department}, class={student_class}")
 
     connection = get_pg_connection()
     cursor = connection.cursor()
@@ -153,17 +155,9 @@ def get_students():
             WHERE department = %s AND class = %s
         """, (department, student_class))
     elif department:
-        cursor.execute("""
-            SELECT roll_number, name 
-            FROM Students 
-            WHERE department = %s
-        """, (department,))
+        cursor.execute("SELECT roll_number, name FROM Students WHERE department = %s", (department,))
     elif student_class:
-        cursor.execute("""
-            SELECT roll_number, name 
-            FROM Students 
-            WHERE class = %s
-        """, (student_class,))
+        cursor.execute("SELECT roll_number, name FROM Students WHERE class = %s", (student_class,))
     else:
         cursor.execute("SELECT roll_number, name FROM Students")
 
