@@ -1,7 +1,7 @@
 // Handle Manual Entry Submission
 document.getElementById('studentForm').addEventListener('submit', async (event) => {
     event.preventDefault();
-
+  document.getElementById("skeleton-overlay").style.display = "flex";
     const rollNumber = document.getElementById('rollNumber').value.trim();
     const name = document.getElementById('name').value.trim();
     const department = document.getElementById('department').value;
@@ -40,6 +40,7 @@ document.getElementById('studentForm').addEventListener('submit', async (event) 
         });
 
         const result = await response.json();
+        document.getElementById("skeleton-overlay").style.display = "none"; // ✅ hide after fetch
         if (response.ok && result.success) {
             showPopup('Student Details added successfully!');
             document.getElementById('studentForm').reset();
