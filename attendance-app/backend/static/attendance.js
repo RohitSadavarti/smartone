@@ -84,34 +84,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Display attendance data in the table
-    function displayAttendanceData(data) {
-        tableBody.innerHTML = '';
-        if (data.length === 0) {
-            const row = document.createElement('tr');
-            row.innerHTML = '<td colspan="7">No records found for the selected dates</td>';
-            tableBody.appendChild(row);
-            return;
-        }
+function displayAttendanceData(data) {
+    const tableBody = document.getElementById('attendance-table').querySelector('tbody');
+    tableBody.innerHTML = '';
 
-        // Sort data by date in descending order (most recent first)
-        data.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // ✅ HIDE skeleton when data starts rendering
+    document.getElementById("skeleton-overlay").style.display = "none";
 
-        // Create rows and append to the table
-        data.forEach(record => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${record.date}</td>
-                <td>${record.roll_number}</td>
-                <td>${record.name}</td>
-                <td>${record.department}</td>
-                <td>${record.class}</td>
-                <td>${record.attendance}</td>
-                <td>${record.lecture_time}</td>
-            `;
-            tableBody.appendChild(row);
-        });
+    if (data.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td colspan="7">No records found for the selected dates</td>';
+        tableBody.appendChild(row);
+        return;
     }
+
+    data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    data.forEach(record => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${record.date}</td>
+            <td>${record.roll_number}</td>
+            <td>${record.name}</td>
+            <td>${record.department}</td>
+            <td>${record.class}</td>
+            <td>${record.attendance}</td>
+            <td>${record.lecture_time}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
 
     // Filter table rows based on search input
     function filterTableRows(query) {
