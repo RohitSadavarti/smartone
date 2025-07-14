@@ -1,7 +1,9 @@
 // Handle Manual Entry Submission
 document.getElementById('teacherForm').addEventListener('submit', async (event) => {
     event.preventDefault();
-document.getElementById("skeleton-overlay").style.display = "flex";
+
+    const overlay = document.getElementById("skeleton-overlay");
+    overlay.style.display = "flex"; // ✅ Show loader
 
     const teacherName = document.getElementById('teacherName').value.trim();
     const day = document.getElementById('day').value;
@@ -12,7 +14,7 @@ document.getElementById("skeleton-overlay").style.display = "flex";
 
     if (!teacherName || !day || !subject || !timeSlot || !department || !classValue) {
         alert("All fields are required!");
-        document.getElementById("skeleton-overlay").style.display = "none"; // ✅ Hide on validation error
+        overlay.style.display = "none"; // ✅ Hide on validation error
         return;
     }
 
@@ -39,18 +41,25 @@ document.getElementById("skeleton-overlay").style.display = "flex";
     } catch (error) {
         console.error("Error saving teacher data:", error);
         alert("An error occurred while saving data.");
+    } finally {
+        overlay.style.display = "none"; // ✅ Always hide after submission
     }
 });
+
 
 // Handle Excel File Upload
 document.getElementById('excelForm').addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    const overlay = document.getElementById("skeleton-overlay");
+    overlay.style.display = "flex"; // ✅ Show loader
 
     const fileInput = document.getElementById('excelFile');
     const file = fileInput.files[0];
 
     if (!file) {
         alert("Please select a file to upload.");
+        overlay.style.display = "none"; // ✅ Hide if invalid
         return;
     }
 
@@ -66,15 +75,18 @@ document.getElementById('excelForm').addEventListener('submit', async (event) =>
         const result = await response.json();
         if (response.ok) {
             alert("File uploaded successfully!");
-            fetchUploadHistory();
+            fetchUploadHistory(); // Optional: keep loader for that
         } else {
             alert(result.message || "Failed to upload the file.");
         }
     } catch (error) {
         console.error('Error uploading file:', error);
         alert("An error occurred while uploading the file.");
+    } finally {
+        overlay.style.display = "none"; // ✅ Always hide
     }
 });
+
 
 // Fetch and display upload history in recent-first order
 let currentPage = 1;
@@ -87,10 +99,12 @@ document.getElementById("rows-per-page").addEventListener("change", (event) => {
 });
 
 async function fetchUploadHistory() {
+    const overlay = document.getElementById("skeleton-overlay");
+    overlay.style.display = "flex";
+
     try {
         const response = await fetch("/upload-history");
         const history = await response.json();
-
         // Sort the records by upload_time in descending order
         history.sort((a, b) => new Date(b.upload_time) - new Date(a.upload_time));
 
@@ -116,8 +130,10 @@ async function fetchUploadHistory() {
         });
 
         updatePaginationControls(totalPages);
-    } catch (error) {
+     } catch (error) {
         console.error("Error fetching upload history:", error);
+    } finally {
+        overlay.style.display = "none";
     }
 }
 
