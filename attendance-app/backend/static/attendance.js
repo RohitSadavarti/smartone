@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
    try {
+       document.getElementById("skeleton-overlay").style.display = "flex"; // ✅ Show loader
         const params = new URLSearchParams({
             start_date: startDate,
             end_date: endDate,
@@ -44,6 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!response.ok) throw new Error('Failed to fetch data');
         const data = await response.json();
         displayAttendanceData(data);
+       document.getElementById("skeleton-overlay").style.display = "none"; // ✅ Hide loader after success
+
     } catch (error) {
         console.error('Error fetching attendance data:', error);
         alert('Error fetching attendance data. Please check the console for details.');
