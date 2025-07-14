@@ -1,6 +1,7 @@
 // Handle Manual Entry Submission
 document.getElementById('teacherForm').addEventListener('submit', async (event) => {
     event.preventDefault();
+document.getElementById("skeleton-overlay").style.display = "flex";
 
     const teacherName = document.getElementById('teacherName').value.trim();
     const day = document.getElementById('day').value;
@@ -11,6 +12,7 @@ document.getElementById('teacherForm').addEventListener('submit', async (event) 
 
     if (!teacherName || !day || !subject || !timeSlot || !department || !classValue) {
         alert("All fields are required!");
+        document.getElementById("skeleton-overlay").style.display = "none"; // ✅ Hide on validation error
         return;
     }
 
