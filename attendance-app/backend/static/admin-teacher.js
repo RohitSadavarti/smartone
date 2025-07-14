@@ -3,7 +3,7 @@ document.getElementById('teacherForm').addEventListener('submit', async (event) 
     event.preventDefault();
 
     const overlay = document.getElementById("skeleton-overlay");
-    overlay.style.display = "flex"; // ✅ Show loader
+    overlay.style.display = "flex";
 
     const teacherName = document.getElementById('teacherName').value.trim();
     const day = document.getElementById('day').value;
@@ -14,7 +14,7 @@ document.getElementById('teacherForm').addEventListener('submit', async (event) 
 
     if (!teacherName || !day || !subject || !timeSlot || !department || !classValue) {
         alert("All fields are required!");
-        overlay.style.display = "none"; // ✅ Hide on validation error
+        overlay.style.display = "none";
         return;
     }
 
@@ -24,42 +24,37 @@ document.getElementById('teacherForm').addEventListener('submit', async (event) 
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 teacher_name: teacherName,
-                day: day,
-                subject: subject,
+                day,
+                subject,
                 time_slot: timeSlot,
-                department: department,
+                department,
                 class: classValue,
             }),
         });
 
         const result = await response.json();
-        if (response.ok) {
-            alert(result.message || "Teacher data saved successfully!");
-        } else {
-            alert(result.message || "Failed to save teacher data.");
-        }
+        alert(result.message || (response.ok ? "Teacher data saved successfully!" : "Failed to save teacher data."));
     } catch (error) {
         console.error("Error saving teacher data:", error);
         alert("An error occurred while saving data.");
     } finally {
-        overlay.style.display = "none"; // ✅ Always hide after submission
+        overlay.style.display = "none";
     }
 });
-
 
 // Handle Excel File Upload
 document.getElementById('excelForm').addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const overlay = document.getElementById("skeleton-overlay");
-    overlay.style.display = "flex"; // ✅ Show loader
+    overlay.style.display = "flex";
 
     const fileInput = document.getElementById('excelFile');
     const file = fileInput.files[0];
 
     if (!file) {
         alert("Please select a file to upload.");
-        overlay.style.display = "none"; // ✅ Hide if invalid
+        overlay.style.display = "none";
         return;
     }
 
@@ -75,7 +70,7 @@ document.getElementById('excelForm').addEventListener('submit', async (event) =>
         const result = await response.json();
         if (response.ok) {
             alert("File uploaded successfully!");
-            fetchUploadHistory(); // Optional: keep loader for that
+            await fetchUploadHistory(false); // do not show loader inside again
         } else {
             alert(result.message || "Failed to upload the file.");
         }
@@ -83,29 +78,29 @@ document.getElementById('excelForm').addEventListener('submit', async (event) =>
         console.error('Error uploading file:', error);
         alert("An error occurred while uploading the file.");
     } finally {
-        overlay.style.display = "none"; // ✅ Always hide
+        overlay.style.display = "none";
     }
 });
 
-
-// Fetch and display upload history in recent-first order
+// Pagination
 let currentPage = 1;
 let rowsPerPage = 10;
 
 document.getElementById("rows-per-page").addEventListener("change", (event) => {
     rowsPerPage = parseInt(event.target.value);
-    currentPage = 1; // Reset to the first page
+    currentPage = 1;
     fetchUploadHistory();
 });
 
-async function fetchUploadHistory() {
+// Fetch and display upload history
+async function fetchUploadHistory(showLoader = true) {
     const overlay = document.getElementById("skeleton-overlay");
-    overlay.style.display = "flex";
+    if (showLoader) overlay.style.display = "flex";
 
     try {
         const response = await fetch("/upload-history");
         const history = await response.json();
-        // Sort the records by upload_time in descending order
+
         history.sort((a, b) => new Date(b.upload_time) - new Date(a.upload_time));
 
         const totalRecords = history.length;
@@ -116,12 +111,12 @@ async function fetchUploadHistory() {
         const pageData = history.slice(start, end);
 
         const uploadSummary = document.getElementById("uploadSummary");
-        uploadSummary.innerHTML = ""; // Clear existing rows
+        uploadSummary.innerHTML = "";
 
         pageData.forEach((record) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                 <td>${record.uploader_name}</td>
+                <td>${record.uploader_name}</td>
                 <td><a href="javascript:void(0)" onclick="downloadCSV('${record.id}', 'total')">${record.total_records}</a></td>
                 <td><a href="javascript:void(0)" onclick="downloadCSV('${record.id}', 'valid')">${record.valid_records}</a></td>
                 <td><a href="javascript:void(0)" onclick="downloadCSV('${record.id}', 'error')">${record.error_records}</a></td>
@@ -130,10 +125,10 @@ async function fetchUploadHistory() {
         });
 
         updatePaginationControls(totalPages);
-     } catch (error) {
+    } catch (error) {
         console.error("Error fetching upload history:", error);
     } finally {
-        overlay.style.display = "none";
+        if (showLoader) overlay.style.display = "none";
     }
 }
 
@@ -143,29 +138,32 @@ async function downloadCSV(uploadId, recordType) {
         return;
     }
 
-    const response = await fetch(`/download-upload-history/${uploadId}?type=${recordType}`);
-    if (response.ok) {
-        const blob = await response.blob();
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `${recordType}_records_${uploadId}.csv`;
-        link.click();
-    } else {
-        alert('Error downloading CSV file');
+    try {
+        const response = await fetch(`/download-upload-history/${uploadId}?type=${recordType}`);
+        if (response.ok) {
+            const blob = await response.blob();
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${recordType}_records_${uploadId}.csv`;
+            link.click();
+        } else {
+            alert('Error downloading CSV file');
+        }
+    } catch (error) {
+        console.error("CSV download failed:", error);
+        alert("An error occurred while downloading.");
     }
 }
 
+// Populate department & class dropdowns
 document.addEventListener("DOMContentLoaded", async () => {
     const departmentDropdown = document.getElementById("department");
     const classDropdown = document.getElementById("class");
 
-    // Helper function to fetch and populate dropdown
     async function fetchAndPopulateDropdown(url, dropdownElement, defaultText) {
         try {
             const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Error fetching data from ${url}`);
-            }
+            if (!response.ok) throw new Error(`Error fetching data from ${url}`);
 
             const data = await response.json();
             dropdownElement.innerHTML = `<option value="" disabled selected>${defaultText}</option>`;
@@ -181,14 +179,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Populate Department dropdown
-    await fetchAndPopulateDropdown(
-        "/departments",
-        departmentDropdown,
-        "Select Department"
-    );
+    await fetchAndPopulateDropdown("/departments", departmentDropdown, "Select Department");
 
-    // Event listener to update Class dropdown based on selected department
     departmentDropdown.addEventListener("change", async () => {
         const selectedDepartment = departmentDropdown.value;
 
@@ -203,4 +195,3 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 });
-
