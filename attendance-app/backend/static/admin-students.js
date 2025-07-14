@@ -1,7 +1,25 @@
+// ✅ Hide skeleton overlay after full page load
+window.addEventListener("load", () => {
+  const overlay = document.getElementById("skeleton-overlay");
+  if (overlay) {
+    overlay.style.display = "none";
+  }
+});
+
+// ✅ Also ensure DOM is ready before anything (fallback for some browsers)
+document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("skeleton-overlay");
+  if (overlay) {
+    overlay.style.display = "none";
+  }
+});
+
 // Handle Manual Entry Submission
 document.getElementById('studentForm').addEventListener('submit', async (event) => {
     event.preventDefault();
-  document.getElementById("skeleton-overlay").style.display = "flex";
+    const overlay = document.getElementById("skeleton-overlay");
+    overlay.style.display = "flex";
+
     const rollNumber = document.getElementById('rollNumber').value.trim();
     const name = document.getElementById('name').value.trim();
     const department = document.getElementById('department').value;
@@ -10,7 +28,6 @@ document.getElementById('studentForm').addEventListener('submit', async (event) 
     const popupBox = document.getElementById('popup-box');
     const closePopup = document.getElementById('close-popup');
 
-    // Function to show the popup
     function showPopup(message) {
         popupBox.querySelector('p').textContent = message;
         popupBox.classList.remove('hidden');
@@ -23,6 +40,7 @@ document.getElementById('studentForm').addEventListener('submit', async (event) 
     });
 
     if (!rollNumber || !name || !department || !classValue) {
+        overlay.style.display = "none";
         showPopup('All fields are required!');
         return;
     }
@@ -40,7 +58,6 @@ document.getElementById('studentForm').addEventListener('submit', async (event) 
         });
 
         const result = await response.json();
-        document.getElementById("skeleton-overlay").style.display = "none"; // ✅ hide after fetch
         if (response.ok && result.success) {
             showPopup('Student Details added successfully!');
             document.getElementById('studentForm').reset();
@@ -56,18 +73,22 @@ document.getElementById('studentForm').addEventListener('submit', async (event) 
     } catch (error) {
         console.error('Error occurred while submitting data:', error);
         showPopup('Failed to submit data. Please try again later.');
+    } finally {
+        overlay.style.display = "none";
     }
 });
 
 // Handle Excel File Upload
-
 document.getElementById('excelForm').addEventListener('submit', async (event) => {
     event.preventDefault();
+    const overlay = document.getElementById("skeleton-overlay");
+    overlay.style.display = "flex";
 
     const fileInput = document.getElementById('excelFile');
     const file = fileInput.files[0];
 
     if (!file) {
+        overlay.style.display = "none";
         alert("Please select a file to upload.");
         return;
     }
@@ -76,7 +97,7 @@ document.getElementById('excelForm').addEventListener('submit', async (event) =>
     formData.append('file', file);
 
     try {
-        const response = await fetch('/upload-file', { // Updated to match backend route
+        const response = await fetch('/upload-file', {
             method: 'POST',
             body: formData,
         });
@@ -84,33 +105,36 @@ document.getElementById('excelForm').addEventListener('submit', async (event) =>
         const result = await response.json();
         if (response.ok) {
             alert("File uploaded successfully!");
-            fetchUploadHistory(); // Refresh the upload history
+            fetchUploadHistory();
         } else {
             alert(result.message || "Failed to upload the file.");
         }
     } catch (error) {
         console.error('Error uploading file:', error);
         alert("An error occurred while uploading the file.");
+    } finally {
+        overlay.style.display = "none";
     }
 });
 
-// Fetch and display upload history in recent-first order
 // Fetch and display upload history with pagination
 let currentPage = 1;
 let rowsPerPage = 10;
 
 document.getElementById("rows-per-page").addEventListener("change", (event) => {
     rowsPerPage = parseInt(event.target.value);
-    currentPage = 1; // Reset to the first page
+    currentPage = 1;
     fetchUploadHistory();
 });
 
 async function fetchUploadHistory() {
+    const overlay = document.getElementById("skeleton-overlay");
+    overlay.style.display = "flex";
+
     try {
         const response = await fetch("/upload-history");
         const history = await response.json();
 
-        // Sort the records by upload_time in descending order
         history.sort((a, b) => new Date(b.upload_time) - new Date(a.upload_time));
 
         const totalRecords = history.length;
@@ -121,7 +145,7 @@ async function fetchUploadHistory() {
         const pageData = history.slice(start, end);
 
         const uploadSummary = document.getElementById("uploadSummary");
-        uploadSummary.innerHTML = ""; // Clear existing rows
+        uploadSummary.innerHTML = "";
 
         pageData.forEach((record) => {
             const row = document.createElement("tr");
@@ -137,6 +161,8 @@ async function fetchUploadHistory() {
         updatePaginationControls(totalPages);
     } catch (error) {
         console.error("Error fetching upload history:", error);
+    } finally {
+        overlay.style.display = "none";
     }
 }
 
@@ -146,15 +172,25 @@ async function downloadCSV(uploadId, recordType) {
         return;
     }
 
-    const response = await fetch(`/download-upload-history/${uploadId}?type=${recordType}`);
-    if (response.ok) {
-        const blob = await response.blob();
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `${recordType}_records_${uploadId}.csv`;
-        link.click();
-    } else {
-        alert('Error downloading CSV file');
+    const overlay = document.getElementById("skeleton-overlay");
+    overlay.style.display = "flex";
+
+    try {
+        const response = await fetch(`/download-upload-history/${uploadId}?type=${recordType}`);
+        if (response.ok) {
+            const blob = await response.blob();
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${recordType}_records_${uploadId}.csv`;
+            link.click();
+        } else {
+            alert('Error downloading CSV file');
+        }
+    } catch (error) {
+        console.error('Error downloading CSV:', error);
+        alert('Failed to download CSV file.');
+    } finally {
+        overlay.style.display = "none";
     }
 }
 
@@ -165,10 +201,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function fetchAndPopulateDropdown(url, dropdownElement, defaultText) {
         try {
             const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Error fetching data from ${url}`);
-            }
-
+            if (!response.ok) throw new Error(`Error fetching from ${url}`);
             const data = await response.json();
             dropdownElement.innerHTML = `<option value="" disabled selected>${defaultText}</option>`;
             data.forEach((item) => {
@@ -183,27 +216,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Populate the Department dropdown
-    await fetchAndPopulateDropdown(
-        "/student-departments",
-        departmentDropdown,
-        "Select Department"
-    );
-
-    // Populate the Class dropdown
-    await fetchAndPopulateDropdown(
-        "/student-classes",
-        classDropdown,
-        "Select Class"
-    );
+    await fetchAndPopulateDropdown("/student-departments", departmentDropdown, "Select Department");
+    await fetchAndPopulateDropdown("/student-classes", classDropdown, "Select Class");
 });
 
 // Update pagination controls
 function updatePaginationControls(totalPages) {
     const paginationControls = document.getElementById("pagination-controls");
-    paginationControls.innerHTML = ""; // Clear existing controls
+    paginationControls.innerHTML = "";
 
-    // Add previous button
     if (currentPage > 1) {
         const prevButton = document.createElement("button");
         prevButton.textContent = "Previous";
@@ -214,7 +235,6 @@ function updatePaginationControls(totalPages) {
         paginationControls.appendChild(prevButton);
     }
 
-    // Add page buttons
     for (let i = 1; i <= totalPages; i++) {
         const pageButton = document.createElement("button");
         pageButton.textContent = i;
@@ -226,7 +246,6 @@ function updatePaginationControls(totalPages) {
         paginationControls.appendChild(pageButton);
     }
 
-    // Add next button
     if (currentPage < totalPages) {
         const nextButton = document.createElement("button");
         nextButton.textContent = "Next";
@@ -237,5 +256,6 @@ function updatePaginationControls(totalPages) {
         paginationControls.appendChild(nextButton);
     }
 }
-// Initial fetch of upload history
+
+// Initial fetch
 fetchUploadHistory();
