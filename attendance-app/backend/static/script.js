@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    // Show skeleton
+    document.getElementById("skeleton-loader").style.display = "block";
+
     // Set the max date to the current date
     const today = new Date().toISOString().split('T')[0];
     const attendanceDateInput = document.getElementById('attendance-date');
@@ -61,33 +64,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     teacherDropdown.addEventListener('change', async () => {
         const teacher = teacherDropdown.value;
         if (teacher) {
-//            const subjects = await fetchDropdownData(`/subjects?teacher=${teacher}`);
-//            populateDropdown(subjectDropdown, subjects);
-
             const classes = await fetchDropdownData(`/student-classes?teacher=${teacher}`);
             populateDropdown(classDropdown, classes);
         } else {
-//            populateDropdown(subjectDropdown, []);
             populateDropdown(classDropdown, []);
         }
     });
 
+    // Populate subjects when a class is selected
+    classDropdown.addEventListener('change', async () => {
+        const department = departmentDropdown.value;
+        const className = classDropdown.value;
+        const teacherName = teacherDropdown.value;
 
-// Populate subjects when a class is selected
-classDropdown.addEventListener('change', async () => {
-    const department = departmentDropdown.value;
-    const className = classDropdown.value;
-    const teacherName = teacherDropdown.value;
-
-    if (department && className && teacherName) {
-        const subjects = await fetchDropdownData(`/subjects?department=${department}&class=${className}&teacher_name=${teacherName}`);
-        populateDropdown(subjectDropdown, subjects);
-    } else {
-        populateDropdown(subjectDropdown, []);
-    }
-});
-
-
+        if (department && className && teacherName) {
+            const subjects = await fetchDropdownData(`/subjects?department=${department}&class=${className}&teacher_name=${teacherName}`);
+            populateDropdown(subjectDropdown, subjects);
+        } else {
+            populateDropdown(subjectDropdown, []);
+        }
+    });
 
     // Fetch time slots
     const timeSlots = await fetchDropdownData('/time-slots');
@@ -97,6 +93,9 @@ classDropdown.addEventListener('change', async () => {
         const response = await fetch('/students');
         const students = await response.json();
         displayStudents(students);
+        
+        // Hide skeleton when data is loaded
+        document.getElementById("skeleton-loader").style.display = "none";
     }
 
     function displayStudents(students) {
@@ -162,28 +161,28 @@ classDropdown.addEventListener('change', async () => {
     await fetchAllStudents();
 
     // Filter students by department + class
-document.getElementById('search-filters').addEventListener('click', async () => {
-    const department = departmentDropdown.value;
-    const className = classDropdown.value;
+    document.getElementById('search-filters').addEventListener('click', async () => {
+        const department = departmentDropdown.value;
+        const className = classDropdown.value;
 
-    if (!department || !className) {
-        alert('Please select both department and class.');
-        return;
-    }
+        if (!department || !className) {
+            alert('Please select both department and class.');
+            return;
+        }
 
-    const queryString = new URLSearchParams({
-        department: department,
-        class: className
-    }).toString();
+        const queryString = new URLSearchParams({
+            department: department,
+            class: className
+        }).toString();
 
-    try {
-        const response = await fetch(`/students?${queryString}`);
-        const students = await response.json();
-        displayStudents(students);
-    } catch (error) {
-        console.error('Error fetching filtered students:', error);
-    }
-});
+        try {
+            const response = await fetch(`/students?${queryString}`);
+            const students = await response.json();
+            displayStudents(students);
+        } catch (error) {
+            console.error('Error fetching filtered students:', error);
+        }
+    });
 
     // Save attendance
     saveAttendanceButton.addEventListener('click', async () => {
@@ -246,4 +245,4 @@ document.getElementById('search-filters').addEventListener('click', async () => 
             alert('Failed to save attendance. Please try again.');
         }
     });
-}); 
+});
