@@ -1,5 +1,13 @@
+// ✅ Hide skeleton overlay after full page load
+window.addEventListener("load", () => {
+  const overlay = document.getElementById("skeleton-overlay");
+  if (overlay) {
+    overlay.style.display = "none";
+  }
+});
+
+// ✅ DOM content ready logic with attendance filtering and loader integration
 document.addEventListener("DOMContentLoaded", () => {
-    // Initialize DOM elements
     const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');
     const filterButton = document.getElementById('filter-data');
@@ -14,52 +22,48 @@ document.addEventListener("DOMContentLoaded", () => {
     const tableHeaders = table.querySelectorAll('thead th');
     const today = new Date().toISOString().split('T')[0];
 
-    // Set maximum dates for inputs
     if (startDateInput) startDateInput.setAttribute('max', today);
     if (endDateInput) endDateInput.setAttribute('max', today);
 
-    // Fetch and display attendance data
+    // ✅ Filter attendance
     filterButton?.addEventListener('click', async () => {
-    const startDate = startDateInput.value;
-    const endDate = endDateInput.value;
-    const department = departmentDropdown.value;
-    const className = classDropdown.value;
-
-    // Check if both start date and end date are selected
-    if (!startDate || !endDate) {
-        alert('Please select both start and end dates.');
-        return;
-    }
-
-   try {
-       document.getElementById("skeleton-overlay").style.display = "flex"; // ✅ Show loader
-        const params = new URLSearchParams({
-            start_date: startDate,
-            end_date: endDate,
-        });
-
-      if (department) params.append('department', department);
-        if (className) params.append('class', className);
-
-      const response = await fetch(`/attendance-data?${params.toString()}`);
-        if (!response.ok) throw new Error('Failed to fetch data');
-        const data = await response.json();
-        displayAttendanceData(data);
-       document.getElementById("skeleton-overlay").style.display = "none"; // ✅ Hide loader after success
-
-    } catch (error) {
-        console.error('Error fetching attendance data:', error);
-        alert('Error fetching attendance data. Please check the console for details.');
-    }
-});
-
-    // Extract CSV data
-    extractCsvButton?.addEventListener('click', async () => {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
         const department = departmentDropdown.value;
         const className = classDropdown.value;
-        
+
+        if (!startDate || !endDate) {
+            alert('Please select both start and end dates.');
+            return;
+        }
+
+        try {
+            document.getElementById("skeleton-overlay").style.display = "flex";
+
+            const params = new URLSearchParams({
+                start_date: startDate,
+                end_date: endDate,
+            });
+            if (department) params.append('department', department);
+            if (className) params.append('class', className);
+
+            const response = await fetch(`/attendance-data?${params.toString()}`);
+            if (!response.ok) throw new Error('Failed to fetch data');
+
+            const data = await response.json();
+            displayAttendanceData(data);
+            document.getElementById("skeleton-overlay").style.display = "none";
+        } catch (error) {
+            console.error('Error fetching attendance data:', error);
+            alert('Error fetching attendance data. Please check the console for details.');
+        }
+    });
+
+    // ✅ Export CSV
+    extractCsvButton?.addEventListener('click', async () => {
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+
         if (!startDate || !endDate) {
             alert('Please select both start and end dates.');
             return;
@@ -84,43 +88,38 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-function displayAttendanceData(data) {
-    const tableBody = document.getElementById('attendance-table').querySelector('tbody');
-    tableBody.innerHTML = '';
+    // ✅ Display attendance data in table
+    function displayAttendanceData(data) {
+        tableBody.innerHTML = '';
+        document.getElementById("skeleton-overlay").style.display = "none";
 
-    // ✅ HIDE skeleton when data starts rendering
-    document.getElementById("skeleton-overlay").style.display = "none";
+        if (data.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = '<td colspan="7">No records found for the selected dates</td>';
+            tableBody.appendChild(row);
+            return;
+        }
 
-    if (data.length === 0) {
-        const row = document.createElement('tr');
-        row.innerHTML = '<td colspan="7">No records found for the selected dates</td>';
-        tableBody.appendChild(row);
-        return;
+        data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        data.forEach(record => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${record.date}</td>
+                <td>${record.roll_number}</td>
+                <td>${record.name}</td>
+                <td>${record.department}</td>
+                <td>${record.class}</td>
+                <td>${record.attendance}</td>
+                <td>${record.lecture_time}</td>
+            `;
+            tableBody.appendChild(row);
+        });
     }
 
-    data.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    data.forEach(record => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${record.date}</td>
-            <td>${record.roll_number}</td>
-            <td>${record.name}</td>
-            <td>${record.department}</td>
-            <td>${record.class}</td>
-            <td>${record.attendance}</td>
-            <td>${record.lecture_time}</td>
-        `;
-        tableBody.appendChild(row);
-    });
-}
-
-
-    // Filter table rows based on search input
+    // ✅ Search filter
     function filterTableRows(query) {
         const rows = tableBody.querySelectorAll('tr');
         query = query.toLowerCase();
-
         rows.forEach(row => {
             const cells = Array.from(row.cells);
             const matches = cells.some(cell => cell.textContent.toLowerCase().includes(query));
@@ -128,45 +127,31 @@ function displayAttendanceData(data) {
         });
     }
 
-    // Sorting functionality
+    // ✅ Sort columns
     function sortTable(columnIndex, isAscending) {
-        const rows = Array.from(tableBody.rows); // Get all rows as an array
-
+        const rows = Array.from(tableBody.rows);
         rows.sort((a, b) => {
             const cellA = a.cells[columnIndex].textContent.trim().toLowerCase();
             const cellB = b.cells[columnIndex].textContent.trim().toLowerCase();
-
             if (!isNaN(Date.parse(cellA)) && !isNaN(Date.parse(cellB))) {
-                // If the column contains dates, parse and compare them
-                return isAscending
-                    ? new Date(cellA) - new Date(cellB)
-                    : new Date(cellB) - new Date(cellA);
+                return isAscending ? new Date(cellA) - new Date(cellB) : new Date(cellB) - new Date(cellA);
             } else if (!isNaN(cellA) && !isNaN(cellB)) {
-                // If the column contains numbers, compare them numerically
                 return isAscending ? cellA - cellB : cellB - cellA;
             } else {
-                // Otherwise, compare as strings
-                return isAscending
-                    ? cellA.localeCompare(cellB)
-                    : cellB.localeCompare(cellA);
+                return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
             }
         });
-
-        // Append sorted rows back to the table body
         rows.forEach(row => tableBody.appendChild(row));
     }
 
-    // Add click event listeners to table headers
     tableHeaders.forEach((header, index) => {
-        let isAscending = true; // Track sort direction
-
+        let isAscending = true;
         header.addEventListener('click', () => {
-            sortTable(index, isAscending); // Sort by the clicked column
-            isAscending = !isAscending; // Toggle sort direction
+            sortTable(index, isAscending);
+            isAscending = !isAscending;
         });
     });
 
-    // Search functionality
     searchButton.addEventListener('click', () => {
         const query = searchInput.value.trim();
         if (!query) {
@@ -176,18 +161,15 @@ function displayAttendanceData(data) {
         filterTableRows(query);
     });
 
-    // Clear search functionality
     clearSearchButton.addEventListener('click', () => {
         searchInput.value = '';
         filterTableRows('');
     });
 
-    // Fetch and populate Department and Class dropdowns
     async function fetchDepartments() {
         try {
             const response = await fetch('/student-departments');
             const departments = await response.json();
-            console.log('Departments fetched:', departments);  // Debug log
             departments.forEach(department => {
                 const option = document.createElement('option');
                 option.value = department;
@@ -203,7 +185,6 @@ function displayAttendanceData(data) {
         try {
             const response = await fetch('/student-classes');
             const classes = await response.json();
-            console.log('Classes fetched:', classes);  // Debug log
             classes.forEach(className => {
                 const option = document.createElement('option');
                 option.value = className;
@@ -215,7 +196,6 @@ function displayAttendanceData(data) {
         }
     }
 
-    // Fetch initial data for dropdowns
     fetchDepartments();
     fetchClasses();
 });
