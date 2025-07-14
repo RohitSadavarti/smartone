@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     // Show skeleton
-    document.getElementById("skeleton-loader").style.display = "block";
+    document.getElementById("skeleton-overlay").style.display = "flex";
 
     // Set the max date to the current date
     const today = new Date().toISOString().split('T')[0];
@@ -95,7 +95,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         displayStudents(students);
         
         // Hide skeleton when data is loaded
-        document.getElementById("skeleton-loader").style.display = "none";
+       document.getElementById("skeleton-overlay").style.display = "none";
+
     }
 
     function displayStudents(students) {
