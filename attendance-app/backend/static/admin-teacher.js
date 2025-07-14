@@ -1,3 +1,19 @@
+// ✅ Hide skeleton overlay after full page load
+window.addEventListener("load", () => {
+  const overlay = document.getElementById("skeleton-overlay");
+  if (overlay) {
+    overlay.style.display = "none";
+  }
+});
+
+// ✅ Also ensure DOM is ready before anything (fallback for some browsers)
+document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("skeleton-overlay");
+  if (overlay) {
+    overlay.style.display = "none";
+  }
+});
+
 // Handle Manual Entry Submission
 document.getElementById('teacherForm').addEventListener('submit', async (event) => {
     event.preventDefault();
