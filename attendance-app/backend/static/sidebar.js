@@ -8,14 +8,18 @@ const backdrop = document.querySelector(".sidebar-toggle-backdrop");
 
 // For desktop: toggle 'close' class on click
 toggle.addEventListener("click", () => {
+  document.getElementById("skeleton-overlay").style.display = "flex"; // ✅ Show loader
   // For mobile view, use overlay
-  if (window.innerWidth <= 768) {
-    sidebar.classList.toggle("open");
-    backdrop.classList.toggle("show");
-  } else {
-    // For desktop view
-    sidebar.classList.toggle("close");
-  }
+  setTimeout(() => {
+    if (window.innerWidth <= 768) {
+      sidebar.classList.toggle("open");
+      backdrop.classList.toggle("show");
+    } else {
+      sidebar.classList.toggle("close");
+    }
+
+    document.getElementById("skeleton-overlay").style.display = "none"; // ✅ Hide loader
+  }, 300); // Delay for effect; adjust as needed
 });
 
 // Optional: clicking search opens sidebar (desktop)
