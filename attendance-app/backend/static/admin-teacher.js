@@ -10,7 +10,7 @@ window.addEventListener("load", () => {
 document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.getElementById("skeleton-overlay");
   if (overlay) {
-    overlay.style.display = "none";
+    overlay.style.display = "none"; // ✅ hide overlay after DOM is ready
   }
 });
 
