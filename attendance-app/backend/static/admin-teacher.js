@@ -24,16 +24,20 @@ document.getElementById('teacherForm').addEventListener('submit', async (event) 
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 teacher_name: teacherName,
-                day,
-                subject,
+                day: day,
+                subject: subject,
                 time_slot: timeSlot,
-                department,
+                department: department,
                 class: classValue,
             }),
         });
 
         const result = await response.json();
-        alert(result.message || (response.ok ? "Teacher data saved successfully!" : "Failed to save teacher data."));
+        if (response.ok) {
+            alert(result.message || "Teacher data saved successfully!");
+        } else {
+            alert(result.message || "Failed to save teacher data.");
+        }
     } catch (error) {
         console.error("Error saving teacher data:", error);
         alert("An error occurred while saving data.");
@@ -70,7 +74,7 @@ document.getElementById('excelForm').addEventListener('submit', async (event) =>
         const result = await response.json();
         if (response.ok) {
             alert("File uploaded successfully!");
-            await fetchUploadHistory(false); // do not show loader inside again
+            fetchUploadHistory();
         } else {
             alert(result.message || "Failed to upload the file.");
         }
@@ -82,25 +86,25 @@ document.getElementById('excelForm').addEventListener('submit', async (event) =>
     }
 });
 
-// Pagination
+// Fetch and display upload history in recent-first order
 let currentPage = 1;
 let rowsPerPage = 10;
 
 document.getElementById("rows-per-page").addEventListener("change", (event) => {
     rowsPerPage = parseInt(event.target.value);
-    currentPage = 1;
+    currentPage = 1; // Reset to the first page
     fetchUploadHistory();
 });
 
-// Fetch and display upload history
-async function fetchUploadHistory(showLoader = true) {
+async function fetchUploadHistory() {
     const overlay = document.getElementById("skeleton-overlay");
-    if (showLoader) overlay.style.display = "flex";
+    overlay.style.display = "flex";
 
     try {
         const response = await fetch("/upload-history");
         const history = await response.json();
 
+        // Sort the records by upload_time in descending order
         history.sort((a, b) => new Date(b.upload_time) - new Date(a.upload_time));
 
         const totalRecords = history.length;
@@ -111,12 +115,12 @@ async function fetchUploadHistory(showLoader = true) {
         const pageData = history.slice(start, end);
 
         const uploadSummary = document.getElementById("uploadSummary");
-        uploadSummary.innerHTML = "";
+        uploadSummary.innerHTML = ""; // Clear existing rows
 
         pageData.forEach((record) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${record.uploader_name}</td>
+                 <td>${record.uploader_name}</td>
                 <td><a href="javascript:void(0)" onclick="downloadCSV('${record.id}', 'total')">${record.total_records}</a></td>
                 <td><a href="javascript:void(0)" onclick="downloadCSV('${record.id}', 'valid')">${record.valid_records}</a></td>
                 <td><a href="javascript:void(0)" onclick="downloadCSV('${record.id}', 'error')">${record.error_records}</a></td>
@@ -128,7 +132,7 @@ async function fetchUploadHistory(showLoader = true) {
     } catch (error) {
         console.error("Error fetching upload history:", error);
     } finally {
-        if (showLoader) overlay.style.display = "none";
+        overlay.style.display = "none";
     }
 }
 
@@ -137,6 +141,9 @@ async function downloadCSV(uploadId, recordType) {
         alert('Invalid Upload ID');
         return;
     }
+
+    const overlay = document.getElementById("skeleton-overlay");
+    overlay.style.display = "flex";
 
     try {
         const response = await fetch(`/download-upload-history/${uploadId}?type=${recordType}`);
@@ -150,20 +157,24 @@ async function downloadCSV(uploadId, recordType) {
             alert('Error downloading CSV file');
         }
     } catch (error) {
-        console.error("CSV download failed:", error);
+        console.error("Error downloading CSV:", error);
         alert("An error occurred while downloading.");
+    } finally {
+        overlay.style.display = "none";
     }
 }
 
-// Populate department & class dropdowns
 document.addEventListener("DOMContentLoaded", async () => {
     const departmentDropdown = document.getElementById("department");
     const classDropdown = document.getElementById("class");
 
+    // Helper function to fetch and populate dropdown
     async function fetchAndPopulateDropdown(url, dropdownElement, defaultText) {
         try {
             const response = await fetch(url);
-            if (!response.ok) throw new Error(`Error fetching data from ${url}`);
+            if (!response.ok) {
+                throw new Error(`Error fetching data from ${url}`);
+            }
 
             const data = await response.json();
             dropdownElement.innerHTML = `<option value="" disabled selected>${defaultText}</option>`;
@@ -179,8 +190,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    await fetchAndPopulateDropdown("/departments", departmentDropdown, "Select Department");
+    // Populate Department dropdown
+    await fetchAndPopulateDropdown(
+        "/departments",
+        departmentDropdown,
+        "Select Department"
+    );
 
+    // Event listener to update Class dropdown based on selected department
     departmentDropdown.addEventListener("change", async () => {
         const selectedDepartment = departmentDropdown.value;
 
