@@ -137,6 +137,7 @@ nav a:hover {
 
 /* Form Styling */
 form {
+    position: sticky;
     max-width: 1600px;
     margin: 0 auto;
     margin-top: 10px;
@@ -247,6 +248,7 @@ td {
 }
 
 th {
+    position: sticky;
     background:purple;
     color: white;
 }
