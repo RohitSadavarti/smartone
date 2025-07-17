@@ -12,19 +12,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     const subjectDropdown = document.getElementById('subject');
     const timeDropdown = document.getElementById('time');
     const saveAttendanceButton = document.getElementById('save-attendance');
-    const skeletonOverlay = document.getElementById("skeleton-overlay");
 
     // Show Popup Function
     function showPopup(message) {
-        popupBox.querySelector('p').textContent = message;
-        popupBox.style.display = 'block';
-        popupBox.classList.remove('hidden');
+        popupBox.querySelector('p').textContent = message; // Update message
+        popupBox.style.display = 'block'; // Ensure display is block
+        popupBox.classList.remove('hidden'); // Show popup
     }
 
     // Close Popup Event
     closePopup.addEventListener('click', () => {
-        popupBox.style.display = 'none';
-        popupBox.classList.add('hidden');
+        popupBox.style.display = 'none'; // Hide the popup
+        popupBox.classList.add('hidden'); // Add hidden class for consistency
     });
 
     // Fetch data for dropdowns
@@ -47,6 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const departments = await fetchDropdownData('/departments');
     populateDropdown(departmentDropdown, departments);
 
+    // Populate teachers when a department is selected
     departmentDropdown.addEventListener('change', async () => {
         const department = departmentDropdown.value;
         if (department) {
@@ -57,31 +57,47 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
+    // Populate subjects and classes when a teacher is selected
     teacherDropdown.addEventListener('change', async () => {
         const teacher = teacherDropdown.value;
         if (teacher) {
+//            const subjects = await fetchDropdownData(`/subjects?teacher=${teacher}`);
+//            populateDropdown(subjectDropdown, subjects);
+
             const classes = await fetchDropdownData(`/student-classes?teacher=${teacher}`);
             populateDropdown(classDropdown, classes);
         } else {
+//            populateDropdown(subjectDropdown, []);
             populateDropdown(classDropdown, []);
         }
     });
 
-    classDropdown.addEventListener('change', async () => {
-        const department = departmentDropdown.value;
-        const className = classDropdown.value;
-        const teacherName = teacherDropdown.value;
 
-        if (department && className && teacherName) {
-            const subjects = await fetchDropdownData(`/subjects?department=${department}&class=${className}&teacher_name=${teacherName}`);
-            populateDropdown(subjectDropdown, subjects);
-        } else {
-            populateDropdown(subjectDropdown, []);
-        }
-    });
+// Populate subjects when a class is selected
+classDropdown.addEventListener('change', async () => {
+    const department = departmentDropdown.value;
+    const className = classDropdown.value;
+    const teacherName = teacherDropdown.value;
 
+    if (department && className && teacherName) {
+        const subjects = await fetchDropdownData(`/subjects?department=${department}&class=${className}&teacher_name=${teacherName}`);
+        populateDropdown(subjectDropdown, subjects);
+    } else {
+        populateDropdown(subjectDropdown, []);
+    }
+});
+
+
+
+    // Fetch time slots
     const timeSlots = await fetchDropdownData('/time-slots');
     populateDropdown(timeDropdown, timeSlots);
+
+    async function fetchAllStudents() {
+        const response = await fetch('/students');
+        const students = await response.json();
+        displayStudents(students);
+    }
 
     function displayStudents(students) {
         const tableBody = document.getElementById('student-table').querySelector('tbody');
@@ -143,35 +159,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    await fetchAllStudents();
+
     // Filter students by department + class
-    document.getElementById('search-filters').addEventListener('click', async () => {
-        const department = departmentDropdown.value;
-        const className = classDropdown.value;
+document.getElementById('search-filters').addEventListener('click', async () => {
+    const department = departmentDropdown.value;
+    const className = classDropdown.value;
 
-        if (!department || !className) {
-            alert('Please select both department and class.');
-            return;
-        }
+    if (!department || !className) {
+        alert('Please select both department and class.');
+        return;
+    }
 
-        // Show loading
-        skeletonOverlay.style.display = "flex";
+    const queryString = new URLSearchParams({
+        department: department,
+        class: className
+    }).toString();
 
-        const queryString = new URLSearchParams({
-            department: department,
-            class: className
-        }).toString();
-
-        try {
-            const response = await fetch(`/students?${queryString}`);
-            const students = await response.json();
-            displayStudents(students);
-        } catch (error) {
-            console.error('Error fetching filtered students:', error);
-        } finally {
-            // Hide loading
-            skeletonOverlay.style.display = "none";
-        }
-    });
+    try {
+        const response = await fetch(`/students?${queryString}`);
+        const students = await response.json();
+        displayStudents(students);
+    } catch (error) {
+        console.error('Error fetching filtered students:', error);
+    }
+});
 
     // Save attendance
     saveAttendanceButton.addEventListener('click', async () => {
@@ -234,4 +246,4 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert('Failed to save attendance. Please try again.');
         }
     });
-});
+}); 
