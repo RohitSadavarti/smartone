@@ -154,12 +154,26 @@ form {
 }
 /* Scrollable table rows */
 .table-wrapper {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 10px;
 }
 
+.table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-wrapper th, 
+.table-wrapper td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
 
 label {
     font-weight: bold;
