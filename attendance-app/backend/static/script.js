@@ -30,10 +30,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // Fetch data for dropdowns
-    async function fetchDropdownData(url) {
-        const response = await fetch(url);
-        return await response.json();
-    }
+   async function fetchDropdownData(url) {
+    document.getElementById("skeleton-overlay").style.display = "flex"; // Show
+    const response = await fetch(url);
+    const data = await response.json();
+    document.getElementById("skeleton-overlay").style.display = "none"; // Hide
+    return data;
+}
+
 
     async function populateDropdown(dropdown, data) {
         dropdown.innerHTML = '<option value="">Select</option>';
