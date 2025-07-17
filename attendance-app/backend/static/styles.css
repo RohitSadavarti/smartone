@@ -104,16 +104,12 @@ body.dark .home .text {
 
 /* Header */
 h1 {
-    position: sticky;
-    top: 0;
-    z-index: 200;
     text-align: center;
-    margin: 0;
-    padding: 15px 10px;
+    margin-bottom: 20px;
     font-size: 2rem;
     color: white;
     background-color: purple;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 }body.dark h1 {
     text-align: center;
     margin-bottom: 20px;
