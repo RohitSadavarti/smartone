@@ -1,7 +1,4 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    // Show skeleton
-    document.getElementById("skeleton-overlay").style.display = "flex";
-
     // Set the max date to the current date
     const today = new Date().toISOString().split('T')[0];
     const attendanceDateInput = document.getElementById('attendance-date');
@@ -15,29 +12,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     const subjectDropdown = document.getElementById('subject');
     const timeDropdown = document.getElementById('time');
     const saveAttendanceButton = document.getElementById('save-attendance');
+    const skeletonOverlay = document.getElementById("skeleton-overlay");
 
     // Show Popup Function
     function showPopup(message) {
-        popupBox.querySelector('p').textContent = message; // Update message
-        popupBox.style.display = 'block'; // Ensure display is block
-        popupBox.classList.remove('hidden'); // Show popup
+        popupBox.querySelector('p').textContent = message;
+        popupBox.style.display = 'block';
+        popupBox.classList.remove('hidden');
     }
 
     // Close Popup Event
     closePopup.addEventListener('click', () => {
-        popupBox.style.display = 'none'; // Hide the popup
-        popupBox.classList.add('hidden'); // Add hidden class for consistency
+        popupBox.style.display = 'none';
+        popupBox.classList.add('hidden');
     });
 
     // Fetch data for dropdowns
-   async function fetchDropdownData(url) {
-    document.getElementById("skeleton-overlay").style.display = "flex"; // Show
-    const response = await fetch(url);
-    const data = await response.json();
-    document.getElementById("skeleton-overlay").style.display = "none"; // Hide
-    return data;
-}
-
+    async function fetchDropdownData(url) {
+        const response = await fetch(url);
+        return await response.json();
+    }
 
     async function populateDropdown(dropdown, data) {
         dropdown.innerHTML = '<option value="">Select</option>';
@@ -53,7 +47,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const departments = await fetchDropdownData('/departments');
     populateDropdown(departmentDropdown, departments);
 
-    // Populate teachers when a department is selected
     departmentDropdown.addEventListener('change', async () => {
         const department = departmentDropdown.value;
         if (department) {
@@ -64,7 +57,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    // Populate subjects and classes when a teacher is selected
     teacherDropdown.addEventListener('change', async () => {
         const teacher = teacherDropdown.value;
         if (teacher) {
@@ -75,7 +67,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    // Populate subjects when a class is selected
     classDropdown.addEventListener('change', async () => {
         const department = departmentDropdown.value;
         const className = classDropdown.value;
@@ -89,19 +80,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    // Fetch time slots
     const timeSlots = await fetchDropdownData('/time-slots');
     populateDropdown(timeDropdown, timeSlots);
-
-    async function fetchAllStudents() {
-        const response = await fetch('/students');
-        const students = await response.json();
-        displayStudents(students);
-        
-        // Hide skeleton when data is loaded
-       document.getElementById("skeleton-overlay").style.display = "none";
-
-    }
 
     function displayStudents(students) {
         const tableBody = document.getElementById('student-table').querySelector('tbody');
@@ -163,8 +143,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    await fetchAllStudents();
-
     // Filter students by department + class
     document.getElementById('search-filters').addEventListener('click', async () => {
         const department = departmentDropdown.value;
@@ -174,6 +152,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert('Please select both department and class.');
             return;
         }
+
+        // Show loading
+        skeletonOverlay.style.display = "flex";
 
         const queryString = new URLSearchParams({
             department: department,
@@ -186,6 +167,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             displayStudents(students);
         } catch (error) {
             console.error('Error fetching filtered students:', error);
+        } finally {
+            // Hide loading
+            skeletonOverlay.style.display = "none";
         }
     });
 
