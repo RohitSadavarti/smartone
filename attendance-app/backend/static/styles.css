@@ -1,38 +1,3 @@
-/* Skeleton Loader Overlay */
-#skeleton-overlay {
-  position: sticky;
-  inset: 0; /* shorthand for top: 0; right: 0; bottom: 0; left: 0; */
-  background-color: white;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.skeleton-line {
-  height: 20px;
-  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.2s infinite ease-in-out;
-  margin-bottom: 10px;
-  border-radius: 4px;
-}
-
-.skeleton-line.short {
-  width: 60%;
-}
-
-@keyframes skeleton-loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-
 /* General Reset */
 * {
     margin: 0;
@@ -89,12 +54,11 @@ body.dark .home .text {
 
 /* Main Content */
 .main-content {
-  position: relative;
-  padding: 20px;
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 20px;
+    background: #f4f4f9;
+    transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
 .sidebar.close ~ .main-content {
@@ -108,9 +72,10 @@ h1 {
     margin-bottom: 20px;
     font-size: 2rem;
     color: white;
-    background-color: purple;
+    background-color:purple;
 }
-}body.dark h1 {
+
+body.dark h1 {
     text-align: center;
     margin-bottom: 20px;
     font-size: 2rem;
@@ -137,42 +102,20 @@ nav a:hover {
 
 /* Form Styling */
 form {
-    position: sticky;
-    top: 60px; /* h1 height */
-    z-index: 100;
-    background-color: #f4f4f9;
     max-width: 1600px;
     margin: 0 auto;
+    margin-top: 10px;
     margin-left: 20px;
-    padding: 10px;
+    height: 50px;
+    padding: 5px;
     border-radius: 10px;
     display: flex;
     flex-wrap: wrap;
     gap: 25px;
     align-items: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
-/* Scrollable table rows */
-.table-wrapper {
-  max-height: 400px;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  margin-top: 20px;
-  background-color: white;
-  border-radius: 8px;
-  padding: 10px;
-}
-
-.table-wrapper table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table-wrapper th, 
-.table-wrapper td {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  text-align: left;
+form{
+    margin-top: 25px;
 }
 
 label {
@@ -181,10 +124,7 @@ label {
     flex-shrink: 0;
 }
 
-select,
-input[type="date"],
-input[type="text"],
-button {
+select, input[type="date"], input[type="text"], button {
     padding: 8px 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -203,8 +143,9 @@ button {
 }
 
 button:hover {
-    background-color: purple;
+    background-color:purple;
 }
+
 /* Attendance Buttons */
 .present-btn {
     background-color: white;
@@ -262,46 +203,19 @@ table {
     margin-top: 60px;
 }
 
-.table-wrapper {
-    max-height: calc(100vh - 140px); /* adjust based on h1 + form height */
-    overflow-y: auto;
-    margin-top: 20px;
-}
-
-#student-table {
-  width: 100%;
-  table-layout: fixed;
-}
-
-.table-scroll {
-  overflow-y: auto;
-  max-height: 60vh;
-}
-
-.table-scroll table {
-  width: 100%;
-  table-layout: fixed;
-}
-
-th, td {
-  text-align: center;
-  padding: 10px;
-  border: 1px solid #ddd;
+th,
+td {
+    margin-top: 250px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
 }
 
 th {
-    position: sticky;
-    top: 130px; /* h1 (60px) + form (70px) */
-    background: purple;
+    background:purple;
     color: white;
-    z-index: 10;
 }
 
-/* Alternating Row Color */
-tr:nth-child(even) {
-    background: #f4f4f9;
-}
-/* Alternate Row Color */
 tr:nth-child(even) {
     background: #f4f4f9;
 }
@@ -419,8 +333,6 @@ body.dark .absent-btn:hover {
     appearance: auto;
 }
 
-
-
 @media screen and (max-width: 768px) {
     .home {
         left: 0;
@@ -435,23 +347,14 @@ body.dark .absent-btn:hover {
     }
 
     form {
-        position: sticky;
-        top: 60px;
-        z-index: 100;
-        background-color: #f4f4f9;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
         height: auto;
-        margin: 0 10px;
-        padding: 10px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        margin-left: 10px;
     }
 
-    select,
-    input[type="date"],
-    input[type="text"],
-    button {
+    select, input[type="date"], input[type="text"], button {
         width: 100%;
     }
 
@@ -461,24 +364,9 @@ body.dark .absent-btn:hover {
         display: block;
     }
 
-    thead th {
-        position: sticky;
-        top: 0;
-        background-color: purple;
-        color: white;
-        z-index: 10;
-    }
-
     .upload-section {
         position: static;
         margin-top: 10px;
         justify-content: center;
-    }
-
-    #save-attendance {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
     }
 }
