@@ -104,15 +104,17 @@ body.dark .home .text {
 
 /* Header */
 h1 {
-  position: sticky;
-  top: 0;
-  background: purple;
-  color: white;
-  padding: 10px;
-  z-index: 1000;
-}
-
-body.dark h1 {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    text-align: center;
+    margin: 0;
+    padding: 15px 10px;
+    font-size: 2rem;
+    color: white;
+    background-color: purple;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}body.dark h1 {
     text-align: center;
     margin-bottom: 20px;
     font-size: 2rem;
@@ -139,11 +141,20 @@ nav a:hover {
 
 /* Form Styling */
 form {
-  position: sticky;
-  top: 60px;
-  background: white;
-  z-index: 999;
-  padding: 10px;
+    position: sticky;
+    top: 60px; /* h1 height */
+    z-index: 100;
+    background-color: #f4f4f9;
+    max-width: 1600px;
+    margin: 0 auto;
+    margin-left: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 /* Scrollable table rows */
 .table-wrapper {
@@ -184,7 +195,6 @@ button {
 button:hover {
     background-color: purple;
 }
-
 /* Attendance Buttons */
 .present-btn {
     background-color: white;
@@ -271,16 +281,16 @@ th, td {
 
 th {
     position: sticky;
-    top: 0;
+    top: 130px; /* h1 (60px) + form (70px) */
     background: purple;
     color: white;
-    z-index: 100;
+    z-index: 10;
 }
 
+/* Alternating Row Color */
 tr:nth-child(even) {
     background: #f4f4f9;
 }
-
 /* Alternate Row Color */
 tr:nth-child(even) {
     background: #f4f4f9;
