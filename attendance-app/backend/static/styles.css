@@ -150,6 +150,7 @@ form {
     gap: 25px;
     align-items: center;
     cursor: pointer;
+
 }
 form{
     margin-top: 25px;
@@ -249,10 +250,8 @@ td {
 }
 
 th {
-    position: fixed;
     background:purple;
     color: white;
-    cursor: pointer;
 }
 
 tr:nth-child(even) {
