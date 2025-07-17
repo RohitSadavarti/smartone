@@ -105,9 +105,9 @@ body.dark .home .text {
 h1 {
     position: sticky;
     top: 0;
-    z-index: 200;
+    z-index: 300;
     text-align: center;
-    margin: 0; /* Removed bottom margin to avoid jumpiness */
+    margin: 0;
     padding: 15px 10px;
     font-size: 2rem;
     color: white;
@@ -143,21 +143,19 @@ nav a:hover {
 /* Form Styling */
 form {
     position: sticky;
-    top: 60px; /* Adjust this according to your header height */
-    z-index: 100;
+    top: 56px; /* height of h1 */
+    z-index: 200;
     background-color: #f4f4f9;
     max-width: 1600px;
     margin: 0 auto;
-    margin-top: 10px;
     margin-left: 20px;
-    height: auto; /* Changed from fixed height to auto for better responsiveness */
     padding: 10px;
     border-radius: 10px;
     display: flex;
     flex-wrap: wrap;
     gap: 25px;
     align-items: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 label {
@@ -166,7 +164,10 @@ label {
     flex-shrink: 0;
 }
 
-select, input[type="date"], input[type="text"], button {
+select,
+input[type="date"],
+input[type="text"],
+button {
     padding: 8px 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -245,20 +246,28 @@ table {
     margin-top: 60px;
 }
 
-th,
-td {
+.table-wrapper {
+    max-height: calc(100vh - 140px); /* adjust based on h1 + form height */
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+th, td {
     padding: 10px;
     text-align: center;
     border: 1px solid #ddd;
 }
 
-/* Sticky Header */
 th {
     position: sticky;
     top: 0;
     background: purple;
     color: white;
-    z-index: 10;
+    z-index: 100;
+}
+
+tr:nth-child(even) {
+    background: #f4f4f9;
 }
 
 /* Alternate Row Color */
