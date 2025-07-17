@@ -1,6 +1,6 @@
 /* Skeleton Loader Overlay */
 #skeleton-overlay {
-  position: fixed;
+  position: sticky;
   inset: 0; /* shorthand for top: 0; right: 0; bottom: 0; left: 0; */
   background-color: white;
   z-index: 9999;
@@ -137,7 +137,7 @@ nav a:hover {
 
 /* Form Styling */
 form {
-    position: fixed;
+    position: sticky;
     max-width: 1600px;
     margin: 0 auto;
     margin-top: 10px;
