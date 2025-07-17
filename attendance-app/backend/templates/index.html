@@ -13,14 +13,6 @@
   <link rel="stylesheet" href="styles.css"> <!-- Consolidated CSS -->
 </head>
 <body>
-   <!-- Skeleton Loader Overlay -->
-  <div id="skeleton-overlay">
-    <div class="skeleton-line" style="width: 80%;"></div>
-    <div class="skeleton-line short"></div>
-    <div class="skeleton-line" style="width: 90%;"></div>
-    <div class="skeleton-line" style="width: 70%;"></div>
-  </div>
-
   <!-- Sidebar -->
   <nav class="sidebar">
     <header>
@@ -130,23 +122,16 @@
         <button type="button" id="clear-search">Clear</button>
       </div>  -->
     </form>
-<div class="table-wrapper">
-  <table id="student-table">
-    <thead>
-      <tr>
-        <th id="roll-header">Roll Number</th>
-        <th id="name-header">Name</th>
-        <th>Attendance</th>
-      </tr>
-    </thead>
-  </table>
-  <div class="table-scroll">
-    <table>
+    <table id="student-table">
+      <thead>
+        <tr>
+          <th id="roll-header">Roll Number</th>
+          <th id="name-header">Name</th>
+          <th>Attendance</th>
+        </tr>
+      </thead>
       <tbody></tbody>
     </table>
-  </div>
-</div>
-
     <div id="popup-box" class="popup hidden">
       <p>Attendance Saved Successfully</p>    
       <button id="close-popup">Close</button>
