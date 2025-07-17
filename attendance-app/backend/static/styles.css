@@ -137,7 +137,7 @@ nav a:hover {
 
 /* Form Styling */
 form {
-    position: sticky;
+    position: fixed;
     max-width: 1600px;
     margin: 0 auto;
     margin-top: 10px;
@@ -149,6 +149,7 @@ form {
     flex-wrap: wrap;
     gap: 25px;
     align-items: center;
+    cursor: pointer;
 }
 form{
     margin-top: 25px;
@@ -248,9 +249,10 @@ td {
 }
 
 th {
-    position: sticky;
+    position: fixed;
     background:purple;
     color: white;
+    cursor: pointer;
 }
 
 tr:nth-child(even) {
