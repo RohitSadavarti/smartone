@@ -89,11 +89,12 @@ body.dark .home .text {
 
 /* Main Content */
 .main-content {
-    margin-left: 250px;
-    width: calc(100% - 250px);
-    padding: 20px;
-    background: #f4f4f9;
-    transition: margin-left 0.3s ease, width 0.3s ease;
+  position: relative;
+  padding: 20px;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar.close ~ .main-content {
@@ -103,16 +104,12 @@ body.dark .home .text {
 
 /* Header */
 h1 {
-    position: sticky;
-    top: 0;
-    z-index: 300;
-    text-align: center;
-    margin: 0;
-    padding: 15px 10px;
-    font-size: 2rem;
-    color: white;
-    background-color: purple;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  background: purple;
+  color: white;
+  padding: 10px;
+  z-index: 1000;
 }
 
 body.dark h1 {
@@ -142,21 +139,20 @@ nav a:hover {
 
 /* Form Styling */
 form {
-    position: sticky;
-    top: 56px; /* height of h1 */
-    z-index: 200;
-    background-color: #f4f4f9;
-    max-width: 1600px;
-    margin: 0 auto;
-    margin-left: 20px;
-    padding: 10px;
-    border-radius: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 25px;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 60px;
+  background: white;
+  z-index: 999;
+  padding: 10px;
 }
+/* Scrollable table rows */
+.table-wrapper {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 
 label {
     font-weight: bold;
@@ -252,10 +248,25 @@ table {
     margin-top: 20px;
 }
 
+#student-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.table-scroll {
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.table-scroll table {
+  width: 100%;
+  table-layout: fixed;
+}
+
 th, td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ddd;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #ddd;
 }
 
 th {
