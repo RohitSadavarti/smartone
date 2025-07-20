@@ -47,6 +47,11 @@ def admin_student():
 def admin_teacher():
     return render_template("admin-teacher.html")
 
+@app.route("/dashboard")
+def dashboard_page():
+    return render_template("dashboard.html")
+
+
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
