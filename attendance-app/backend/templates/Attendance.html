@@ -21,15 +21,16 @@
   </div>
   <!-- Sidebar -->
   <nav class="sidebar">
-    <header>
-      <i class='bx bx-chevron-right toggle'></i>
-    </header>
+   
+<header>
+  <i class='bx bx-menu' id="hamburger-toggle" style="font-size: 24px; cursor: pointer; margin: 10px;"></i>
+</header>
     <div class="menu-bar">
       <div class="menu">
         <ul class="menu-links">
           <li class="nav-link">
             <a href="{{ url_for('home') }}">
-              <i class='bx bx-home-alt icon'></i>
+   
               <span class="text nav-text">Home</span>
             </a>
           </li>
@@ -91,8 +92,6 @@
   <!-- Main Content -->
   <div class="main-content">
     <header>
-      <i class='bx bx-menu' onclick="toggleSidebar()" style="font-size: 24px; cursor: pointer; margin: 10px;"></i>
-
       <h1>Attendance Data</h1>
     </header>
 
