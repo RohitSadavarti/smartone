@@ -1,54 +1,60 @@
 const body = document.querySelector("body");
 const sidebar = body.querySelector("nav.sidebar");
-const toggle = body.querySelector(".toggle");
+const toggle = document.getElementById("hamburger-toggle");
 const backdrop = document.querySelector(".sidebar-toggle-backdrop");
 const modeSwitch = body.querySelector(".toggle-switch");
 const modeText = body.querySelector(".mode-text");
 
-// For desktop: toggle 'close' class on click
+// Sidebar toggle (☰ ↔ ✖) for mobile and desktop
 toggle.addEventListener("click", () => {
-  document.getElementById("skeleton-overlay").style.display = "flex"; // ✅ Show loader
-  // For mobile view, use overlay
+  const loader = document.getElementById("skeleton-overlay");
+  if (loader) loader.style.display = "flex"; // ✅ Show loader
+
   setTimeout(() => {
-    if (window.innerWidth <= 768) {
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
       sidebar.classList.toggle("open");
-      backdrop.classList.toggle("show");
+      backdrop?.classList.toggle("show");
     } else {
       sidebar.classList.toggle("close");
     }
 
-    document.getElementById("skeleton-overlay").style.display = "none"; // ✅ Hide loader
-  }, 300); // Delay for effect; adjust as needed
+    // Toggle icon ☰ ↔ ✖
+    if (sidebar.classList.contains("open") || !sidebar.classList.contains("close")) {
+      toggle.classList.replace("bx-menu", "bx-x");
+    } else {
+      toggle.classList.replace("bx-x", "bx-menu");
+    }
+
+    if (loader) loader.style.display = "none"; // ✅ Hide loader
+  }, 300);
 });
-
-
 
 // Dark mode toggle
-modeSwitch.addEventListener("click", () => {
+modeSwitch?.addEventListener("click", () => {
   body.classList.toggle("dark");
-
-  if (body.classList.contains("dark")) {
-    modeText.innerText = "Light mode";
-  } else {
-    modeText.innerText = "Dark mode";
-  }
+  modeText.textContent = body.classList.contains("dark") ? "Light mode" : "Dark mode";
 });
 
-// Used by backdrop click
+// Close sidebar when backdrop is clicked (mobile)
 function closeSidebar() {
   sidebar.classList.remove("open");
-  backdrop.classList.remove("show");
+  backdrop?.classList.remove("show");
+  toggle.classList.replace("bx-x", "bx-menu");
 }
+window.closeSidebar = closeSidebar;
 
-// Optional if you want to control programmatically
+// Optional: Programmatic toggle
 function toggleSidebar() {
   sidebar.classList.toggle("open");
-  backdrop.classList.toggle("show");
+  backdrop?.classList.toggle("show");
 }
+window.toggleSidebar = toggleSidebar;
 
+// Toggle submenu visibility
 function toggleSubMenu(el) {
-  const parent = el.closest('.has-submenu');
-  parent.classList.toggle('active');
+  const parent = el.closest(".has-submenu");
+  parent?.classList.toggle("active");
 }
-
-window.closeSidebar = closeSidebar; // So it's callable from HTML onclick
+window.toggleSubMenu = toggleSubMenu;
