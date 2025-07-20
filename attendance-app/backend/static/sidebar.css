@@ -232,30 +232,28 @@ body.dark .toggle-switch .switch {
     font-size: 20px;
 }
 
-.sidebar .toggle {
-    position: absolute;
-    top: 15px;
-    right: -5px;
-    background: purple;
-    color: #fff;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
+.sidebar .toggle.hamburger-icon {
+  font-size: 24px;
+  font-weight: bold;
+  position: absolute;
+  top: 15px;
+  right: -20px; /* Adjust this for alignment */
+  background: purple;
+  color: white;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  z-index: 101;
 }
+
+.sidebar.close .toggle.hamburger-icon {
+  transform: rotate(0);
+}
+
 
 body.dark .sidebar .toggle {
     background: black;
     color: white;
-}
-
-.sidebar.close .toggle {
-    transform: rotate(0);
 }
 
 .has-submenu .submenu {
