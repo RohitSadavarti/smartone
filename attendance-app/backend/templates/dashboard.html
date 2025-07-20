@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Portal</title>
+
+  <!-- Sidebar and Icons CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+
+  <!-- Static CSS from Flask -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <header>
+      <i class='bx bx-chevron-right toggle'></i>
+    </header>
+    <div class="menu-bar">
+      <div class="menu">
+        <ul class="menu-links">
+          <li class="nav-link">
+            <a href="#" onclick="loadPage('/home')">
+              <i class='fas fa-home'></i>
+              <span class="text nav-text">Home</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="#" onclick="loadPage('/dashboard')">
+              <i class='fas fa-chart-bar icon'></i>
+              <span class="text nav-text">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="#" onclick="loadPage('/admin-students')">
+              <i class='fas fa-user-graduate'></i>
+              <span class="text nav-text">Update Student</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="#" onclick="loadPage('/admin-teacher')">
+              <i class='fas fa-chalkboard-teacher'></i>
+              <span class="text nav-text">Update Teacher</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="#" onclick="loadPage('/attendance')">
+              <i class='bx bx-pie-chart-alt icon'></i>
+              <span class="text nav-text">Attendance Tracker</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="bottom-content">
+        <li>
+          <a href="#">
+            <i class='bx bx-log-out icon'></i>
+            <span class="text nav-text">Logout</span>
+          </a>
+        </li>
+        <li class="mode">
+          <div class="sun-moon">
+            <i class='bx bx-moon icon moon'></i>
+            <i class='bx bx-sun icon sun'></i>
+          </div>
+          <span class="mode-text text">Dark mode</span>
+          <div class="toggle-switch">
+            <span class="switch"></span>
+          </div>
+        </li>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Area (only iframe) -->
+  <div class="main-content">
+    <iframe id="content-frame" src="/dashboard-content" frameborder="0" width="100%" height="800px"></iframe>
+  </div>
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script>
+    function loadPage(url) {
+      document.getElementById("content-frame").src = url;
+    }
+  </script>
+</body>
+</html>
