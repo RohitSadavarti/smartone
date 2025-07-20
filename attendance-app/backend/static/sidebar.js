@@ -1,10 +1,9 @@
 const body = document.querySelector("body");
 const sidebar = body.querySelector("nav.sidebar");
 const toggle = body.querySelector(".toggle");
-const searchBtn = body.querySelector(".search-box");
+const backdrop = document.querySelector(".sidebar-toggle-backdrop");
 const modeSwitch = body.querySelector(".toggle-switch");
 const modeText = body.querySelector(".mode-text");
-const backdrop = document.querySelector(".sidebar-toggle-backdrop");
 
 // For desktop: toggle 'close' class on click
 toggle.addEventListener("click", () => {
@@ -22,12 +21,7 @@ toggle.addEventListener("click", () => {
   }, 300); // Delay for effect; adjust as needed
 });
 
-// Optional: clicking search opens sidebar (desktop)
-searchBtn?.addEventListener("click", () => {
-  if (window.innerWidth > 768) {
-    sidebar.classList.remove("close");
-  }
-});
+
 
 // Dark mode toggle
 modeSwitch.addEventListener("click", () => {
@@ -57,3 +51,4 @@ function toggleSubMenu(el) {
   parent.classList.toggle('active');
 }
 
+window.closeSidebar = closeSidebar; // So it's callable from HTML onclick
