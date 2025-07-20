@@ -12,6 +12,39 @@
   <!-- Static CSS from Flask -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+
+  <style>
+    .iframe-controls {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .iframe-controls button {
+      background-color: #004aad;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      margin-left: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .iframe-container {
+      position: relative;
+      height: 100%;
+    }
+
+    #content-frame.iframe-maximized {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999;
+    }
+  </style>
 </head>
 <body>
 
@@ -30,7 +63,7 @@
             </a>
           </li>
           <li class="nav-link">
-            <a href="#" onclick="loadPage('/dashboard')">
+            <a href="#" onclick="loadPage('https://test-opwl.onrender.com')">
               <i class='fas fa-chart-bar icon'></i>
               <span class="text nav-text">Dashboard</span>
             </a>
@@ -77,15 +110,18 @@
     </div>
   </nav>
 
-  <!-- Main Content Area (only iframe) -->
-  <div class="main-content">
+  <!-- Main Content Area -->
+  <div class="main-content iframe-container">
+    <div class="iframe-controls">
+      <button onclick="maximizeIframe()">Maximize</button>
+      <button onclick="minimizeIframe()">Minimize</button>
+    </div>
     <iframe id="content-frame"
-        src="https://test-opwl.onrender.com"
-        frameborder="0"
-        width="100%"
-        height="800px"
-        style="min-height: 100vh;"></iframe>
-
+            src="https://test-opwl.onrender.com"
+            frameborder="0"
+            width="100%"
+            height="800px"
+            style="min-height: 100vh;"></iframe>
   </div>
 
   <!-- Scripts -->
@@ -95,6 +131,15 @@
     function loadPage(url) {
       document.getElementById("content-frame").src = url;
     }
+
+    function maximizeIframe() {
+      document.getElementById("content-frame").classList.add("iframe-maximized");
+    }
+
+    function minimizeIframe() {
+      document.getElementById("content-frame").classList.remove("iframe-maximized");
+    }
   </script>
 </body>
 </html>
+
