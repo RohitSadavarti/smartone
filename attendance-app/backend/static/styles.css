@@ -108,7 +108,10 @@ body.dark .home .text {
     padding: 20px;
     background: #f4f4f9;
     transition: margin-left 0.3s ease, width 0.3s ease;
-    overflow-x: auto;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar.close ~ .main-content {
@@ -125,40 +128,17 @@ h1 {
     background-color: purple;
     padding: 15px;
     border-radius: 8px;
+    flex-shrink: 0;
 }
 
 body.dark h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 2rem;
-    color: white;
     background-color: black;
-    padding: 15px;
-    border-radius: 8px;
-}
-
-/* Navigation Link */
-nav a {
-    display: inline-block;
-    text-decoration: none;
-    color: #dc143c;
-    padding: 10px 20px;
-    border-radius: 5px;
-    background: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-nav a:hover {
-    background: purple;
-    color: #fff;
 }
 
 /* Form Styling */
 form {
     max-width: 100%;
-    margin: 0 auto;
-    margin-top: 25px;
+    margin-bottom: 20px;
     padding: 20px;
     border-radius: 10px;
     background: white;
@@ -167,6 +147,7 @@ form {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     align-items: end;
+    flex-shrink: 0;
 }
 
 body.dark form {
@@ -231,12 +212,14 @@ button:hover {
     background-color: white;
     color: green;
     border: 2px solid #28a745;
-    padding: 8px 15px;
+    padding: 6px 12px;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-right: 10px;
     font-weight: 500;
+    font-size: 12px;
+    min-width: 60px;
+    flex: 1;
 }
 
 .present-btn.selected {
@@ -254,11 +237,14 @@ button:hover {
     background-color: white;
     color: red;
     border: 2px solid #dc3545;
-    padding: 8px 15px;
+    padding: 6px 12px;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 500;
+    font-size: 12px;
+    min-width: 60px;
+    flex: 1;
 }
 
 .absent-btn.selected {
@@ -273,67 +259,88 @@ button:hover {
 
 /* Table Styling */
 .table-container {
-    overflow-x: auto;
-    margin-top: 30px;
+    margin-top: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: auto;
+    position: relative;
+}
+
+body.dark .table-container {
+    background: #2a2a2a;
 }
 
 table {
     width: 100%;
     min-width: 600px;
     border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
+    background: transparent;
 }
 
-body.dark table {
-    background: #2a2a2a;
-}
-
-th, td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-body.dark th, body.dark td {
-    border-bottom: 1px solid #555;
-    color: #ccc;
-}
-
-th {
+/* Sticky Table Header */
+thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
     background: purple;
     color: white;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.9rem;
     letter-spacing: 0.5px;
+    padding: 15px 12px;
+    text-align: left;
+    border-bottom: 2px solid #fff;
 }
 
-body.dark th {
+body.dark thead th {
     background: #1a1a1a;
+    border-bottom: 2px solid #333;
+}
+
+td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    color: #333;
+}
+
+body.dark td {
+    border-bottom: 1px solid #444;
+    color: #ccc;
 }
 
 tr:nth-child(even) {
     background: #f8f9fa;
 }
 
-body.dark tr:nth-child(even) {
+body.dark tbody tr:nth-child(even) {
     background: #333;
 }
 
-tr:hover {
+tbody tr:hover {
     background: #f1f1f1;
 }
 
-body.dark tr:hover {
+body.dark tbody tr:hover {
     background: #444;
 }
 
+/* Attendance buttons container */
 td:last-child {
     text-align: center;
+    padding: 8px;
+}
+
+.attendance-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
 }
 
 /* Buttons in Dark Mode */
@@ -449,6 +456,7 @@ body.dark #popup-box {
         margin-left: 0;
         width: 100%;
         padding: 15px 10px;
+        height: 100vh;
     }
 
     h1 {
@@ -460,7 +468,7 @@ body.dark #popup-box {
         grid-template-columns: 1fr;
         gap: 15px;
         padding: 15px;
-        margin-top: 15px;
+        margin-bottom: 15px;
     }
 
     button {
@@ -469,7 +477,7 @@ body.dark #popup-box {
     }
 
     .table-container {
-        margin-top: 20px;
+        max-height: 50vh;
     }
 
     table {
@@ -477,14 +485,27 @@ body.dark #popup-box {
         font-size: 14px;
     }
 
-    th, td {
+    thead th {
+        padding: 10px 6px;
+        font-size: 12px;
+    }
+
+    td {
         padding: 8px 6px;
+        font-size: 13px;
+    }
+
+    .attendance-buttons {
+        flex-direction: row;
+        gap: 4px;
+        justify-content: center;
     }
 
     .present-btn, .absent-btn {
-        padding: 6px 10px;
-        font-size: 12px;
-        margin: 2px;
+        padding: 4px 8px;
+        font-size: 10px;
+        min-width: 45px;
+        flex: 1;
     }
 
     .upload-section {
@@ -503,6 +524,7 @@ body.dark #popup-box {
 @media screen and (max-width: 480px) {
     .main-content {
         padding: 10px 5px;
+        height: 100vh;
     }
 
     h1 {
@@ -514,19 +536,31 @@ body.dark #popup-box {
         padding: 10px;
     }
 
+    .table-container {
+        max-height: 45vh;
+    }
+
     table {
         font-size: 12px;
     }
 
-    th, td {
+    thead th {
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+
+    td {
         padding: 6px 4px;
+        font-size: 12px;
+    }
+
+    .attendance-buttons {
+        gap: 2px;
     }
 
     .present-btn, .absent-btn {
-        padding: 4px 8px;
-        font-size: 11px;
-        display: block;
-        margin: 2px 0;
-        width: 100%;
+        padding: 3px 6px;
+        font-size: 9px;
+        min-width: 40px;
     }
 }
