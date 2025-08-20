@@ -180,8 +180,8 @@ button:hover {
 
 /* Search Section */
 .search-section {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
     gap: 15px;
     align-items: end;
     margin-bottom: 20px;
@@ -202,9 +202,9 @@ body.dark .search-section {
 }
 
 #search, #clear-search {
-    min-width: 80px;
+    min-width: 120px;
     height: 42px;
-    margin-left: 10px;
+    margin-left: 0;
 }
 
 /* Table Container */
@@ -306,10 +306,7 @@ body.dark button:hover {
         margin-left: 0;
         width: 100%;
         padding: 15px 10px;
-        height: auto;
-        min-height: 100vh;
-        overflow: visible;
-        display: block;
+        height: 190vh;
     }
 
     h1 {
@@ -325,9 +322,13 @@ body.dark button:hover {
         margin-bottom: 15px;
     }
 
+    button {
+        grid-column: span 1;
+        margin-top: 10px;
+    }
+
     .search-section {
-        flex-direction: column;
-        align-items: stretch;
+        grid-template-columns: 1fr;
         gap: 10px;
         padding: 15px;
     }
@@ -339,11 +340,13 @@ body.dark button:hover {
     #search, #clear-search {
         margin-left: 0;
         margin-top: 10px;
+        min-width: unset;
+        width: 100%;
     }
 
     .table-container {
+        max-height: 100vh;
         margin-bottom: 80px;
-        max-height: none;
     }
 
     table {
@@ -366,10 +369,7 @@ body.dark button:hover {
 @media screen and (max-width: 480px) {
     .main-content {
         padding: 10px 5px;
-        height: auto;
-        min-height: 100vh;
-        overflow: visible;
-        display: block;
+        height: 175vh;
     }
 
     h1 {
@@ -383,6 +383,10 @@ body.dark button:hover {
 
     .search-section {
         padding: 10px;
+    }
+
+    .table-container {
+        max-height: 100vh;
     }
 
     table {
