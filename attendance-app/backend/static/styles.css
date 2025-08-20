@@ -456,7 +456,7 @@ body.dark #popup-box {
         margin-left: 0;
         width: 100%;
         padding: 15px 10px;
-        height: auto;
+        height: 300vh;
         min-height: 100vh;
         overflow: visible;
         display: block;
