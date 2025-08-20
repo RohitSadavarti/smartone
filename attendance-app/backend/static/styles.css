@@ -533,7 +533,7 @@ body.dark #popup-box {
 @media screen and (max-width: 480px) {
     .main-content {
         padding: 10px 5px;
-        height: 300vh;
+        height: 150vh;
     }
 
     h1 {
@@ -546,7 +546,7 @@ body.dark #popup-box {
     }
 
     .table-container {
-        max-height: 100vh;
+        max-height: 60vh;
     }
 
     table {
