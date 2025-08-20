@@ -456,16 +456,12 @@ body.dark #popup-box {
         margin-left: 0;
         width: 100%;
         padding: 15px 10px;
-        height: 300vh;
-        min-height: 100vh;
-        overflow: visible;
-        display: block;
+        height: 100vh;
     }
 
     h1 {
         font-size: 1.5rem;
         padding: 10px;
-        position: relative;
     }
 
     form {
@@ -473,7 +469,6 @@ body.dark #popup-box {
         gap: 15px;
         padding: 15px;
         margin-bottom: 15px;
-        position: relative;
     }
 
     button {
@@ -482,10 +477,7 @@ body.dark #popup-box {
     }
 
     .table-container {
-        max-height: none;
-        height: auto;
-        overflow: visible;
-        margin-bottom: 80px;
+        max-height: 50vh;
     }
 
     table {
@@ -496,7 +488,6 @@ body.dark #popup-box {
     thead th {
         padding: 10px 6px;
         font-size: 12px;
-        position: relative;
     }
 
     td {
@@ -533,7 +524,7 @@ body.dark #popup-box {
 @media screen and (max-width: 480px) {
     .main-content {
         padding: 10px 5px;
-        height: 150vh;
+        height: 100vh;
     }
 
     h1 {
@@ -546,7 +537,7 @@ body.dark #popup-box {
     }
 
     .table-container {
-        max-height: 60vh;
+        max-height: 45vh;
     }
 
     table {
