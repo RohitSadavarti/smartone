@@ -456,7 +456,7 @@ body.dark #popup-box {
         margin-left: 0;
         width: 100%;
         padding: 15px 10px;
-        height: 100vh;
+        height: 150vh;
     }
 
     h1 {
@@ -477,7 +477,7 @@ body.dark #popup-box {
     }
 
     .table-container {
-        max-height: 50vh;
+        max-height: 100vh;
     }
 
     table {
