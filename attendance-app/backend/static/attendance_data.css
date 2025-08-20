@@ -300,8 +300,10 @@ body.dark button:hover {
     color: white;
 }
 
-/* Mobile-Only Sticky Header */
+/* Mobile Responsive */
+
 @media screen and (max-width: 768px) {
+
     header {
         position: sticky;
         top: 0;
@@ -320,42 +322,183 @@ body.dark button:hover {
         background: #1a1a1a;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
-
-    /* Adjust main content to account for sticky header */
     .main-content {
-        padding-top: 10px; /* Add some space below sticky header */
+
+        margin-left: 0;
+
+        width: 100%;
+
+        padding: 15px 10px;
+
+        height: 100vh;
+
+        overflow: hidden;
+
+        display: flex;
+
+        flex-direction: column;
+
     }
 
-    /* Make sure hamburger menu is visible */
-    #hamburger-toggle {
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
+    h1 {
+
+        font-size: 1.5rem;
+
+        padding: 10px;
+
+        margin-bottom: 15px;
+
+        flex-shrink: 0;
+
     }
 
-    /* Optional: Add header title for mobile */
-    header::after {
-        content: "Attendance System";
-        font-weight: 600;
-        font-size: 1.1rem;
-        flex-grow: 1;
-        text-align: center;
-        margin-right: 24px; /* Balance the hamburger icon */
+    form {
+
+        grid-template-columns: 1fr;
+
+        gap: 15px;
+
+        padding: 15px;
+
+        margin-bottom: 15px;
+
+        flex-shrink: 0;
+
     }
+
+    button {
+
+        grid-column: span 1;
+
+        margin-top: 10px;
+
+    }
+
+    .search-section {
+
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+
+        padding: 15px;
+
+        flex-shrink: 0;
+
+    }
+
+    .search-section .form-group {
+
+        min-width: unset;
+
+    }
+
+    #search, #clear-search {
+
+        margin-left: 0;
+
+        margin-top: 10px;
+
+        min-width: unset;
+
+        width: 100%;
+
+    }
+
+    .table-container {
+
+        flex: 1;
+
+        overflow-y: auto;
+
+        margin-bottom: 0;
+
+    }
+
+    table {
+
+        min-width: 100%;
+
+        font-size: 14px;
+
+    }
+
+    thead th {
+
+        padding: 10px 6px;
+
+        font-size: 12px;
+
+    }
+
+    td {
+
+        padding: 8px 6px;
+
+        font-size: 13px;
+
+    }
+
 }
 
-/* For very small screens (480px and below) */
+/* Very small screens */
+
 @media screen and (max-width: 480px) {
-    header {
-        padding: 10px 12px;
+
+    .main-content {
+
+        padding: 10px 5px;
+
+        height: 175vh;
+
     }
 
-    header::after {
-        font-size: 1rem;
-        margin-right: 20px;
+    h1 {
+
+        font-size: 1.2rem;
+
+        padding: 8px;
+
     }
 
-    #hamburger-toggle {
-        font-size: 22px;
+    form {
+
+        padding: 10px;
+
     }
+
+    .search-section {
+
+        padding: 10px;
+
+    }
+
+    .table-container {
+
+        max-height: 100vh;
+
+    }
+
+    table {
+
+        font-size: 12px;
+
+    }
+
+    thead th {
+
+        padding: 8px 4px;
+
+        font-size: 11px;
+
+    }
+
+    td {
+
+        padding: 6px 4px;
+
+        font-size: 12px;
+
+    }
+
 }
+
