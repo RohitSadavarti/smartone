@@ -303,185 +303,139 @@ body.dark button:hover {
 /* Mobile Responsive */
 
 @media screen and (max-width: 768px) {
-
     .main-content {
-
         margin-left: 0;
-
         width: 100%;
-
         padding: 15px 10px;
-
         height: 100vh;
-
         overflow: hidden;
-
         display: flex;
-
         flex-direction: column;
-
     }
 
     h1 {
         position: sticky;
-
+        top: 0;
+        z-index: 100;
         font-size: 1.5rem;
-
         padding: 10px;
-
         margin-bottom: 15px;
-
         flex-shrink: 0;
+        background-color: purple;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
 
+    /* Dark mode support for sticky h1 */
+    body.dark h1 {
+        background-color: black;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     form {
-
         grid-template-columns: 1fr;
-
         gap: 15px;
-
         padding: 15px;
-
         margin-bottom: 15px;
-
         flex-shrink: 0;
-
     }
 
     button {
-
         grid-column: span 1;
-
         margin-top: 10px;
-
     }
 
     .search-section {
-
         grid-template-columns: 1fr;
-
         gap: 10px;
-
         padding: 15px;
-
         flex-shrink: 0;
-
     }
 
     .search-section .form-group {
-
         min-width: unset;
-
     }
 
     #search, #clear-search {
-
         margin-left: 0;
-
         margin-top: 10px;
-
         min-width: unset;
-
         width: 100%;
-
     }
 
     .table-container {
-
         flex: 1;
-
         overflow-y: auto;
-
         margin-bottom: 0;
-
     }
 
     table {
-
         min-width: 100%;
-
         font-size: 14px;
-
     }
 
     thead th {
-
         padding: 10px 6px;
-
         font-size: 12px;
-
     }
 
     td {
-
         padding: 8px 6px;
-
         font-size: 13px;
-
     }
-
 }
 
 /* Very small screens */
-
 @media screen and (max-width: 480px) {
-
     .main-content {
-
         padding: 10px 5px;
-
-        height: 175vh;
-
+        height: 100vh; /* Changed from 175vh to 100vh for consistency */
     }
 
     h1 {
-
+        position: sticky;
+        top: 0;
+        z-index: 100;
         font-size: 1.2rem;
-
         padding: 8px;
+        background-color: purple;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
 
+    /* Dark mode support for very small screens */
+    body.dark h1 {
+        background-color: black;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     form {
-
         padding: 10px;
-
     }
 
     .search-section {
-
         padding: 10px;
-
     }
 
     .table-container {
-
-        max-height: 100vh;
-
+        flex: 1;
+        overflow-y: auto;
+        max-height: none; /* Remove max-height restriction */
     }
 
     table {
-
         font-size: 12px;
-
     }
 
     thead th {
-
         padding: 8px 4px;
-
         font-size: 11px;
-
     }
 
     td {
-
         padding: 6px 4px;
-
         font-size: 12px;
-
     }
-
 }
-
