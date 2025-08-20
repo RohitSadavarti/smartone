@@ -9,12 +9,15 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='attendance_data.css') }}">
 </head>
-<body>
+<body class="sidebar-closed">
+  <!-- Fixed Header -->
   <header>
-    <i class='bx bx-menu' id="hamburger-toggle" style="font-size: 24px; cursor: pointer; margin: 10px;"></i>
+    <i class='bx bx-menu' id="hamburger-toggle" style="font-size: 24px; cursor: pointer;"></i>
+    <h1 class="page-title">Attendance Data</h1>
   </header>
+
   <!-- Sidebar -->
-  <nav class="sidebar">
+  <nav class="sidebar close">
     <div class="menu-bar">
       <div class="menu">
         <ul class="menu-links">
@@ -81,9 +84,7 @@
   </nav>
 
   <!-- Main Content -->
-  <h1 class="page-title">Attendance Data</h1>
   <div class="main-content">
-  
     <form id="filter-form">
       <div class="form-group">
         <label for="start-date">Start Date:</label>
