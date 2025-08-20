@@ -21,10 +21,10 @@ CORS(app)
 # Database configuration
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIONS'] = {'xlsx', 'xls', 'csv'}
-app.config['PG_HOST'] = 'dpg-d1nodrjipnbc73au2ra0-a'
-app.config['PG_USER'] = 'smartone_db_user'  # change to your PostgreSQL username
-app.config['PG_PASSWORD'] = 'rJAlus2ILRfJkNG3yeUkRctIrRC0efe4'  # change to your PostgreSQL password
-app.config['PG_DB'] = 'smartone_db'  # change to your PostgreSQL database name
+app.config['PG_HOST'] = 'db.avqpzwgdylnklbkyqukp.supabase.co'
+app.config['PG_USER'] = 'postgres'  # change to your PostgreSQL username
+app.config['PG_PASSWORD'] = 'Clashe@749498'  # change to your PostgreSQL password
+app.config['PG_DB'] = 'postgres'  # change to your PostgreSQL database name
 app.config['sslmode']='require'
 
 
@@ -58,10 +58,10 @@ def serve_static(filename):
 
 def get_pg_connection():
     return psycopg2.connect(
-        host="dpg-d1nodrjipnbc73au2ra0-a",
-        database="smartone_db",
-        user="smartone_db_user",
-        password="rJAlus2ILRfJkNG3yeUkRctIrRC0efe4",
+        host="db.avqpzwgdylnklbkyqukp.supabase.co",
+        database="postgres",
+        user="postgres",
+        password="Clashe@749498",
         port=5432,
         sslmode='require'
     )
