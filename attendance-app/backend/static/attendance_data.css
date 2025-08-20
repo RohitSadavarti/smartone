@@ -73,14 +73,45 @@ body.dark .loading-text {
     100% { transform: rotate(360deg); }
 }
 
+/* Hide header on desktop */
+header {
+    display: none;
+}
+
+/* Page Title */
+.page-title {
+    position: fixed;
+    top: 0;
+    left: 250px;
+    right: 0;
+    z-index: 50;
+    text-align: center;
+    font-size: 2rem;
+    color: white;
+    background-color: purple;
+    padding: 15px;
+    border-radius: 0;
+    margin: 0;
+    transition: left 0.3s ease;
+}
+
+.sidebar.close ~ .page-title {
+    left: 80px;
+}
+
+body.dark .page-title {
+    background-color: black;
+}
+
 /* Main Content */
 .main-content {
     margin-left: 250px;
+    margin-top: 70px; /* Space for fixed page title */
     width: calc(100% - 250px);
     padding: 20px;
     background: #f4f4f9;
     transition: margin-left 0.3s ease, width 0.3s ease;
-    height: 100vh;
+    height: calc(100vh - 70px);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -91,20 +122,9 @@ body.dark .loading-text {
     width: calc(100% - 80px);
 }
 
-/* Header */
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 2rem;
-    color: white;
-    background-color: purple;
-    padding: 15px;
-    border-radius: 8px;
-    flex-shrink: 0;
-}
-
-body.dark h1 {
-    background-color: black;
+/* Remove h1 from main-content since we have page-title */
+.main-content h1 {
+    display: none;
 }
 
 /* Form Styling */
@@ -300,136 +320,179 @@ body.dark button:hover {
     color: white;
 }
 
-    /* Mobile Responsive */
-    @media screen and (max-width: 768px) {
-        /* Hide sidebar on mobile */
-        .sidebar {
-            transform: translateX(-100%);
-        }
-
-        .sidebar.open {
-            transform: translateX(0);
-        }
-
-        /* Show header with hamburger */
-        header {
-            display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 200;
-            background: purple;
-            color: white;
-            padding: 12px 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        body.dark header {
-            background: black;
-        }
-
-        #hamburger-toggle {
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        /* Fixed Page Title for mobile */
-        .page-title {
-            position: fixed;
-            top: 50px; /* Below header */
-            left: 0;
-            right: 0;
-            z-index: 50;
-            font-size: 1.5rem;
-            padding: 12px 15px;
-            margin: 0;
-        }
-
-        /* Fixed Main Content for mobile */
-        .main-content {
-            margin-left: 0;
-            margin-top: 110px; /* Header + page-title height */
-            width: 100%;
-            height: calc(100vh - 110px);
-            padding: 15px 10px;
-            overflow-y: auto;
-        }
-
-        /* Mobile form styling */
-        form {
-            grid-template-columns: 1fr;
-            gap: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        button {
-            margin-top: 10px;
-        }
-
-        /* Mobile search section */
-        .search-section {
-            grid-template-columns: 1fr;
-            gap: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        #search, #clear-search {
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        /* Mobile table */
-        .table-container {
-            max-height: 50vh;
-            overflow: auto;
-        }
-
-        table {
-            min-width: 100%;
-            font-size: 14px;
-        }
-
-        thead th {
-            padding: 10px 6px;
-            font-size: 12px;
-        }
-
-        td {
-            padding: 8px 6px;
-            font-size: 13px;
-        }
+/* Mobile Responsive */
+@media screen and (max-width: 768px) {
+    .home {
+        left: 0;
+        width: 100%;
+        position: relative;
     }
 
-    /* Very small screens */
-    @media screen and (max-width: 480px) {
-        .page-title {
-            font-size: 1.2rem;
-            padding: 10px 12px;
-        }
-
-        .main-content {
-            padding: 10px 5px;
-        }
-
-        form, .search-section {
-            padding: 10px;
-        }
-
-        table {
-            font-size: 12px;
-        }
-
-        thead th {
-            padding: 8px 4px;
-            font-size: 11px;
-        }
-
-        td {
-            padding: 6px 4px;
-            font-size: 12px;
-        }
+    /* Show header with hamburger on mobile */
+    header {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        background: purple;
+        color: white;
+        padding: 12px 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+
+    body.dark header {
+        background: black;
+    }
+
+    #hamburger-toggle {
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    /* Hide sidebar on mobile by default */
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    /* Page title for mobile */
+    .page-title {
+        position: fixed;
+        top: 50px; /* Below header */
+        left: 0;
+        right: 0;
+        z-index: 50;
+        font-size: 1.5rem;
+        padding: 10px;
+        margin: 0;
+    }
+
+    /* Main content for mobile */
+    .main-content {
+        margin-left: 0;
+        margin-top: 110px; /* Header + page-title height */
+        width: 100%;
+        padding: 15px 10px;
+        height: 190vh;
+    }
+
+    form {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    button {
+        grid-column: span 1;
+        margin-top: 10px;
+    }
+
+    /* Search Section Mobile */
+    .search-section {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    #search, #clear-search {
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .table-container {
+        max-height: 100vh;
+        overflow: auto;
+    }
+
+    table {
+        min-width: 100%;
+        font-size: 14px;
+    }
+
+    thead th {
+        padding: 10px 6px;
+        font-size: 12px;
+    }
+
+    td {
+        padding: 8px 6px;
+        font-size: 13px;
+    }
+
+    .attendance-buttons {
+        flex-direction: row;
+        gap: 4px;
+        justify-content: center;
+    }
+
+    .present-btn, .absent-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+        min-width: 45px;
+        flex: 1;
+    }
+
+    .upload-section {
+        position: static;
+        margin-top: 15px;
+        justify-content: center;
+    }
+
+    #popup-box {
+        width: 90%;
+        padding: 20px;
+    }
+}
+
+/* Very small screens */
+@media screen and (max-width: 480px) {
+    .main-content {
+        padding: 10px 5px;
+        height: 175vh;
+    }
+
+    .page-title {
+        font-size: 1.2rem;
+        padding: 8px;
+    }
+
+    form {
+        padding: 10px;
+    }
+
+    .table-container {
+        max-height: 100vh;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    thead th {
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+
+    td {
+        padding: 6px 4px;
+        font-size: 12px;
+    }
+
+    .attendance-buttons {
+        gap: 2px;
+    }
+
+    .present-btn, .absent-btn {
+        padding: 3px 6px;
+        font-size: 9px;
+        min-width: 40px;
+    }
+}
