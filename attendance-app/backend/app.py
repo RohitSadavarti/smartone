@@ -23,7 +23,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIONS'] = {'xlsx', 'xls', 'csv'}
 app.config['PG_HOST'] = 'aws-0-ap-south-1.pooler.supabase.com'
 app.config['PG_USER'] = 'postgres.avqpzwgdylnklbkyqukp'  # change to your PostgreSQL username
-app.config['PG_PASSWORD'] = 'Clashe@749498'  # change to your PostgreSQL password
+app.config['PG_PASSWORD'] = 'asBjLmDfKfoZPVt9'  # change to your PostgreSQL password
 app.config['PG_DB'] = 'postgres'  # change to your PostgreSQL database name
 app.config['sslmode']='require'
 
@@ -61,7 +61,7 @@ def get_pg_connection():
         host="aws-0-ap-south-1.pooler.supabase.com",
         database="postgres",
         user="postgres.avqpzwgdylnklbkyqukp",
-        password="Clashe@749498",
+        password="asBjLmDfKfoZPVt9",
         port=6543,
         sslmode='require'
     )
