@@ -1,13 +1,26 @@
-// ✅ Hide skeleton overlay after full page load
-window.addEventListener("load", () => {
-  const overlay = document.getElementById("skeleton-overlay");
-  if (overlay) {
-    overlay.style.display = "none";
-  }
-});
-
-// ✅ DOM content ready logic with attendance filtering and loader integration
 document.addEventListener("DOMContentLoaded", () => {
+    // Loading functions
+    function showLoading() {
+        let loadingOverlay = document.getElementById('loading-overlay');
+        if (!loadingOverlay) {
+            loadingOverlay = document.createElement('div');
+            loadingOverlay.id = 'loading-overlay';
+            loadingOverlay.innerHTML = `
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Loading...</div>
+            `;
+            document.body.appendChild(loadingOverlay);
+        }
+        loadingOverlay.style.display = 'flex';
+    }
+
+    function hideLoading() {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+    }
+
     const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');
     const filterButton = document.getElementById('filter-data');
@@ -20,12 +33,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const table = document.getElementById('attendance-table');
     const tableBody = table.querySelector('tbody');
     const tableHeaders = table.querySelectorAll('thead th');
-    const today = new Date().toISOString().split('T')[0];
 
+    // Set max date to today
+    const today = new Date().toISOString().split('T')[0];
     if (startDateInput) startDateInput.setAttribute('max', today);
     if (endDateInput) endDateInput.setAttribute('max', today);
 
-    // ✅ Filter attendance
+    // Show initial loading and hide after setup
+    showLoading();
+    setTimeout(() => {
+        hideLoading();
+    }, 500);
+
+    // Filter attendance with loading
     filterButton?.addEventListener('click', async () => {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
@@ -38,8 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            document.getElementById("skeleton-overlay").style.display = "flex";
-
+            showLoading();
+            
             const params = new URLSearchParams({
                 start_date: startDate,
                 end_date: endDate,
@@ -52,17 +72,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const data = await response.json();
             displayAttendanceData(data);
-            document.getElementById("skeleton-overlay").style.display = "none";
         } catch (error) {
             console.error('Error fetching attendance data:', error);
             alert('Error fetching attendance data. Please check the console for details.');
+        } finally {
+            hideLoading();
         }
     });
 
-    // ✅ Export CSV
+    // Export CSV with loading
     extractCsvButton?.addEventListener('click', async () => {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
+        const department = departmentDropdown.value;
+        const className = classDropdown.value;
 
         if (!startDate || !endDate) {
             alert('Please select both start and end dates.');
@@ -70,7 +93,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(`/attendance-csv?start_date=${startDate}&end_date=${endDate}`);
+            showLoading();
+            
+            const params = new URLSearchParams({
+                start_date: startDate,
+                end_date: endDate
+            });
+            if (department) params.append('department', department);
+            if (className) params.append('class', className);
+
+            const response = await fetch(`/attendance-csv?${params.toString()}`);
             if (response.ok) {
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
@@ -85,22 +117,26 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             console.error('Error generating CSV:', error);
+            alert('Failed to generate CSV. Please try again.');
+        } finally {
+            hideLoading();
         }
     });
 
-    // ✅ Display attendance data in table
+    // Display attendance data in table
     function displayAttendanceData(data) {
         tableBody.innerHTML = '';
-        document.getElementById("skeleton-overlay").style.display = "none";
 
         if (data.length === 0) {
             const row = document.createElement('tr');
-            row.innerHTML = '<td colspan="7">No records found for the selected dates</td>';
+            row.innerHTML = '<td colspan="7" style="text-align: center; padding: 20px; color: #666;">No records found for the selected dates</td>';
             tableBody.appendChild(row);
             return;
         }
 
+        // Sort by date (newest first)
         data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
         data.forEach(record => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -109,50 +145,77 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${record.name}</td>
                 <td>${record.department}</td>
                 <td>${record.class}</td>
-                <td>${record.attendance}</td>
+                <td style="color: ${record.attendance === 'P' ? 'green' : 'red'}; font-weight: bold;">${record.attendance}</td>
                 <td>${record.lecture_time}</td>
             `;
             tableBody.appendChild(row);
         });
     }
 
-    // ✅ Search filter
+    // Search filter
     function filterTableRows(query) {
         const rows = tableBody.querySelectorAll('tr');
         query = query.toLowerCase();
+        
         rows.forEach(row => {
             const cells = Array.from(row.cells);
-            const matches = cells.some(cell => cell.textContent.toLowerCase().includes(query));
+            const matches = cells.some(cell => 
+                cell.textContent.toLowerCase().includes(query)
+            );
             row.style.display = matches ? '' : 'none';
         });
     }
 
-    // ✅ Sort columns
+    // Sort table columns
     function sortTable(columnIndex, isAscending) {
         const rows = Array.from(tableBody.rows);
+        
         rows.sort((a, b) => {
             const cellA = a.cells[columnIndex].textContent.trim().toLowerCase();
             const cellB = b.cells[columnIndex].textContent.trim().toLowerCase();
+            
+            // Handle date sorting
             if (!isNaN(Date.parse(cellA)) && !isNaN(Date.parse(cellB))) {
                 return isAscending ? new Date(cellA) - new Date(cellB) : new Date(cellB) - new Date(cellA);
-            } else if (!isNaN(cellA) && !isNaN(cellB)) {
+            }
+            // Handle number sorting
+            else if (!isNaN(cellA) && !isNaN(cellB)) {
                 return isAscending ? cellA - cellB : cellB - cellA;
-            } else {
+            }
+            // Handle string sorting
+            else {
                 return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
             }
         });
+        
         rows.forEach(row => tableBody.appendChild(row));
     }
 
+    // Add click events to table headers for sorting
     tableHeaders.forEach((header, index) => {
         let isAscending = true;
         header.addEventListener('click', () => {
+            // Remove any existing sort indicators
+            tableHeaders.forEach(h => {
+                h.style.position = 'sticky';
+                h.style.top = '0';
+                h.innerHTML = h.textContent.replace(' ↑', '').replace(' ↓', '');
+            });
+            
+            // Add sort indicator
+            header.innerHTML = header.textContent + (isAscending ? ' ↑' : ' ↓');
+            
             sortTable(index, isAscending);
             isAscending = !isAscending;
         });
+        
+        // Add hover effect
+        header.style.cursor = 'pointer';
+        header.title = 'Click to sort';
     });
 
-    searchButton.addEventListener('click', () => {
+    // Search functionality
+    searchButton?.addEventListener('click', () => {
         const query = searchInput.value.trim();
         if (!query) {
             alert("Please enter a value to search.");
@@ -161,15 +224,26 @@ document.addEventListener("DOMContentLoaded", () => {
         filterTableRows(query);
     });
 
-    clearSearchButton.addEventListener('click', () => {
+    // Clear search
+    clearSearchButton?.addEventListener('click', () => {
         searchInput.value = '';
         filterTableRows('');
     });
 
+    // Enter key search
+    searchInput?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            searchButton.click();
+        }
+    });
+
+    // Fetch departments with loading
     async function fetchDepartments() {
         try {
+            showLoading();
             const response = await fetch('/student-departments');
             const departments = await response.json();
+            
             departments.forEach(department => {
                 const option = document.createElement('option');
                 option.value = department;
@@ -178,13 +252,17 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } catch (error) {
             console.error('Error fetching departments:', error);
+        } finally {
+            hideLoading();
         }
     }
 
+    // Fetch classes with loading  
     async function fetchClasses() {
         try {
             const response = await fetch('/student-classes');
             const classes = await response.json();
+            
             classes.forEach(className => {
                 const option = document.createElement('option');
                 option.value = className;
@@ -196,6 +274,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Initialize dropdowns
     fetchDepartments();
     fetchClasses();
+
+    // Auto-resize search input on mobile
+    if (window.innerWidth <= 768) {
+        searchInput.style.width = '100%';
+    }
 });
