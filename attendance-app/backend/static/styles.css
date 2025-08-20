@@ -524,7 +524,7 @@ body.dark #popup-box {
 @media screen and (max-width: 480px) {
     .main-content {
         padding: 10px 5px;
-        height: 190vh;
+        height: 180vh;
     }
 
     h1 {
