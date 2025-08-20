@@ -5,10 +5,10 @@ const backdrop = document.querySelector(".sidebar-toggle-backdrop");
 const modeSwitch = body.querySelector(".toggle-switch");
 const modeText = body.querySelector(".mode-text");
 
-// Sidebar toggle (☰ ↔ ✖) for mobile and desktop
+// Sidebar toggle (only hamburger icon for mobile and desktop)
 toggle.addEventListener("click", () => {
   const loader = document.getElementById("skeleton-overlay");
-  if (loader) loader.style.display = "flex"; // ✅ Show loader
+  if (loader) loader.style.display = "flex"; // Show loader
 
   setTimeout(() => {
     const isMobile = window.innerWidth <= 768;
@@ -20,14 +20,10 @@ toggle.addEventListener("click", () => {
       sidebar.classList.toggle("close");
     }
 
-    // Toggle icon ☰ ↔ ✖
-    if (sidebar.classList.contains("open") || !sidebar.classList.contains("close")) {
-      toggle.classList.replace("bx-menu", "bx-x");
-    } else {
-      toggle.classList.replace("bx-x", "bx-menu");
-    }
+    // Keep hamburger icon always (remove the icon toggle logic)
+    // No more bx-menu to bx-x switching
 
-    if (loader) loader.style.display = "none"; // ✅ Hide loader
+    if (loader) loader.style.display = "none"; // Hide loader
   }, 300);
 });
 
@@ -41,7 +37,7 @@ modeSwitch?.addEventListener("click", () => {
 function closeSidebar() {
   sidebar.classList.remove("open");
   backdrop?.classList.remove("show");
-  toggle.classList.replace("bx-x", "bx-menu");
+  // Keep hamburger icon (no icon change)
 }
 window.closeSidebar = closeSidebar;
 
