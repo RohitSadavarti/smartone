@@ -306,51 +306,71 @@ body.dark button:hover {
     .main-content {
         margin-left: 0;
         width: 100%;
-        padding: 15px 10px;
+        padding: 0;
         height: 100vh;
         overflow: hidden;
         display: flex;
         flex-direction: column;
     }
 
+    /* Fixed H1 at top */
     h1 {
         position: sticky;
         top: 0;
-        z-index: 100;
+        z-index: 300;
         font-size: 1.5rem;
-        padding: 10px;
-        margin-bottom: 15px;
+        padding: 10px 15px;
+        margin: 0;
         flex-shrink: 0;
         background-color: purple;
         color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    /* Dark mode support for sticky h1 */
     body.dark h1 {
         background-color: black;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
+    /* Fixed Form Section */
     form {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 15px;
-        margin-bottom: 15px;
-        flex-shrink: 0;
-    }
-
-    button {
-        grid-column: span 1;
-        margin-top: 10px;
-    }
-
-    .search-section {
+        position: sticky;
+        top: 60px; /* Height of h1 + padding */
+        z-index: 200;
         grid-template-columns: 1fr;
         gap: 10px;
         padding: 15px;
+        margin: 0;
         flex-shrink: 0;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 0;
+    }
+
+    body.dark form {
+        background: #2a2a2a;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Fixed Search Section */
+    .search-section {
+        position: sticky;
+        top: 220px; /* Adjust based on h1 + form height */
+        z-index: 200;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 15px;
+        margin: 0;
+        flex-shrink: 0;
+        background: white;
+        border-radius: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark .search-section {
+        background: #2a2a2a;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .search-section .form-group {
@@ -364,23 +384,50 @@ body.dark button:hover {
         width: 100%;
     }
 
+    button {
+        grid-column: span 1;
+        margin-top: 10px;
+    }
+
+    /* Table Container - Scrollable Area */
     .table-container {
         flex: 1;
         overflow-y: auto;
-        margin-bottom: 0;
+        overflow-x: auto;
+        margin: 0;
+        border-radius: 0;
+        background: white;
+        position: relative;
     }
 
+    body.dark .table-container {
+        background: #2a2a2a;
+    }
+
+    /* Fixed Table Header */
     table {
         min-width: 100%;
         font-size: 14px;
     }
 
     thead th {
+        position: sticky;
+        top: 0;
+        z-index: 100;
         padding: 10px 6px;
         font-size: 12px;
+        background: purple;
+        color: white;
+        border-bottom: 2px solid #fff;
     }
 
-    td {
+    body.dark thead th {
+        background: #1a1a1a;
+        border-bottom: 2px solid #333;
+    }
+
+    /* Scrollable Table Body */
+    tbody td {
         padding: 8px 6px;
         font-size: 13px;
     }
@@ -389,40 +436,28 @@ body.dark button:hover {
 /* Very small screens */
 @media screen and (max-width: 480px) {
     .main-content {
-        padding: 10px 5px;
-        height: 100vh; /* Changed from 175vh to 100vh for consistency */
+        padding: 0;
+        height: 100vh;
     }
 
     h1 {
-        position: sticky;
-        top: 0;
-        z-index: 100;
         font-size: 1.2rem;
-        padding: 8px;
-        background-color: purple;
-        color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Dark mode support for very small screens */
-    body.dark h1 {
-        background-color: black;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        padding: 8px 12px;
+        top: 0;
     }
 
     form {
+        top: 50px; /* Adjusted for smaller h1 */
         padding: 10px;
     }
 
     .search-section {
+        top: 180px; /* Adjusted for smaller form */
         padding: 10px;
     }
 
     .table-container {
         flex: 1;
-        overflow-y: auto;
-        max-height: none; /* Remove max-height restriction */
     }
 
     table {
@@ -434,7 +469,7 @@ body.dark button:hover {
         font-size: 11px;
     }
 
-    td {
+    tbody td {
         padding: 6px 4px;
         font-size: 12px;
     }
