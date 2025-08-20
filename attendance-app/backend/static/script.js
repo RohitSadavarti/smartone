@@ -160,8 +160,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <td>${student.roll_number}</td>
                 <td>${student.name}</td>
                 <td>
-                    <button class="present-btn">Present</button>
-                    <button class="absent-btn">Absent</button>
+                    <div class="attendance-buttons">
+                        <button class="present-btn">Present</button>
+                        <button class="absent-btn">Absent</button>
+                    </div>
                 </td>
             `;
             tableBody.appendChild(row);
