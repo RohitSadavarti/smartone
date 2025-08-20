@@ -300,113 +300,62 @@ body.dark button:hover {
     color: white;
 }
 
-/* Mobile Responsive */
+/* Mobile-Only Sticky Header */
 @media screen and (max-width: 768px) {
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 15px 10px;
-        height: 100vh;
-        overflow: hidden;
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 1001; /* Higher than table header z-index */
+        background: purple;
+        color: white;
+        padding: 12px 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    h1 {
-        font-size: 1.5rem;
-        padding: 10px;
-        margin-bottom: 15px;
-        flex-shrink: 0;
+    /* Dark mode support for mobile header */
+    body.dark header {
+        background: #1a1a1a;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
-    form {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 15px;
-        margin-bottom: 15px;
-        flex-shrink: 0;
+    /* Adjust main content to account for sticky header */
+    .main-content {
+        padding-top: 10px; /* Add some space below sticky header */
     }
 
-    button {
-        grid-column: span 1;
-        margin-top: 10px;
+    /* Make sure hamburger menu is visible */
+    #hamburger-toggle {
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
     }
 
-    .search-section {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        padding: 15px;
-        flex-shrink: 0;
-    }
-
-    .search-section .form-group {
-        min-width: unset;
-    }
-
-    #search, #clear-search {
-        margin-left: 0;
-        margin-top: 10px;
-        min-width: unset;
-        width: 100%;
-    }
-
-    .table-container {
-        flex: 1;
-        overflow-y: auto;
-        margin-bottom: 0;
-    }
-
-    table {
-        min-width: 100%;
-        font-size: 14px;
-    }
-
-    thead th {
-        padding: 10px 6px;
-        font-size: 12px;
-    }
-
-    td {
-        padding: 8px 6px;
-        font-size: 13px;
+    /* Optional: Add header title for mobile */
+    header::after {
+        content: "Attendance System";
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex-grow: 1;
+        text-align: center;
+        margin-right: 24px; /* Balance the hamburger icon */
     }
 }
 
-/* Very small screens */
+/* For very small screens (480px and below) */
 @media screen and (max-width: 480px) {
-    .main-content {
-        padding: 10px 5px;
-        height: 175vh;
+    header {
+        padding: 10px 12px;
     }
 
-    h1 {
-        font-size: 1.2rem;
-        padding: 8px;
+    header::after {
+        font-size: 1rem;
+        margin-right: 20px;
     }
 
-    form {
-        padding: 10px;
-    }
-
-    .search-section {
-        padding: 10px;
-    }
-
-    .table-container {
-        max-height: 100vh;
-    }
-
-    table {
-        font-size: 12px;
-    }
-
-    thead th {
-        padding: 8px 4px;
-        font-size: 11px;
-    }
-
-    td {
-        padding: 6px 4px;
-        font-size: 12px;
+    #hamburger-toggle {
+        font-size: 22px;
     }
 }
