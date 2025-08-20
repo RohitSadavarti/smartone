@@ -73,41 +73,52 @@ body.dark .loading-text {
     100% { transform: rotate(360deg); }
 }
 
-/* Hide header on desktop */
+/* Fixed Header for Desktop */
 header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: purple;
+    color: white;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.dark header {
+    background: black;
+}
+
+/* Hide hamburger on desktop */
+#hamburger-toggle {
     display: none;
 }
 
-/* Page Title */
+/* Page Title in Header */
 .page-title {
-    position: fixed;
-    top: 0;
-    left: 250px;
-    right: 0;
-    z-index: 50;
-    text-align: center;
     font-size: 2rem;
     color: white;
-    background-color: purple;
-    padding: 15px;
+    background: transparent;
+    padding: 0;
     border-radius: 0;
     margin: 0;
-    transition: left 0.3s ease;
-}
-
-.sidebar.close ~ .page-title {
-    left: 80px;
+    text-align: center;
 }
 
 body.dark .page-title {
-    background-color: black;
+    background: transparent;
+    color: white;
 }
 
-/* Main Content */
+/* Main Content - Adjusted for sidebar collapsed by default */
 .main-content {
-    margin-left: 250px;
-    margin-top: 70px; /* Space for fixed page title */
-    width: calc(100% - 250px);
+    margin-left: 80px; /* Collapsed sidebar width */
+    margin-top: 70px; /* Space for fixed header */
+    width: calc(100% - 80px);
     padding: 20px;
     background: #f4f4f9;
     transition: margin-left 0.3s ease, width 0.3s ease;
@@ -117,12 +128,13 @@ body.dark .page-title {
     flex-direction: column;
 }
 
-.sidebar.close ~ .main-content {
-    margin-left: 80px;
-    width: calc(100% - 80px);
+/* When sidebar is open (expanded) */
+body:not(.sidebar-closed) .main-content {
+    margin-left: 250px;
+    width: calc(100% - 250px);
 }
 
-/* Remove h1 from main-content since we have page-title */
+/* Remove h1 from main-content since we have page-title in header */
 .main-content h1 {
     display: none;
 }
@@ -322,34 +334,32 @@ body.dark button:hover {
 
 /* Mobile Responsive */
 @media screen and (max-width: 768px) {
+    /* Show hamburger on mobile */
+    #hamburger-toggle {
+        display: block;
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    /* Header adjustments for mobile */
+    header {
+        padding: 12px 15px;
+        justify-content: center;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
     .home {
         left: 0;
         width: 100%;
         position: relative;
-    }
-
-    /* Show header with hamburger on mobile */
-    header {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 200;
-        background: purple;
-        color: white;
-        padding: 12px 15px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    body.dark header {
-        background: black;
-    }
-
-    #hamburger-toggle {
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
     }
 
     /* Hide sidebar on mobile by default */
@@ -361,32 +371,67 @@ body.dark button:hover {
         transform: translateX(0);
     }
 
-    /* Page title for mobile */
-    .page-title {
-        position: fixed;
-        top: 50px; /* Below header */
-        left: 0;
-        right: 0;
-        z-index: 50;
-        font-size: 1.5rem;
-        padding: 10px;
-        margin: 0;
-    }
-
     /* Main content for mobile */
     .main-content {
         margin-left: 0;
-        margin-top: 110px; /* Header + page-title height */
+        margin-top: 60px; /* Header height */
         width: 100%;
-        padding: 15px 10px;
-        height: 190vh;
+        padding: 0;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
 
+    /* Fixed Form Section */
     form {
+        position: sticky;
+        top: 0;
+        z-index: 200;
         grid-template-columns: 1fr;
-        gap: 15px;
+        gap: 10px;
         padding: 15px;
-        margin-bottom: 15px;
+        margin: 0;
+        flex-shrink: 0;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 0;
+    }
+
+    body.dark form {
+        background: #2a2a2a;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Fixed Search Section */
+    .search-section {
+        position: sticky;
+        top: 160px; /* Adjust based on form height */
+        z-index: 200;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 15px;
+        margin: 0;
+        flex-shrink: 0;
+        background: white;
+        border-radius: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark .search-section {
+        background: #2a2a2a;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .search-section .form-group {
+        min-width: unset;
+    }
+
+    #search, #clear-search {
+        margin-left: 0;
+        margin-top: 10px;
+        min-width: unset;
+        width: 100%;
     }
 
     button {
@@ -394,82 +439,74 @@ body.dark button:hover {
         margin-top: 10px;
     }
 
-    /* Search Section Mobile */
-    .search-section {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-
-    #search, #clear-search {
-        margin-top: 10px;
-        width: 100%;
-    }
-
+    /* Table Container - Scrollable Area */
     .table-container {
-        max-height: 100vh;
-        overflow: auto;
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: auto;
+        margin: 0;
+        border-radius: 0;
+        background: white;
+        position: relative;
     }
 
+    body.dark .table-container {
+        background: #2a2a2a;
+    }
+
+    /* Fixed Table Header */
     table {
         min-width: 100%;
         font-size: 14px;
     }
 
     thead th {
+        position: sticky;
+        top: 0;
+        z-index: 100;
         padding: 10px 6px;
         font-size: 12px;
+        background: purple;
+        color: white;
+        border-bottom: 2px solid #fff;
     }
 
-    td {
+    body.dark thead th {
+        background: #1a1a1a;
+        border-bottom: 2px solid #333;
+    }
+
+    /* Scrollable Table Body */
+    tbody td {
         padding: 8px 6px;
         font-size: 13px;
-    }
-
-    .attendance-buttons {
-        flex-direction: row;
-        gap: 4px;
-        justify-content: center;
-    }
-
-    .present-btn, .absent-btn {
-        padding: 4px 8px;
-        font-size: 10px;
-        min-width: 45px;
-        flex: 1;
-    }
-
-    .upload-section {
-        position: static;
-        margin-top: 15px;
-        justify-content: center;
-    }
-
-    #popup-box {
-        width: 90%;
-        padding: 20px;
     }
 }
 
 /* Very small screens */
 @media screen and (max-width: 480px) {
-    .main-content {
-        padding: 10px 5px;
-        height: 175vh;
-    }
-
     .page-title {
         font-size: 1.2rem;
-        padding: 8px;
+    }
+
+    .main-content {
+        padding: 0;
+        height: calc(100vh - 50px);
+        margin-top: 50px;
     }
 
     form {
+        top: 0;
+        padding: 10px;
+    }
+
+    .search-section {
+        top: 140px; /* Adjusted for smaller form */
         padding: 10px;
     }
 
     .table-container {
-        max-height: 100vh;
+        flex: 1;
     }
 
     table {
@@ -481,18 +518,8 @@ body.dark button:hover {
         font-size: 11px;
     }
 
-    td {
+    tbody td {
         padding: 6px 4px;
         font-size: 12px;
-    }
-
-    .attendance-buttons {
-        gap: 2px;
-    }
-
-    .present-btn, .absent-btn {
-        padding: 3px 6px;
-        font-size: 9px;
-        min-width: 40px;
     }
 }
