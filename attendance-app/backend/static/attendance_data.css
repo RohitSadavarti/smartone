@@ -86,33 +86,25 @@ body.dark .loading-text {
     100% { transform: rotate(360deg); }
 }
 
-/* Header Styling */
+/* Header Styling - Match index.html */
 header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1001;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background-color: var(--body-color);
     padding: 15px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: relative;
+    height: 60px;
+    border-bottom: 1px solid #ddd;
+    transition: var(--tran-05);
 }
 
 body.dark header {
-    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
-}
-
-.header-left {
-    position: absolute;
-    left: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
+    background-color: var(--body-color);
+    border-bottom: 1px solid #444;
 }
 
 #hamburger-toggle {
@@ -121,7 +113,7 @@ body.dark header {
     padding: 8px;
     border-radius: 5px;
     transition: background-color 0.3s ease;
-    color: white !important;
+    color: #333 !important;
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -132,38 +124,30 @@ body.dark header {
     display: flex !important;
     align-items: center;
     justify-content: center;
+    margin-right: 15px;
+}
+
+body.dark #hamburger-toggle {
+    color: #fff !important;
 }
 
 #hamburger-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+body.dark #hamburger-toggle:hover {
     background-color: rgba(255, 255, 255, 0.1);
-}
-
-.page-title {
-    font-size: 1.8rem;
-    color: white;
-    background: transparent;
-    padding: 0;
-    border-radius: 0;
-    margin: 0;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
-body.dark .page-title {
-    background: transparent;
-    color: white;
 }
 
 /* Main Content - Adjusted for sidebar collapsed by default */
 .main-content {
     margin-left: 88px; /* Collapsed sidebar width */
-    margin-top: 70px; /* Space for fixed header */
+    margin-top: 60px; /* Space for fixed header */
     width: calc(100% - 88px);
     padding: 20px;
     background: var(--body-color);
     transition: margin-left 0.3s ease, width 0.3s ease;
-    height: calc(100vh - 70px);
+    height: calc(100vh - 60px);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -173,6 +157,22 @@ body.dark .page-title {
 body:not(.sidebar-closed) .main-content {
     margin-left: 250px;
     width: calc(100% - 250px);
+}
+
+/* Main page title - same as index.html */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: white;
+    background-color: purple;
+    padding: 15px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+body.dark h1 {
+    background-color: black;
 }
 
 /* Form Styling */
@@ -373,11 +373,7 @@ body.dark button:hover {
     /* Header adjustments for mobile */
     header {
         padding: 12px 15px;
-        justify-content: center;
-    }
-
-    .header-left {
-        left: 15px;
+        height: 50px;
     }
 
     .page-title {
@@ -387,10 +383,10 @@ body.dark button:hover {
     /* Main content for mobile */
     .main-content {
         margin-left: 0;
-        margin-top: 60px;
+        margin-top: 50px;
         width: 100%;
         padding: 0;
-        height: calc(100vh - 60px);
+        height: calc(100vh - 50px);
     }
 
     /* Form adjustments */
@@ -459,8 +455,8 @@ body.dark button:hover {
     }
 
     .main-content {
-        margin-top: 50px;
-        height: calc(100vh - 50px);
+        margin-top: 45px;
+        height: calc(100vh - 45px);
     }
 
     form {
@@ -486,40 +482,4 @@ body.dark button:hover {
         padding: 6px 4px;
         font-size: 12px;
     }
-}
-
-/* Force hamburger menu visibility - Override any conflicting styles */
-#hamburger-toggle {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    color: white !important;
-    font-size: 24px !important;
-    z-index: 1002 !important;
-    position: relative !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    padding: 8px !important;
-    border-radius: 5px !important;
-    transition: background-color 0.3s ease !important;
-}
-
-/* Ensure header elements are properly positioned */
-header .header-left {
-    display: flex !important;
-    align-items: center !important;
-    gap: 15px !important;
-    width: 100% !important;
-}
-
-header .page-title {
-    color: white !important;
-    font-size: 1.8rem !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border-radius: 0 !important;
 }
