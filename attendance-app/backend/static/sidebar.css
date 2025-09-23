@@ -91,16 +91,19 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
+  padding: 12px;
   width: 100%;
   border-radius: 6px;
   text-decoration: none;
   transition: var(--tran-03);
+  position: relative;
+  z-index: 1001;
 }
 
 .sidebar li a:hover {
-  background: gray;
-  color: black;
+ background: rgba(255, 255, 255, 0.1);
+ color: white;
+ transform: translateX(2px);
 }
 
 .sidebar li a:hover .icon,
@@ -304,13 +307,24 @@ body.dark .sidebar.open li a:hover {
 /* ----------------------------------- */
 .has-submenu .submenu {
   display: none;
-  padding-left: 30px;
-  margin-top: 5px;
-  flex-direction: column;
+    padding-left: 30px;
+    margin-top: 5px;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 10px 30px;
+    margin: 5px 0;
+    position: relative;
+    z-index: 1002;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease, padding 0.3s ease;
 }
 
 .has-submenu.active .submenu {
   display: flex;
+    max-height: 200px;
+    padding: 10px 30px;
 }
 
 .has-submenu .submenu li a {
@@ -698,3 +712,4 @@ body.dark .sidebar.open li a:hover {
 body.dark .has-submenu .submenu li a {
   color: #fff;
 }
+
