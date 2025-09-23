@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Get DOM elements
     const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');
     const filterButton = document.getElementById('filter-data');
@@ -31,8 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const departmentDropdown = document.getElementById('department');
     const classDropdown = document.getElementById('class');
     const table = document.getElementById('attendance-table');
-    const tableBody = table.querySelector('tbody');
-    const tableHeaders = table.querySelectorAll('thead th');
+    const tableBody = table ? table.querySelector('tbody') : null;
+    const tableHeaders = table ? table.querySelectorAll('thead th') : [];
 
     // Set max date to today
     const today = new Date().toISOString().split('T')[0];
@@ -46,85 +47,91 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 500);
 
     // Filter attendance with loading
-    filterButton?.addEventListener('click', async () => {
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
-        const department = departmentDropdown.value;
-        const className = classDropdown.value;
+    if (filterButton) {
+        filterButton.addEventListener('click', async () => {
+            const startDate = startDateInput ? startDateInput.value : '';
+            const endDate = endDateInput ? endDateInput.value : '';
+            const department = departmentDropdown ? departmentDropdown.value : '';
+            const className = classDropdown ? classDropdown.value : '';
 
-        if (!startDate || !endDate) {
-            alert('Please select both start and end dates.');
-            return;
-        }
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates.');
+                return;
+            }
 
-        try {
-            showLoading();
-            
-            const params = new URLSearchParams({
-                start_date: startDate,
-                end_date: endDate,
-            });
-            if (department) params.append('department', department);
-            if (className) params.append('class', className);
+            try {
+                showLoading();
+                
+                const params = new URLSearchParams({
+                    start_date: startDate,
+                    end_date: endDate,
+                });
+                if (department) params.append('department', department);
+                if (className) params.append('class', className);
 
-            const response = await fetch(`/attendance-data?${params.toString()}`);
-            if (!response.ok) throw new Error('Failed to fetch data');
+                const response = await fetch(`/attendance-data?${params.toString()}`);
+                if (!response.ok) throw new Error('Failed to fetch data');
 
-            const data = await response.json();
-            displayAttendanceData(data);
-        } catch (error) {
-            console.error('Error fetching attendance data:', error);
-            alert('Error fetching attendance data. Please check the console for details.');
-        } finally {
-            hideLoading();
-        }
-    });
+                const data = await response.json();
+                displayAttendanceData(data);
+            } catch (error) {
+                console.error('Error fetching attendance data:', error);
+                alert('Error fetching attendance data. Please check the console for details.');
+            } finally {
+                hideLoading();
+            }
+        });
+    }
 
     // Export CSV with loading
-    extractCsvButton?.addEventListener('click', async () => {
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
-        const department = departmentDropdown.value;
-        const className = classDropdown.value;
+    if (extractCsvButton) {
+        extractCsvButton.addEventListener('click', async () => {
+            const startDate = startDateInput ? startDateInput.value : '';
+            const endDate = endDateInput ? endDateInput.value : '';
+            const department = departmentDropdown ? departmentDropdown.value : '';
+            const className = classDropdown ? classDropdown.value : '';
 
-        if (!startDate || !endDate) {
-            alert('Please select both start and end dates.');
-            return;
-        }
-
-        try {
-            showLoading();
-            
-            const params = new URLSearchParams({
-                start_date: startDate,
-                end_date: endDate
-            });
-            if (department) params.append('department', department);
-            if (className) params.append('class', className);
-
-            const response = await fetch(`/attendance-csv?${params.toString()}`);
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'attendance_data.csv';
-                a.click();
-                window.URL.revokeObjectURL(url);
-            } else {
-                const error = await response.json();
-                alert(error.message || 'Error generating CSV');
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates.');
+                return;
             }
-        } catch (error) {
-            console.error('Error generating CSV:', error);
-            alert('Failed to generate CSV. Please try again.');
-        } finally {
-            hideLoading();
-        }
-    });
+
+            try {
+                showLoading();
+                
+                const params = new URLSearchParams({
+                    start_date: startDate,
+                    end_date: endDate
+                });
+                if (department) params.append('department', department);
+                if (className) params.append('class', className);
+
+                const response = await fetch(`/attendance-csv?${params.toString()}`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'attendance_data.csv';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Error generating CSV');
+                }
+            } catch (error) {
+                console.error('Error generating CSV:', error);
+                alert('Failed to generate CSV. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        });
+    }
 
     // Display attendance data in table
     function displayAttendanceData(data) {
+        if (!tableBody) return;
+        
         tableBody.innerHTML = '';
 
         if (data.length === 0) {
@@ -140,13 +147,13 @@ document.addEventListener("DOMContentLoaded", () => {
         data.forEach(record => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${record.date}</td>
-                <td>${record.roll_number}</td>
-                <td>${record.name}</td>
-                <td>${record.department}</td>
-                <td>${record.class}</td>
-                <td style="color: ${record.attendance === 'P' ? 'green' : 'red'}; font-weight: bold;">${record.attendance}</td>
-                <td>${record.lecture_time}</td>
+                <td>${record.date || ''}</td>
+                <td>${record.roll_number || ''}</td>
+                <td>${record.name || ''}</td>
+                <td>${record.department || ''}</td>
+                <td>${record.class || ''}</td>
+                <td style="color: ${record.attendance === 'P' ? 'green' : 'red'}; font-weight: bold;">${record.attendance || ''}</td>
+                <td>${record.lecture_time || ''}</td>
             `;
             tableBody.appendChild(row);
         });
@@ -154,6 +161,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Search filter
     function filterTableRows(query) {
+        if (!tableBody) return;
+        
         const rows = tableBody.querySelectorAll('tr');
         query = query.toLowerCase();
         
@@ -168,11 +177,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Sort table columns
     function sortTable(columnIndex, isAscending) {
+        if (!tableBody) return;
+        
         const rows = Array.from(tableBody.rows);
         
         rows.sort((a, b) => {
-            const cellA = a.cells[columnIndex].textContent.trim().toLowerCase();
-            const cellB = b.cells[columnIndex].textContent.trim().toLowerCase();
+            const cellA = a.cells[columnIndex] ? a.cells[columnIndex].textContent.trim().toLowerCase() : '';
+            const cellB = b.cells[columnIndex] ? b.cells[columnIndex].textContent.trim().toLowerCase() : '';
             
             // Handle date sorting
             if (!isNaN(Date.parse(cellA)) && !isNaN(Date.parse(cellB))) {
@@ -215,30 +226,38 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Search functionality
-    searchButton?.addEventListener('click', () => {
-        const query = searchInput.value.trim();
-        if (!query) {
-            alert("Please enter a value to search.");
-            return;
-        }
-        filterTableRows(query);
-    });
+    if (searchButton && searchInput) {
+        searchButton.addEventListener('click', () => {
+            const query = searchInput.value.trim();
+            if (!query) {
+                alert("Please enter a value to search.");
+                return;
+            }
+            filterTableRows(query);
+        });
+    }
 
     // Clear search
-    clearSearchButton?.addEventListener('click', () => {
-        searchInput.value = '';
-        filterTableRows('');
-    });
+    if (clearSearchButton && searchInput) {
+        clearSearchButton.addEventListener('click', () => {
+            searchInput.value = '';
+            filterTableRows('');
+        });
+    }
 
     // Enter key search
-    searchInput?.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            searchButton.click();
-        }
-    });
+    if (searchInput && searchButton) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+    }
 
     // Fetch departments with loading
     async function fetchDepartments() {
+        if (!departmentDropdown) return;
+        
         try {
             showLoading();
             const response = await fetch('/student-departments');
@@ -259,6 +278,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fetch classes with loading  
     async function fetchClasses() {
+        if (!classDropdown) return;
+        
         try {
             const response = await fetch('/student-classes');
             const classes = await response.json();
@@ -279,7 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchClasses();
 
     // Auto-resize search input on mobile
-    if (window.innerWidth <= 768) {
+    if (searchInput && window.innerWidth <= 768) {
         searchInput.style.width = '100%';
     }
 });
