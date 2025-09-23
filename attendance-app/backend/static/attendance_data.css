@@ -6,9 +6,20 @@
     font-family: 'Poppins', sans-serif;
 }
 
+:root {
+    --tran-03: all 0.2s ease;
+    --tran-05: all 0.3s ease;
+    --body-color: #f4f4f9;
+    --sidebar-color: #11101d;
+    --primary-color: #695cfe;
+    --primary-color-light: #f6f5ff;
+    --toggle-color: #ddd;
+    --text-color: #707070;
+}
+
 body {
     min-height: 100vh;
-    background-color: #f4f4f9;
+    background-color: var(--body-color);
     color: #333;
     line-height: 1.6;
     display: flex;
@@ -22,6 +33,8 @@ body.dark {
     --primary-color-light: #3a3b3c;
     --toggle-color: #fff;
     --text-color: #ccc;
+    background-color: var(--body-color);
+    color: var(--text-color);
 }
 
 /* Loading Overlay */
@@ -73,40 +86,64 @@ body.dark .loading-text {
     100% { transform: rotate(360deg); }
 }
 
-/* Fixed Header for Desktop */
+/* Header Styling */
 header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
-    background: purple;
+    z-index: 1001;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 15px;
+    padding: 15px 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+body.dark header {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+#hamburger-toggle {
+    font-size: 24px !important;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    color: white !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative;
+    z-index: 1002;
+    min-width: 40px;
+    min-height: 40px;
+    display: flex !important;
     align-items: center;
     justify-content: center;
 }
 
-body.dark header {
-    background: black;
+#hamburger-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Hide hamburger on desktop */
-#hamburger-toggle {
-    display: none;
-}
-
-/* Page Title in Header */
 .page-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: white;
     background: transparent;
     padding: 0;
     border-radius: 0;
     margin: 0;
-    text-align: center;
+    text-align: left;
 }
 
 body.dark .page-title {
@@ -116,11 +153,11 @@ body.dark .page-title {
 
 /* Main Content - Adjusted for sidebar collapsed by default */
 .main-content {
-    margin-left: 80px; /* Collapsed sidebar width */
+    margin-left: 88px; /* Collapsed sidebar width */
     margin-top: 70px; /* Space for fixed header */
-    width: calc(100% - 80px);
+    width: calc(100% - 88px);
     padding: 20px;
-    background: #f4f4f9;
+    background: var(--body-color);
     transition: margin-left 0.3s ease, width 0.3s ease;
     height: calc(100vh - 70px);
     overflow: hidden;
@@ -128,15 +165,10 @@ body.dark .page-title {
     flex-direction: column;
 }
 
-/* When sidebar is open (expanded) */
+/* When sidebar is expanded */
 body:not(.sidebar-closed) .main-content {
     margin-left: 250px;
     width: calc(100% - 250px);
-}
-
-/* Remove h1 from main-content since we have page-title in header */
-.main-content h1 {
-    display: none;
 }
 
 /* Form Styling */
@@ -320,7 +352,7 @@ body.dark tbody tr:hover {
     background: #444;
 }
 
-/* Dark Mode Support */
+/* Dark Mode Button Support */
 body.dark button {
     background-color: #1a1a1a;
     color: white;
@@ -334,56 +366,25 @@ body.dark button:hover {
 
 /* Mobile Responsive */
 @media screen and (max-width: 768px) {
-    /* Show hamburger on mobile */
-    #hamburger-toggle {
-        display: block;
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-    }
-
     /* Header adjustments for mobile */
     header {
         padding: 12px 15px;
-        justify-content: center;
     }
 
     .page-title {
         font-size: 1.5rem;
     }
 
-    .home {
-        left: 0;
-        width: 100%;
-        position: relative;
-    }
-
-    /* Hide sidebar on mobile by default */
-    .sidebar {
-        transform: translateX(-100%);
-    }
-
-    .sidebar.open {
-        transform: translateX(0);
-    }
-
     /* Main content for mobile */
     .main-content {
         margin-left: 0;
-        margin-top: 60px; /* Header height */
+        margin-top: 60px;
         width: 100%;
         padding: 0;
         height: calc(100vh - 60px);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
     }
 
-    /* Fixed Form Section */
+    /* Form adjustments */
     form {
         position: sticky;
         top: 0;
@@ -392,35 +393,21 @@ body.dark button:hover {
         gap: 10px;
         padding: 15px;
         margin: 0;
-        flex-shrink: 0;
-        background: white;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         border-radius: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    body.dark form {
-        background: #2a2a2a;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Fixed Search Section */
+    /* Search section adjustments */
     .search-section {
         position: sticky;
-        top: 160px; /* Adjust based on form height */
+        top: 160px;
         z-index: 200;
         grid-template-columns: 1fr;
         gap: 10px;
         padding: 15px;
         margin: 0;
-        flex-shrink: 0;
-        background: white;
         border-radius: 0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    body.dark .search-section {
-        background: #2a2a2a;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .search-section .form-group {
@@ -428,55 +415,28 @@ body.dark button:hover {
     }
 
     #search, #clear-search {
-        margin-left: 0;
         margin-top: 10px;
         min-width: unset;
         width: 100%;
     }
 
-    button {
-        grid-column: span 1;
-        margin-top: 10px;
-    }
-
-    /* Table Container - Scrollable Area */
+    /* Table container for mobile */
     .table-container {
         flex: 1;
-        overflow-y: auto;
-        overflow-x: auto;
         margin: 0;
         border-radius: 0;
-        background: white;
-        position: relative;
     }
 
-    body.dark .table-container {
-        background: #2a2a2a;
-    }
-
-    /* Fixed Table Header */
     table {
         min-width: 100%;
         font-size: 14px;
     }
 
     thead th {
-        position: sticky;
-        top: 0;
-        z-index: 100;
         padding: 10px 6px;
         font-size: 12px;
-        background: purple;
-        color: white;
-        border-bottom: 2px solid #fff;
     }
 
-    body.dark thead th {
-        background: #1a1a1a;
-        border-bottom: 2px solid #333;
-    }
-
-    /* Scrollable Table Body */
     tbody td {
         padding: 8px 6px;
         font-size: 13px;
@@ -490,9 +450,8 @@ body.dark button:hover {
     }
 
     .main-content {
-        padding: 0;
-        height: calc(100vh - 50px);
         margin-top: 50px;
+        height: calc(100vh - 50px);
     }
 
     form {
@@ -501,12 +460,8 @@ body.dark button:hover {
     }
 
     .search-section {
-        top: 140px; /* Adjusted for smaller form */
+        top: 140px;
         padding: 10px;
-    }
-
-    .table-container {
-        flex: 1;
     }
 
     table {
@@ -522,4 +477,40 @@ body.dark button:hover {
         padding: 6px 4px;
         font-size: 12px;
     }
+}
+
+/* Force hamburger menu visibility - Override any conflicting styles */
+#hamburger-toggle {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: white !important;
+    font-size: 24px !important;
+    z-index: 1002 !important;
+    position: relative !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    padding: 8px !important;
+    border-radius: 5px !important;
+    transition: background-color 0.3s ease !important;
+}
+
+/* Ensure header elements are properly positioned */
+header .header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    width: 100% !important;
+}
+
+header .page-title {
+    color: white !important;
+    font-size: 1.8rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
 }
