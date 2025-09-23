@@ -11,15 +11,12 @@
 </head>
 <body>
   <header>
-    <div class="header-left">
-      <i class='bx bx-menu' id="hamburger-toggle"></i>
-      <h1 class="page-title">Attendance Data</h1>
-    </div>
+    <i class='bx bx-menu' id="hamburger-toggle" style="font-size: 24px; cursor: pointer; margin: 10px;"></i>
+    <h1 class="page-title">Attendance Data</h1>
   </header>
 
-  <div class="sidebar-toggle-backdrop" id="sidebar-backdrop"></div>
-
-  <nav class="sidebar close" id="sidebar">
+  <!-- Sidebar -->
+  <nav class="sidebar close">
     <div class="menu-bar">
       <div class="menu">
         <ul class="menu-links">
@@ -62,6 +59,7 @@
           </li>
         </ul>
       </div>
+      <div class="sidebar-toggle-backdrop" onclick="closeSidebar()"></div>
 
       <div class="bottom-content">
         <li>
