@@ -175,10 +175,10 @@ body:not(.sidebar-closed) .main-content {
 /* Main page title - same as index.html */
 h1 {
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     font-size: 2rem;
     color: white;
-    background-color: Black;
+    background-color: purple;
     padding: 15px;
     border-radius: 8px;
     flex-shrink: 0;
