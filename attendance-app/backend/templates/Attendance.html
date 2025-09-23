@@ -9,15 +9,20 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='attendance_data.css') }}">
 </head>
-<body class="sidebar-closed">
+<body>
   <!-- Fixed Header -->
   <header>
-    <i class='bx bx-menu' id="hamburger-toggle" style="font-size: 24px; cursor: pointer;"></i>
-    <h1 class="page-title">Attendance Data</h1>
+    <div class="header-left">
+      <i class='bx bx-menu' id="hamburger-toggle"></i>
+      <h1 class="page-title">Attendance Data</h1>
+    </div>
   </header>
 
+  <!-- Sidebar Backdrop -->
+  <div class="sidebar-toggle-backdrop" id="sidebar-backdrop"></div>
+
   <!-- Sidebar -->
-  <nav class="sidebar close">
+  <nav class="sidebar close" id="sidebar">
     <div class="menu-bar">
       <div class="menu">
         <ul class="menu-links">
@@ -60,7 +65,6 @@
           </li>
         </ul>
       </div>
-      <div class="sidebar-toggle-backdrop" onclick="closeSidebar()"></div>
 
       <div class="bottom-content">
         <li>
