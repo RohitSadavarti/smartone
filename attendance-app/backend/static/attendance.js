@@ -1,4 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // Initialize sidebar state - collapsed by default
+    const body = document.querySelector("body");
+    const sidebar = document.querySelector("nav.sidebar");
+    if (sidebar && window.innerWidth > 768) {
+        sidebar.classList.add("close");
+        body.classList.add("sidebar-closed");
+    }
+
     // Loading functions
     function showLoading() {
         let loadingOverlay = document.getElementById('loading-overlay');
