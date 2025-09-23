@@ -181,7 +181,7 @@ form {
     margin-bottom: 20px;
     padding: 20px;
     border-radius: 10px;
-    background: white;
+    background: #2a2a2a;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
