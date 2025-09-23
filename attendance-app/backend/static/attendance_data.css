@@ -175,14 +175,15 @@ body:not(.sidebar-closed) .main-content {
 /* Main page title - same as index.html */
 h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin: 0 auto 20px auto;
     font-size: 2rem;
     color: white;
-    background-color: purple;
-    padding: 15px;
+    background-color: black;
+    padding: 10px;
     border-radius: 8px;
     flex-shrink: 0;
-}
+    width: fit-content;
+    display: block;}
 
 body.dark h1 {
     background-color: black;
