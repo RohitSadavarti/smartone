@@ -175,7 +175,7 @@ body:not(.sidebar-closed) .main-content {
 /* Main page title - same as index.html */
 h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     font-size: 2rem;
     color: white;
     background-color: Black;
