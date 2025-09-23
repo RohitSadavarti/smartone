@@ -26,7 +26,8 @@ body {
     transition: var(--tran-05);
 }
 
-body.dark {
+/* Set dark mode as default */
+body {
     --body-color: #18191a;
     --sidebar-color: #242526;
     --primary-color: #3a3b3c;
@@ -37,14 +38,26 @@ body.dark {
     color: var(--text-color);
 }
 
-/* Loading Overlay */
+body.dark {
+    /* Light mode styles when dark class is toggled */
+    --body-color: #f4f4f9;
+    --sidebar-color: #11101d;
+    --primary-color: #695cfe;
+    --primary-color-light: #f6f5ff;
+    --toggle-color: #ddd;
+    --text-color: #707070;
+    background-color: var(--body-color);
+    color: #333;
+}
+
+/* Loading Overlay - Default dark mode */
 #loading-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -53,12 +66,12 @@ body.dark {
 }
 
 body.dark #loading-overlay {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .loading-spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid purple;
+    border: 4px solid #333;
+    border-top: 4px solid #fff;
     border-radius: 50%;
     width: 50px;
     height: 50px;
@@ -67,18 +80,18 @@ body.dark #loading-overlay {
 }
 
 body.dark .loading-spinner {
-    border: 4px solid #333;
-    border-top: 4px solid #fff;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid purple;
 }
 
 .loading-text {
     font-size: 18px;
-    color: #333;
+    color: #fff;
     font-weight: 500;
 }
 
 body.dark .loading-text {
-    color: #fff;
+    color: #333;
 }
 
 @keyframes spin {
@@ -86,7 +99,7 @@ body.dark .loading-text {
     100% { transform: rotate(360deg); }
 }
 
-/* Header Styling - Match index.html */
+/* Header Styling - Match index.html exactly */
 header {
     position: fixed;
     top: 0;
@@ -113,7 +126,7 @@ body.dark header {
     padding: 8px;
     border-radius: 5px;
     transition: background-color 0.3s ease;
-    color: #333 !important;
+    color: #fff !important;
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -128,15 +141,15 @@ body.dark header {
 }
 
 body.dark #hamburger-toggle {
-    color: #fff !important;
+    color: #333 !important;
 }
 
 #hamburger-toggle:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 body.dark #hamburger-toggle:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Main Content - Adjusted for sidebar collapsed by default */
@@ -165,7 +178,7 @@ h1 {
     margin-bottom: 20px;
     font-size: 2rem;
     color: white;
-    background-color: black;
+    background-color: purple;
     padding: 15px;
     border-radius: 8px;
     flex-shrink: 0;
@@ -175,14 +188,14 @@ body.dark h1 {
     background-color: black;
 }
 
-/* Form Styling */
+/* Form Styling - Default dark mode */
 form {
     max-width: 100%;
     margin-bottom: 20px;
     padding: 20px;
     border-radius: 10px;
     background: #2a2a2a;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
@@ -191,8 +204,8 @@ form {
 }
 
 body.dark form {
-    background: #2a2a2a;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
@@ -203,28 +216,30 @@ body.dark form {
 label {
     font-weight: bold;
     margin-bottom: 5px;
-    color: #333;
+    color: #ccc;
 }
 
 body.dark label {
-    color: #ccc;
+    color: #333;
 }
 
 select, input[type="date"], input[type="text"], button {
     padding: 10px 12px;
-    border: 1px solid #ccc;
+    border: 1px solid #555;
     border-radius: 5px;
     font-size: 1rem;
     width: 100%;
     transition: all 0.3s ease;
+    background: #3a3a3a;
+    color: #ccc;
 }
 
 body.dark select, 
 body.dark input[type="date"], 
 body.dark input[type="text"] {
-    background: #3a3a3a;
-    border: 1px solid #555;
-    color: #ccc;
+    background: white;
+    border: 1px solid #ccc;
+    color: #333;
 }
 
 select:focus, input:focus {
@@ -246,7 +261,7 @@ button:hover {
     background-color: #6a0080;
 }
 
-/* Search Section */
+/* Search Section - Default dark mode */
 .search-section {
     display: grid;
     grid-template-columns: 1fr auto auto;
@@ -254,15 +269,30 @@ button:hover {
     align-items: end;
     margin-bottom: 20px;
     padding: 15px;
-    background: white;
+    background: #2a2a2a;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     flex-shrink: 0;
 }
 
 body.dark .search-section {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Container - Default dark mode */
+.table-container {
+    flex: 1;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     background: #2a2a2a;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    overflow-x: auto;
+    position: relative;
+}
+
+body.dark .table-container {
+    background: white;
 }
 
 .search-section .form-group {
@@ -275,22 +305,7 @@ body.dark .search-section {
     margin-left: 0;
 }
 
-/* Table Container */
-.table-container {
-    flex: 1;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    background: white;
-    overflow-y: auto;
-    overflow-x: auto;
-    position: relative;
-}
-
-body.dark .table-container {
-    background: #2a2a2a;
-}
-
-/* Table Styling */
+/* Table Styling - Default dark mode */
 table {
     width: 100%;
     min-width: 800px;
@@ -298,12 +313,12 @@ table {
     background: transparent;
 }
 
-/* Sticky Table Header */
+/* Sticky Table Header - Default dark mode */
 thead th {
     position: sticky;
     top: 0;
     z-index: 10;
-    background: purple;
+    background: #1a1a1a;
     color: white;
     font-weight: 600;
     text-transform: uppercase;
@@ -311,61 +326,71 @@ thead th {
     letter-spacing: 0.5px;
     padding: 15px 12px;
     text-align: center;
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid #333;
     cursor: pointer;
 }
 
 body.dark thead th {
-    background: #1a1a1a;
-    border-bottom: 2px solid #333;
+    background: purple;
+    border-bottom: 2px solid #fff;
 }
 
 thead th:hover {
-    background: #6a0080;
+    background: #333;
 }
 
 body.dark thead th:hover {
-    background: #333;
+    background: #6a0080;
 }
 
 td {
     padding: 12px;
     text-align: center;
-    border-bottom: 1px solid #eee;
-    color: #333;
-}
-
-body.dark td {
     border-bottom: 1px solid #444;
     color: #ccc;
 }
 
-tbody tr:nth-child(even) {
-    background: #f8f9fa;
+body.dark td {
+    border-bottom: 1px solid #eee;
+    color: #333;
 }
 
-body.dark tbody tr:nth-child(even) {
+tbody tr:nth-child(even) {
     background: #333;
 }
 
-tbody tr:hover {
-    background: #f1f1f1;
+body.dark tbody tr:nth-child(even) {
+    background: #f8f9fa;
 }
 
-body.dark tbody tr:hover {
+tbody tr:hover {
     background: #444;
 }
 
-/* Dark Mode Button Support */
-body.dark button {
+body.dark tbody tr:hover {
+    background: #f1f1f1;
+}
+
+/* Dark Mode Button Support - Default dark mode */
+button {
     background-color: #1a1a1a;
     color: white;
     border: 1px solid #444;
 }
 
-body.dark button:hover {
+button:hover {
     background-color: #333;
     color: white;
+}
+
+body.dark button {
+    background-color: purple;
+    color: white;
+    border: none;
+}
+
+body.dark button:hover {
+    background-color: #6a0080;
 }
 
 /* Mobile Responsive */
@@ -376,17 +401,18 @@ body.dark button:hover {
         height: 50px;
     }
 
-    .page-title {
-        font-size: 1.5rem;
-    }
-
     /* Main content for mobile */
     .main-content {
         margin-left: 0;
         margin-top: 50px;
         width: 100%;
-        padding: 0;
+        padding: 15px 10px;
         height: calc(100vh - 50px);
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        padding: 10px;
     }
 
     /* Form adjustments */
@@ -450,13 +476,15 @@ body.dark button:hover {
 
 /* Very small screens */
 @media screen and (max-width: 480px) {
-    .page-title {
+    h1 {
         font-size: 1.2rem;
+        padding: 8px;
     }
 
     .main-content {
         margin-top: 45px;
         height: calc(100vh - 45px);
+        padding: 10px 5px;
     }
 
     form {
