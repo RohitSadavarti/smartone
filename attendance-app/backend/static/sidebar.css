@@ -667,31 +667,37 @@ body.dark .has-submenu .submenu li a {
   color: #fff;
 }
 
+/* Mobile Responsive Sidebar Fixes */
 @media screen and (max-width: 768px) {
+    /* Fix sidebar positioning and background */
     .sidebar {
-        width: 250px; /* Full sidebar width */
-        position: fixed; /* Overlay it over the screen */
+        width: 250px; 
+        position: fixed; 
         top: 0;
         left: 0;
         height: 100vh;
-        background: white /* or your preferred bg */
-        z-index: 1000; /* On top of other content */
+        /* Use CSS variables for consistent background */
+        background: var(--sidebar-color) !important;
+        z-index: 2000; /* Higher z-index to appear above main content */
         overflow-y: auto;
         transform: translateX(-100%); /* Hide by default */
         transition: transform 0.3s ease;
+        /* Remove any conflicting background declarations */
     }
 
+    /* When sidebar is open */
     .sidebar.open {
         transform: translateX(0);
-        background: White;/* Slide in when open */
+        /* Maintain consistent background in both light and dark modes */
+        background: var(--sidebar-color) !important;
     }
 
-    .home,
-    .main-content {
-        margin-left: 0 !important;
-        width: 100% !important;
+    /* Dark mode sidebar background fix */
+    body.dark .sidebar.open {
+        background: var(--sidebar-color) !important;
     }
 
+    /* Ensure backdrop appears behind sidebar but above main content */
     .sidebar-toggle-backdrop {
         display: none;
         position: fixed;
@@ -699,15 +705,135 @@ body.dark .has-submenu .submenu li a {
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.3);
-        z-index: 999;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1999; /* Just below sidebar */
     }
 
     .sidebar.open + .sidebar-toggle-backdrop {
         display: block;
     }
+
+    /* Main content adjustments */
+    .home,
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        z-index: 1; /* Lower than sidebar */
+        position: relative;
+    }
+
+    /* Header adjustments */
+    header {
+        z-index: 1500; /* Above main content but below sidebar */
+        position: fixed;
+        width: 100%;
+    }
+
+    /* Hamburger button positioning */
+    #hamburger-toggle {
+        z-index: 2001; /* Above sidebar */
+        position: fixed;
+        top: 15px;
+        left: 15px;
+    }
+
+    /* Sidebar text and icon colors for mobile */
+    .sidebar.open .text,
+    .sidebar.open .icon,
+    .sidebar.open li a,
+    .sidebar.open li.search-box input {
+        color: white !important;
+    }
+
+    .sidebar.open li.search-box {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar.open li a:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white !important;
+    }
+
+    /* Dark mode mobile sidebar text */
+    body.dark .sidebar.open .text,
+    body.dark .sidebar.open .icon,
+    body.dark .sidebar.open li a,
+    body.dark .sidebar.open li.search-box input {
+        color: white !important;
+    }
+
+    body.dark .sidebar.open li a:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Submenu mobile fixes */
+    .sidebar.open .has-submenu .submenu {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 6px;
+    }
+
+    .sidebar.open .has-submenu .submenu li a {
+        color: white !important;
+        padding: 8px 15px;
+    }
+
+    .sidebar.open .has-submenu .submenu li a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        text-decoration: underline;
+    }
+
+    /* Mode toggle for mobile */
+    .sidebar.open .mode {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark .sidebar.open .mode {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark .sidebar.open .mode .text {
+        color: white !important;
+    }
 }
 
+/* Additional fixes for specific pages */
+
+/* Attendance.html mobile fixes */
+.main-content {
+    /* Ensure main content doesn't overlap with sidebar */
+    position: relative;
+}
+
+@media screen and (max-width: 768px) {
+    /* Form and search section should not overlap sidebar */
+    form, .search-section {
+        position: relative; /* Changed from sticky */
+        z-index: 1;
+    }
+    
+    /* Table container positioning */
+    .table-container {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+/* Prevent body scroll when sidebar is open on mobile */
+@media screen and (max-width: 768px) {
+    body.sidebar-open {
+        overflow: hidden;
+    }
+}
+
+/* Fix for loading overlay z-index */
+#loading-overlay {
+    z-index: 10000; /* Above everything including sidebar */
+}
+
+/* Skeleton overlay z-index fix */
+#skeleton-overlay {
+    z-index: 10001; /* Above loading overlay */
+}
 .sidebar.open .text,
 .sidebar.open .icon,
 .sidebar.open li a,
@@ -762,4 +888,5 @@ body.dark .sidebar.open li a:hover {
 body.dark .has-submenu .submenu li a {
   color: #fff;
 }
+
 
