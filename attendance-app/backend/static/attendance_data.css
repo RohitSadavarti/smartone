@@ -178,7 +178,7 @@ h1 {
     margin: 0 auto 20px auto;
     font-size: 2rem;
     color: white;
-    background-color: black;
+/*    background-color: black;*/
     padding: 10px;
     border-radius: 8px;
     flex-shrink: 0;
