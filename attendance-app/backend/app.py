@@ -6,7 +6,7 @@ from flask_cors import CORS
 import mysql.connector
 from werkzeug.utils import secure_filename
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import request, jsonify
 from openpyxl import load_workbook
 from flask import Flask, render_template
@@ -21,8 +21,12 @@ app = Flask(__name__)
 
 CORS(app)
 
-# Add secret key for sessions
+# Enhanced session configuration
 app.secret_key = 'your-secret-key-change-this-in-production'  # Change this to a random secret key
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
 # Database configuration
 app.config['UPLOAD_FOLDER'] = 'uploads/'
@@ -32,6 +36,9 @@ app.config['PG_USER'] = 'postgres.avqpzwgdylnklbkyqukp'  # change to your Postgr
 app.config['PG_PASSWORD'] = 'asBjLmDfKfoZPVt9'  # change to your PostgreSQL password
 app.config['PG_DB'] = 'postgres'  # change to your PostgreSQL database name
 app.config['sslmode']='require'
+
+# Enable logging
+logging.basicConfig(level=logging.INFO)
 
 def get_pg_connection():
     return psycopg2.connect(
@@ -117,27 +124,58 @@ def create_user_with_crypt(email, password):
         app.logger.error(f"Error creating user: {e}")
         return False
 
-# Authentication decorator
+# FIXED: Enhanced authentication decorator
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        app.logger.info(f"Checking authentication for route: {request.endpoint}")
+        app.logger.info(f"Session keys: {list(session.keys())}")
+        app.logger.info(f"'user_id' in session: {'user_id' in session}")
+        
         if 'user_id' not in session:
+            app.logger.info("User not authenticated, redirecting to login")
+            
             # If it's an AJAX request, return JSON error
-            if request.is_json or request.headers.get('Content-Type') == 'application/json':
+            if request.is_json or request.headers.get('Content-Type') == 'application/json' or 'api/' in request.path:
                 return jsonify({'error': 'Authentication required', 'redirect': '/login'}), 401
             # Otherwise redirect to login page
             return redirect(url_for('login_page'))
+        
+        app.logger.info(f"User authenticated: {session.get('user_id')}")
         return f(*args, **kwargs)
     return decorated_function
 
-# Authentication routes
+# ROUTES - Order is important!
+
+# 1. LOGIN PAGE (must come first, no auth required)
 @app.route('/login')
 def login_page():
+    """Login page route - must not have @login_required"""
+    app.logger.info("Accessing login page")
+    
     # If user is already logged in, redirect to home
     if 'user_id' in session:
+        app.logger.info(f"User already logged in: {session.get('user_id')}")
         return redirect(url_for('home'))
+    
+    app.logger.info("Rendering login page")
     return render_template('login.html')
 
+# 2. ROOT ROUTE - Check auth and redirect
+@app.route("/")
+def root():
+    """Root route - check auth and redirect appropriately"""
+    app.logger.info("Accessing root route")
+    app.logger.info(f"Session data: {dict(session)}")
+    
+    if 'user_id' not in session:
+        app.logger.info("No user session found, redirecting to login")
+        return redirect(url_for('login_page'))
+    
+    app.logger.info(f"User session found: {session.get('user_id')}, rendering home")
+    return render_template("index.html")
+
+# 3. API ROUTES (Authentication)
 @app.route('/api/login', methods=['POST'])
 def api_login():
     try:
@@ -145,6 +183,8 @@ def api_login():
         email = data.get('email', '').strip().lower()
         password = data.get('password', '')
         remember = data.get('remember', False)
+        
+        app.logger.info(f"Login attempt for email: {email}")
         
         if not email or not password:
             return jsonify({
@@ -157,11 +197,15 @@ def api_login():
         
         if user and verify_password_crypt(password, user['password_hash']):
             # Create session
+            session.clear()  # Clear any existing session data
             session['user_id'] = user['email']
             session['user_name'] = user['name']
             session['user_role'] = user['role']
             session['user_db_id'] = user['id']
             session.permanent = remember  # Remember session if checkbox was checked
+            
+            app.logger.info(f"Login successful for user: {email}")
+            app.logger.info(f"Session created: {dict(session)}")
             
             return jsonify({
                 'success': True,
@@ -174,6 +218,7 @@ def api_login():
                 }
             })
         else:
+            app.logger.warning(f"Login failed for email: {email}")
             return jsonify({
                 'success': False,
                 'message': 'Invalid email or password'
@@ -188,6 +233,7 @@ def api_login():
 
 @app.route('/api/logout', methods=['POST'])
 def api_logout():
+    app.logger.info(f"Logout request for user: {session.get('user_id')}")
     session.clear()
     return jsonify({
         'success': True,
@@ -285,10 +331,11 @@ def api_user_info():
         'user_db_id': session.get('user_db_id')
     })
 
-# Protected routes - now require login
-@app.route("/")
+# 4. PROTECTED PAGE ROUTES
+@app.route("/home")
 @login_required
 def home():
+    """Alternative home route"""
     return render_template("index.html")
 
 @app.route("/attendance")
@@ -311,11 +358,12 @@ def admin_teacher():
 def dashboard_page():
     return render_template("dashboard.html")
 
+# 5. STATIC FILES
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
 
-# API routes - now require login
+# 6. API ROUTES (Data) - All require login
 @app.route('/departments', methods=['GET'])
 @login_required
 def get_departments():
@@ -807,40 +855,6 @@ def download_valid_csv():
         return Response(
             csv_data,
             mimetype='text/csv',
-            headers={'Content-Disposition': 'attachment; filename=valid_records.csv'}
-        )
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'message': 'An error occurred while generating the CSV'}), 500
-
-# Download error records as CSV
-@app.route('/error-records-csv', methods=['GET'])
-@login_required
-def download_error_csv():
-    try:
-        connection = get_pg_connection()
-        cursor = connection.cursor()
-        
-        cursor.execute("SELECT roll_number, name, department, class, error_message FROM Errorrecords")
-        rows = cursor.fetchall()
-
-        cursor.close()
-        connection.close()
-
-        if not rows:
-            return jsonify({'message': 'No error records found'}), 404
-
-        # Generate CSV
-        output = StringIO()
-        writer = csv.writer(output)
-        writer.writerow(['Roll Number', 'Name', 'Department', 'Class', 'Error Message'])
-        writer.writerows(rows)
-
-        csv_data = output.getvalue()
-
-        return Response(
-            csv_data,
-            mimetype='text/csv',
             headers={'Content-Disposition': 'attachment; filename=error_records.csv'}
         )
     except Exception as e:
@@ -1025,6 +1039,25 @@ def admin_create_user():
             'message': 'Failed to create user'
         }), 500
 
+# Debug routes (remove in production)
+@app.route('/debug/session')
+def debug_session():
+    return jsonify({
+        'session_data': dict(session),
+        'user_id_in_session': 'user_id' in session,
+        'session_keys': list(session.keys()),
+        'session_permanent': session.permanent
+    })
+
+@app.route('/test/session')
+def test_session():
+    session['test'] = 'working'
+    return jsonify({'message': 'Session test set'})
+
+@app.route('/test/session/check')
+def check_session():
+    return jsonify({'test_value': session.get('test', 'not found')})
+
 # Health check endpoint
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -1050,4 +1083,34 @@ def health_check():
         }), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True)return Response(
+            csv_data,
+            mimetype='text/csv',
+            headers={'Content-Disposition': 'attachment; filename=valid_records.csv'}
+        )
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'An error occurred while generating the CSV'}), 500
+
+# Download error records as CSV
+@app.route('/error-records-csv', methods=['GET'])
+@login_required
+def download_error_csv():
+    try:
+        connection = get_pg_connection()
+        cursor = connection.cursor()
+        
+        cursor.execute("SELECT roll_number, name, department, class, error_message FROM Errorrecords")
+        rows = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        if not rows:
+            return jsonify({'message': 'No error records found'}), 404
+
+        # Generate CSV
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['Roll Number', 'Name', 'Department', 'Class', 'Error Message'])
+        writer.writerows(rows)
