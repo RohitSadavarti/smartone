@@ -86,7 +86,7 @@
 
 .sidebar li a {
   list-style: none;
-  color: purple;
+  color: white;
   background-color: transparent;
   display: flex;
   align-items: center;
@@ -486,7 +486,7 @@ body.dark .sidebar header .toggle {
 .sidebar li a {
     list-style: none;
     height: 100%;
-    color: purple;
+    color: White;
     background-color: transparent;
     display: flex;
     align-items: center;
@@ -622,7 +622,7 @@ body.dark .toggle-switch .switch {
   position: absolute;
   top: 15px;
   right: -20px; /* Adjust this for alignment */
-  background: purple;
+  background: White;
   color: white;
   border-radius: 5px;
   padding: 5px 10px;
@@ -683,7 +683,7 @@ body.dark .has-submenu .submenu li a {
 
     .sidebar.open {
         transform: translateX(0);
-        background: purple;/* Slide in when open */
+        background: White;/* Slide in when open */
     }
 
     .home,
@@ -762,4 +762,5 @@ body.dark .sidebar.open li a:hover {
 body.dark .has-submenu .submenu li a {
   color: #fff;
 }
+
 
