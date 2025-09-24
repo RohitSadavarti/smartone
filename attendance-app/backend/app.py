@@ -772,9 +772,9 @@ def upload_file():
             # Insert upload summary
             upload_time = datetime.now()
             cursor.execute("""
-    INSERT INTO UploadHistory (uploader_name, total_records, valid_records, error_records, upload_time)
-    VALUES (%s, %s, %s, %s, %s)
-""", (session.get('user_name', 'Unknown'), total_records, valid_records, error_records, upload_time))
+                INSERT INTO UploadHistory (uploader_name, total_records, valid_records, error_records, upload_time)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (session.get('user_name', 'Unknown'), total_records, valid_records, error_records, upload_time))
 
             # Commit everything
             connection.commit()
@@ -847,7 +847,7 @@ def download_valid_csv():
         # Generate CSV
         output = StringIO()
         writer = csv.writer(output)
-        writer.writerow(['Roll Number', 'Name', 'Department', 'Class'])
+        writer.writerow(['Roll Number', 'Name', 'Department', 'Class', 'Error Message'])
         writer.writerows(rows)
 
         csv_data = output.getvalue()
@@ -1083,7 +1083,13 @@ def health_check():
         }), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)return Response(
+    app.run(debug=True) csv.writer(output)
+        writer.writerow(['Roll Number', 'Name', 'Department', 'Class'])
+        writer.writerows(rows)
+
+        csv_data = output.getvalue()
+
+        return Response(
             csv_data,
             mimetype='text/csv',
             headers={'Content-Disposition': 'attachment; filename=valid_records.csv'}
@@ -1094,7 +1100,6 @@ if __name__ == '__main__':
 
 # Download error records as CSV
 @app.route('/error-records-csv', methods=['GET'])
-@login_required
 def download_error_csv():
     try:
         connection = get_pg_connection()
@@ -1114,7 +1119,8 @@ def download_error_csv():
         writer = csv.writer(output)
         writer.writerow(['Roll Number', 'Name', 'Department', 'Class', 'Error Message'])
         writer.writerows(rows)
-         csv_data = output.getvalue()
+
+        csv_data = output.getvalue()
 
         return Response(
             csv_data,
@@ -1124,7 +1130,7 @@ def download_error_csv():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'message': 'An error occurred while generating the CSV'}), 500
-
+# Get row count by uploader name
 # Get row count by uploader name
 @app.route('/upload-history/row-count', methods=['GET'])
 @login_required
