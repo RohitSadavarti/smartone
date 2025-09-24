@@ -1114,3 +1114,237 @@ def download_error_csv():
         writer = csv.writer(output)
         writer.writerow(['Roll Number', 'Name', 'Department', 'Class', 'Error Message'])
         writer.writerows(rows)
+         csv_data = output.getvalue()
+
+        return Response(
+            csv_data,
+            mimetype='text/csv',
+            headers={'Content-Disposition': 'attachment; filename=error_records.csv'}
+        )
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'An error occurred while generating the CSV'}), 500
+
+# Get row count by uploader name
+@app.route('/upload-history/row-count', methods=['GET'])
+@login_required
+def get_row_count():
+    try:
+        uploader_name = request.args.get('uploader_name', '').strip()
+        if not uploader_name:
+            return jsonify({'message': 'Uploader name is required'}), 400
+
+        connection = get_pg_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM UploadHistory 
+            WHERE uploader_name = %s
+        """, (uploader_name,))
+        row_count = cursor.fetchone()[0]
+
+        cursor.close()
+        connection.close()
+
+        return jsonify({'uploader_name': uploader_name, 'row_count': row_count})
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'An error occurred while fetching row count'}), 500
+
+# Save teacher manually
+@app.route('/teachers', methods=['POST'])
+@login_required
+def save_teacher():
+    try:
+        data = request.json
+        teacher_name = data.get('teacher_name')
+        day = data.get('day')
+        subject = data.get('subject')
+        time_slot = data.get('time_slot')
+        department = data.get('department')
+        class_value = data.get('class')
+
+        if not all([teacher_name, day, subject, time_slot, department, class_value]):
+            return jsonify({'message': 'All fields are required'}), 400
+
+        connection = get_pg_connection()
+        cursor = connection.cursor()
+
+        query = """
+            INSERT INTO Teachers (teacher_name, day, subject, time_slot, department, class)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            ON CONFLICT (subject, time_slot, department, class) DO UPDATE 
+            SET teacher_name = EXCLUDED.teacher_name
+        """
+        cursor.execute(query, (teacher_name, day, subject, time_slot, department, class_value))
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        return jsonify({'message': 'Teacher data saved or updated successfully'})
+    except Exception as e:
+        print(f"Error saving teacher: {e}")
+        return jsonify({'message': 'Failed to save teacher data'}), 500
+
+# Upload teachers in bulk via file
+@app.route('/upload-teachers', methods=['POST'])
+@login_required
+def upload_teachers():
+    try:
+        file = request.files.get('file')
+        if not file or file.filename == '':
+            return jsonify({'message': 'No file selected'}), 400
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            file.save(file_path)
+
+            data = process_excel(file_path)
+            total_records = len(data)
+            valid_records = 0
+            error_records = 0
+
+            connection = get_pg_connection()
+            cursor = connection.cursor()
+
+            valid_data = []
+            error_data = []
+
+            for row in data:
+                try:
+                    teacher_name, day, subject, time_slot, department, class_value = row
+
+                    cursor.execute("""
+                        INSERT INTO Teachers (teacher_name, day, subject, time_slot, department, class)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (subject, time_slot, department, class) DO UPDATE 
+                        SET teacher_name = EXCLUDED.teacher_name
+                    """, (teacher_name, day, subject, time_slot, department, class_value))
+
+                    valid_data.append((teacher_name, day, subject, time_slot, department, class_value))
+                    valid_records += 1
+                except Exception as e:
+                    error_data.append(row + (str(e),))
+                    error_records += 1
+
+            connection.commit()
+
+            # Save valid and error data
+            if valid_data:
+                cursor.executemany("""
+                    INSERT INTO ValidTeachers (teacher_name, day, subject, time_slot, department, class)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """, valid_data)
+
+            if error_data:
+                cursor.executemany("""
+                    INSERT INTO ErrorTeachers (teacher_name, day, subject, time_slot, department, class, error_message)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """, error_data)
+
+            connection.commit()
+            cursor.close()
+            connection.close()
+
+            return jsonify({
+                'message': 'File processed successfully.',
+                'total_records': total_records,
+                'valid_records': valid_records,
+                'error_records': error_records
+            }), 200
+        else:
+            return jsonify({'message': 'Invalid file type. Only .xlsx, .xls, and .csv files are allowed.'}), 400
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'An error occurred while processing the file.'}), 500
+
+# Admin utility endpoint to create users (optional - for development/testing)
+@app.route('/api/admin/create-user', methods=['POST'])
+@login_required
+def admin_create_user():
+    # Check if user has admin role
+    if session.get('user_role') != 'admin':
+        return jsonify({
+            'success': False,
+            'message': 'Admin access required'
+        }), 403
+    
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+        
+        if not email or not password:
+            return jsonify({
+                'success': False,
+                'message': 'Email and password are required'
+            }), 400
+        
+        if create_user_with_crypt(email, password):
+            return jsonify({
+                'success': True,
+                'message': f'User {email} created successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to create user'
+            }), 500
+            
+    except Exception as e:
+        app.logger.error(f"Admin create user error: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to create user'
+        }), 500
+
+# Debug routes (remove in production)
+@app.route('/debug/session')
+def debug_session():
+    return jsonify({
+        'session_data': dict(session),
+        'user_id_in_session': 'user_id' in session,
+        'session_keys': list(session.keys()),
+        'session_permanent': session.permanent
+    })
+
+@app.route('/test/session')
+def test_session():
+    session['test'] = 'working'
+    return jsonify({'message': 'Session test set'})
+
+@app.route('/test/session/check')
+def check_session():
+    return jsonify({'test_value': session.get('test', 'not found')})
+
+# Health check endpoint
+@app.route('/health', methods=['GET'])
+def health_check():
+    try:
+        # Test database connection
+        connection = get_pg_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT 1")
+        cursor.close()
+        connection.close()
+        
+        return jsonify({
+            'status': 'healthy',
+            'database': 'connected',
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'database': 'disconnected',
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
