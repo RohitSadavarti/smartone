@@ -213,31 +213,47 @@ body.dark .toggle-switch .switch {
   justify-content: center;
   padding: 8px;
   min-width: 60px;
+  display: flex !important;
+  align-items: center;
 }
 
-/* Hide submenu text when sidebar is closed */
+/* Hide ALL submenu text when sidebar is closed - more specific selectors */
 .sidebar.close .has-submenu .submenu li a span,
-.sidebar.close .has-submenu .submenu li a .text {
-  display: none;
+.sidebar.close .has-submenu .submenu li a .text,
+.sidebar.close .has-submenu .submenu li a .nav-text {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Hide text nodes directly - target any text content */
+.sidebar.close .has-submenu .submenu li a {
+  font-size: 0 !important; /* This hides any direct text nodes */
 }
 
 /* Keep icons visible and centered */
 .sidebar.close .has-submenu .submenu li a i {
-  margin-right: 0;
-  font-size: 18px;
+  margin-right: 0 !important;
+  font-size: 18px !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Adjust submenu positioning when sidebar is closed */
 .sidebar.close .has-submenu .submenu {
   padding-left: 10px;
   padding-right: 10px;
+  width: 60px; /* Fixed width to contain only icons */
 }
 
 /* Ensure submenu can still expand when sidebar is closed */
 .sidebar.close .has-submenu.active .submenu {
   display: flex !important;
   max-height: 200px;
-  padding: 10px;
+  padding: 5px;
+  flex-direction: column;
+  align-items: center;
 }
 
 .sidebar.close .menu-bar .mode {
