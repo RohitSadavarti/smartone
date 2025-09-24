@@ -206,9 +206,40 @@ body.dark .toggle-switch .switch {
 /* ----------------------------------- */
 /* 🧠 SIDEBAR CLOSE STYLE FIXES        */
 /* ----------------------------------- */
-.sidebar.close .has-submenu .submenu {
-  display: none !important;
+/* REMOVED: .sidebar.close .has-submenu .submenu { display: none !important; } */
+
+/* NEW: Fix submenu behavior when sidebar is closed - show only icons */
+.sidebar.close .has-submenu .submenu li a {
+  justify-content: center;
+  padding: 8px;
+  min-width: 60px;
 }
+
+/* Hide submenu text when sidebar is closed */
+.sidebar.close .has-submenu .submenu li a span,
+.sidebar.close .has-submenu .submenu li a .text {
+  display: none;
+}
+
+/* Keep icons visible and centered */
+.sidebar.close .has-submenu .submenu li a i {
+  margin-right: 0;
+  font-size: 18px;
+}
+
+/* Adjust submenu positioning when sidebar is closed */
+.sidebar.close .has-submenu .submenu {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* Ensure submenu can still expand when sidebar is closed */
+.sidebar.close .has-submenu.active .submenu {
+  display: flex !important;
+  max-height: 200px;
+  padding: 10px;
+}
+
 .sidebar.close .menu-bar .mode {
   justify-content: center;
 }
@@ -715,5 +746,3 @@ body.dark .sidebar.open li a:hover {
 body.dark .has-submenu .submenu li a {
   color: #fff;
 }
-
-
