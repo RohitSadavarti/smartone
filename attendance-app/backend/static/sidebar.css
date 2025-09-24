@@ -206,6 +206,9 @@ body.dark .toggle-switch .switch {
 /* ----------------------------------- */
 /* 🧠 SIDEBAR CLOSE STYLE FIXES        */
 /* ----------------------------------- */
+.sidebar.close .has-submenu .submenu {
+  display: none !important;
+}
 .sidebar.close .menu-bar .mode {
   justify-content: center;
 }
@@ -712,4 +715,5 @@ body.dark .sidebar.open li a:hover {
 body.dark .has-submenu .submenu li a {
   color: #fff;
 }
+
 
