@@ -1,4 +1,4 @@
-// Login Page JavaScript
+// Complete Login Page JavaScript with Authentication Utilities
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const forgotPasswordForm = document.getElementById('forgotPasswordForm');
@@ -8,32 +8,56 @@ document.addEventListener('DOMContentLoaded', function() {
     const popupMessage = document.getElementById('popupMessage');
     const closePopup = document.getElementById('close-popup');
     
-    // Initialize form validation
-    initFormValidation();
+    // Check if we're on the login page or other pages
+    const isLoginPage = window.location.pathname === '/login';
     
-    // Login form submission
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
+    if (isLoginPage) {
+        // Login page specific initialization
+        initializeLoginPage();
+    } else {
+        // Other pages - check auth and add logout functionality
+        checkAuthStatus();
+        initializeAuthUtilities();
     }
     
-    // Forgot password form submission
-    if (forgotPasswordForm) {
-        forgotPasswordForm.addEventListener('submit', handleForgotPassword);
+    // Initialize login page functionality
+    function initializeLoginPage() {
+        // Initialize form validation
+        initFormValidation();
+        
+        // Login form submission
+        if (loginForm) {
+            loginForm.addEventListener('submit', handleLogin);
+        }
+        
+        // Forgot password form submission
+        if (forgotPasswordForm) {
+            forgotPasswordForm.addEventListener('submit', handleForgotPassword);
+        }
+        
+        // Close popup handler
+        if (closePopup) {
+            closePopup.addEventListener('click', hidePopup);
+        }
+        
+        // Auto-focus on email field
+        const emailField = document.getElementById('email');
+        if (emailField) {
+            emailField.focus();
+        }
+        
+        // Load remembered email if exists
+        loadRememberedUser();
     }
     
-    // Close popup handler
-    if (closePopup) {
-        closePopup.addEventListener('click', hidePopup);
+    // Initialize authentication utilities for other pages
+    function initializeAuthUtilities() {
+        // Add logout functionality to any logout buttons
+        const logoutButtons = document.querySelectorAll('.logout-btn, [data-action="logout"]');
+        logoutButtons.forEach(button => {
+            button.addEventListener('click', handleLogout);
+        });
     }
-    
-    // Auto-focus on email field
-    const emailField = document.getElementById('email');
-    if (emailField) {
-        emailField.focus();
-    }
-    
-    // Load remembered email if exists
-    loadRememberedUser();
     
     // Handle login form submission
     async function handleLogin(e) {
@@ -52,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoadingState();
         
         try {
-            // Simulate API call (replace with actual login logic)
+            // Real API call to Flask backend
             const response = await loginUser(email, password, remember);
             
             if (response.success) {
@@ -69,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Redirect after short delay
                 setTimeout(() => {
-                    window.location.href = response.redirect || '/dashboard';
+                    window.location.href = response.redirect || '/';
                 }, 1500);
                 
             } else {
@@ -96,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            // Simulate password reset API call
+            // Real API call to Flask backend
             const response = await resetPassword(email);
             
             if (response.success) {
@@ -203,13 +227,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Validate email
         const emailField = document.getElementById('email');
-        if (!validateField(emailField)) {
+        if (emailField && !validateField(emailField)) {
             isValid = false;
         }
         
         // Validate password
         const passwordField = document.getElementById('password');
-        if (!validateField(passwordField)) {
+        if (passwordField && !validateField(passwordField)) {
             isValid = false;
         }
         
@@ -254,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Show popup message
+    // Show popup message (for login page)
     function showPopup(message, type = 'info') {
         if (popup && popupMessage) {
             popupMessage.textContent = message;
@@ -296,48 +320,275 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Simulate login API call
+    // Real login API call to Flask backend
     async function loginUser(email, password, remember) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // Demo credentials for testing
-                if (email === 'admin@example.com' && password === 'password123') {
-                    resolve({
-                        success: true,
-                        message: 'Login successful',
-                        redirect: '/dashboard',
-                        user: { email, name: 'Admin User' }
-                    });
-                } else if (email === 'user@example.com' && password === 'user123') {
-                    resolve({
-                        success: true,
-                        message: 'Login successful',
-                        redirect: '/dashboard',
-                        user: { email, name: 'Regular User' }
-                    });
-                } else {
-                    resolve({
-                        success: false,
-                        message: 'Invalid email or password'
-                    });
-                }
-            }, 1500); // Simulate network delay
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    remember: remember
+                })
+            });
+            
+            const data = await response.json();
+            return data;
+            
+        } catch (error) {
+            console.error('Login API error:', error);
+            return {
+                success: false,
+                message: 'Network error. Please try again.'
+            };
+        }
+    }
+    
+    // Real password reset API call to Flask backend
+    async function resetPassword(email) {
+        try {
+            const response = await fetch('/api/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email
+                })
+            });
+            
+            const data = await response.json();
+            return data;
+            
+        } catch (error) {
+            console.error('Password reset API error:', error);
+            return {
+                success: false,
+                message: 'Network error. Please try again.'
+            };
+        }
+    }
+    
+    // Check authentication status (for non-login pages)
+    async function checkAuthStatus() {
+        try {
+            const response = await fetch('/api/user-info');
+            if (response.status === 401) {
+                // User not authenticated, redirect to login
+                window.location.href = '/login';
+                return;
+            }
+            
+            if (response.ok) {
+                const userData = await response.json();
+                updateUserInfo(userData);
+            }
+        } catch (error) {
+            console.error('Auth check error:', error);
+            // On error, assume user needs to login
+            window.location.href = '/login';
+        }
+    }
+    
+    // Update user info in the UI
+    function updateUserInfo(userData) {
+        // Update user name displays
+        const userNameElements = document.querySelectorAll('.user-name, [data-user="name"]');
+        userNameElements.forEach(element => {
+            element.textContent = userData.user_name || 'User';
+        });
+        
+        // Update user email displays
+        const userEmailElements = document.querySelectorAll('.user-email, [data-user="email"]');
+        userEmailElements.forEach(element => {
+            element.textContent = userData.user_id || '';
+        });
+        
+        // Update user role displays
+        const userRoleElements = document.querySelectorAll('.user-role, [data-user="role"]');
+        userRoleElements.forEach(element => {
+            element.textContent = userData.user_role || '';
+        });
+        
+        // Show/hide admin-only elements
+        const adminElements = document.querySelectorAll('.admin-only');
+        adminElements.forEach(element => {
+            if (userData.user_role === 'admin') {
+                element.style.display = '';
+            } else {
+                element.style.display = 'none';
+            }
         });
     }
     
-    // Simulate password reset API call
-    async function resetPassword(email) {
-        return new Promise((resolve) => {
+    // Handle logout (for non-login pages)
+    async function handleLogout(e) {
+        e.preventDefault();
+        
+        // Show confirmation dialog
+        const confirmLogout = confirm('Are you sure you want to logout?');
+        if (!confirmLogout) {
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Clear any client-side storage
+                try {
+                    localStorage.removeItem('remember_user');
+                    sessionStorage.clear();
+                } catch (e) {
+                    console.warn('Could not clear storage');
+                }
+                
+                // Show success message briefly then redirect
+                showNotification('Logged out successfully', 'success');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1000);
+            } else {
+                showNotification('Logout failed. Please try again.', 'error');
+            }
+            
+        } catch (error) {
+            console.error('Logout error:', error);
+            showNotification('Logout failed. Please try again.', 'error');
+        }
+    }
+    
+    // Simple notification function (for non-login pages)
+    function showNotification(message, type = 'info') {
+        // Remove any existing notifications
+        const existingNotification = document.querySelector('.auth-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `auth-notification ${type}`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            max-width: 300px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        `;
+        
+        // Set background color based on type
+        switch(type) {
+            case 'success':
+                notification.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+                break;
+            case 'error':
+                notification.style.background = 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)';
+                break;
+            case 'warning':
+                notification.style.background = 'linear-gradient(135deg, #ed8936 0%, #dd6b20 100%)';
+                break;
+            default:
+                notification.style.background = 'linear-gradient(135deg, #4299e1 0%, #3182ce 100%)';
+        }
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateY(0)';
+        }, 10);
+        
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(-20px)';
             setTimeout(() => {
-                // Always return success for demo
-                resolve({
-                    success: true,
-                    message: 'Password reset link sent successfully'
-                });
-            }, 1000);
-        });
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 4000);
     }
 });
+
+// Global utility functions for other scripts to use
+// Handle API errors globally
+window.handleApiError = function(response) {
+    if (response.status === 401) {
+        // Create and show notification
+        const notification = document.createElement('div');
+        notification.textContent = 'Session expired. Please login again.';
+        notification.style.cssText = `
+            position: fixed; top: 20px; right: 20px; padding: 15px 20px;
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white; border-radius: 8px; z-index: 10000;
+            font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            window.location.href = '/login';
+        }, 2000);
+        return true; // Handled
+    }
+    return false; // Not handled
+};
+
+// Utility function to make authenticated API calls
+window.authenticatedFetch = async function(url, options = {}) {
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+        
+        // Check for authentication errors
+        if (window.handleApiError(response)) {
+            return null;
+        }
+        
+        return response;
+        
+    } catch (error) {
+        console.error('API call error:', error);
+        // Show error notification
+        const notification = document.createElement('div');
+        notification.textContent = 'Network error. Please check your connection.';
+        notification.style.cssText = `
+            position: fixed; top: 20px; right: 20px; padding: 15px 20px;
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            color: white; border-radius: 8px; z-index: 10000;
+            font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 4000);
+        throw error;
+    }
+};
 
 // Password toggle functionality
 function togglePassword() {
@@ -390,11 +641,16 @@ function showRegister() {
 
 // Social login functions (placeholder)
 function loginWithGoogle() {
-    showLoadingState();
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'flex';
+    }
     
     setTimeout(() => {
-        hideLoadingState();
-        showPopup('Google login would be implemented here', 'info');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+        alert('Google login would be implemented here');
     }, 1000);
 }
 
@@ -410,7 +666,7 @@ function loginWithMicrosoft() {
             loadingOverlay.style.display = 'none';
             loadingOverlay.querySelector('.loading-text').textContent = 'Logging you in...';
         }
-        showPopup('Microsoft login would be implemented here', 'info');
+        alert('Microsoft login would be implemented here');
     }, 1000);
 }
 
@@ -426,7 +682,10 @@ document.addEventListener('click', function(e) {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeForgotPassword();
-        hidePopup();
+        const popup = document.getElementById('popup-box');
+        if (popup && popup.style.display !== 'none') {
+            popup.style.display = 'none';
+        }
     }
 });
 
