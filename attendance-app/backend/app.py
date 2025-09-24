@@ -33,20 +33,6 @@ app.config['PG_PASSWORD'] = 'asBjLmDfKfoZPVt9'  # change to your PostgreSQL pass
 app.config['PG_DB'] = 'postgres'  # change to your PostgreSQL database name
 app.config['sslmode']='require'
 
-# Demo users (replace with database lookup in production)
-DEMO_USERS = {
-    'admin@example.com': {
-        'password': 'password123',
-        'name': 'Admin User',
-        'role': 'admin'
-    },
-    'user@example.com': {
-        'password': 'user123', 
-        'name': 'Regular User',
-        'role': 'user'
-    }
-}
-
 def get_pg_connection():
     return psycopg2.connect(
         host="aws-0-ap-south-1.pooler.supabase.com",
@@ -56,6 +42,80 @@ def get_pg_connection():
         port=6543,
         sslmode='require'
     )
+
+def get_user_from_db(email):
+    """Fetch user from users table by email"""
+    try:
+        connection = get_pg_connection()
+        cursor = connection.cursor()
+        
+        cursor.execute("""
+            SELECT id, email, password_hash, created_at
+            FROM users 
+            WHERE email = %s
+        """, (email,))
+        
+        user_row = cursor.fetchone()
+        cursor.close()
+        connection.close()
+        
+        if user_row:
+            return {
+                'id': user_row[0],
+                'email': user_row[1],
+                'password_hash': user_row[2],
+                'created_at': user_row[3],
+                'name': user_row[1].split('@')[0].replace('.', ' ').title(),  # Use email prefix as name
+                'role': 'admin' if 'admin' in user_row[1].lower() else 'user'  # Simple role assignment
+            }
+        return None
+        
+    except Exception as e:
+        app.logger.error(f"Database error in get_user_from_db: {e}")
+        return None
+
+def verify_password_crypt(password, password_hash):
+    """Verify password using PostgreSQL crypt function"""
+    try:
+        connection = get_pg_connection()
+        cursor = connection.cursor()
+        
+        cursor.execute("""
+            SELECT crypt(%s, %s) = %s AS password_match
+        """, (password, password_hash, password_hash))
+        
+        result = cursor.fetchone()
+        cursor.close()
+        connection.close()
+        
+        return result[0] if result else False
+        
+    except Exception as e:
+        app.logger.error(f"Password verification error: {e}")
+        return False
+
+def create_user_with_crypt(email, password):
+    """Create a new user with crypt hashed password"""
+    try:
+        connection = get_pg_connection()
+        cursor = connection.cursor()
+        
+        cursor.execute("""
+            INSERT INTO users (email, password_hash)
+            VALUES (%s, crypt(%s, gen_salt('bf')))
+            ON CONFLICT (email) DO UPDATE 
+            SET password_hash = crypt(EXCLUDED.password_hash, gen_salt('bf'))
+        """, (email, password))
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+        return True
+        
+    except Exception as e:
+        app.logger.error(f"Error creating user: {e}")
+        return False
 
 # Authentication decorator
 def login_required(f):
@@ -92,13 +152,15 @@ def api_login():
                 'message': 'Email and password are required'
             }), 400
         
-        # Check demo users (replace with database lookup)
-        user = DEMO_USERS.get(email)
-        if user and user['password'] == password:
+        # Fetch user from database
+        user = get_user_from_db(email)
+        
+        if user and verify_password_crypt(password, user['password_hash']):
             # Create session
-            session['user_id'] = email
+            session['user_id'] = user['email']
             session['user_name'] = user['name']
             session['user_role'] = user['role']
+            session['user_db_id'] = user['id']
             session.permanent = remember  # Remember session if checkbox was checked
             
             return jsonify({
@@ -106,7 +168,7 @@ def api_login():
                 'message': 'Login successful',
                 'redirect': '/',
                 'user': {
-                    'email': email,
+                    'email': user['email'],
                     'name': user['name'],
                     'role': user['role']
                 }
@@ -145,6 +207,14 @@ def api_forgot_password():
                 'message': 'Email is required'
             }), 400
         
+        # Check if user exists
+        user = get_user_from_db(email)
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': 'Email not found'
+            }), 404
+        
         # For demo purposes, always return success
         # In production, send actual password reset email
         return jsonify({
@@ -159,13 +229,60 @@ def api_forgot_password():
             'message': 'Failed to send reset link'
         }), 500
 
+@app.route('/api/register', methods=['POST'])
+def api_register():
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+        
+        if not email or not password:
+            return jsonify({
+                'success': False,
+                'message': 'Email and password are required'
+            }), 400
+        
+        if len(password) < 6:
+            return jsonify({
+                'success': False,
+                'message': 'Password must be at least 6 characters long'
+            }), 400
+        
+        # Check if user already exists
+        existing_user = get_user_from_db(email)
+        if existing_user:
+            return jsonify({
+                'success': False,
+                'message': 'User already exists'
+            }), 409
+        
+        # Create new user with crypt
+        if create_user_with_crypt(email, password):
+            return jsonify({
+                'success': True,
+                'message': 'User registered successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Registration failed. Please try again.'
+            }), 500
+        
+    except Exception as e:
+        app.logger.error(f"Registration error: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Registration failed. Please try again.'
+        }), 500
+
 @app.route('/api/user-info', methods=['GET'])
 @login_required
 def api_user_info():
     return jsonify({
         'user_id': session.get('user_id'),
         'user_name': session.get('user_name'),
-        'user_role': session.get('user_role')
+        'user_role': session.get('user_role'),
+        'user_db_id': session.get('user_db_id')
     })
 
 # Protected routes - now require login
@@ -867,6 +984,70 @@ def upload_teachers():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'message': 'An error occurred while processing the file.'}), 500
+
+# Admin utility endpoint to create users (optional - for development/testing)
+@app.route('/api/admin/create-user', methods=['POST'])
+@login_required
+def admin_create_user():
+    # Check if user has admin role
+    if session.get('user_role') != 'admin':
+        return jsonify({
+            'success': False,
+            'message': 'Admin access required'
+        }), 403
+    
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+        
+        if not email or not password:
+            return jsonify({
+                'success': False,
+                'message': 'Email and password are required'
+            }), 400
+        
+        if create_user_with_crypt(email, password):
+            return jsonify({
+                'success': True,
+                'message': f'User {email} created successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to create user'
+            }), 500
+            
+    except Exception as e:
+        app.logger.error(f"Admin create user error: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to create user'
+        }), 500
+
+# Health check endpoint
+@app.route('/health', methods=['GET'])
+def health_check():
+    try:
+        # Test database connection
+        connection = get_pg_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT 1")
+        cursor.close()
+        connection.close()
+        
+        return jsonify({
+            'status': 'healthy',
+            'database': 'connected',
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'database': 'disconnected',
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
