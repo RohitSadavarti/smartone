@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="styles.css"> <!-- Consolidated CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
-
 </head>
 <body>
  <!-- Skeleton Loader Overlay -->
@@ -142,9 +141,28 @@
         <!-- Excel Upload Section -->
         <form id="excelForm" class="form upload-section">
             <div class="file-upload-container">
-                <label for="excelFile" class="upload-button"></label>
-                <input type="file" id="excelFile" class="file-input" />
-                <button type="submit" class="upload-btn">Upload</button>
+                <div class="upload-drop-zone" onclick="document.getElementById('excelFile').click()">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <div class="upload-text">Drop your Excel file here or click to browse</div>
+                    <div class="upload-subtext">Supports .xlsx, .xls files up to 10MB</div>
+                </div>
+                <input type="file" id="excelFile" class="file-input" accept=".xlsx,.xls" />
+                <div class="selected-file" id="selectedFile">
+                    <i class="fas fa-file-excel file-icon"></i>
+                    <div class="file-info">
+                        <div class="file-name" id="fileName"></div>
+                        <div class="file-size" id="fileSize"></div>
+                    </div>
+                    <button type="button" class="remove-file" onclick="removeSelectedFile()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="upload-progress" id="uploadProgress">
+                    <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                </div>
+                <button type="submit" class="upload-btn" id="uploadButton" disabled>
+                    <i class="fas fa-upload"></i> Upload File
+                </button>
             </div>
         </form>
         
@@ -181,7 +199,7 @@
         </div>
 
         <div id="popup-box" class="popup hidden">
-            <p id="popupMessage">Student Data Upload Successful</p>
+            <p id="popupMessage">Teacher Data Upload Successful</p>
             <button id="close-popup">Close</button>
         </div>
 
@@ -189,6 +207,94 @@
 
     <script src="/static/sidebar.js"></script>
     <script src="/static/admin-teacher.js"></script>
+
+    <script>
+        // Enhanced Upload functionality
+        const fileInput = document.getElementById('excelFile');
+        const selectedFile = document.getElementById('selectedFile');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const uploadButton = document.getElementById('uploadButton');
+        const uploadDropZone = document.querySelector('.upload-drop-zone');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const uploadProgressBar = document.getElementById('uploadProgressBar');
+
+        // File input change handler
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                displaySelectedFile(file);
+            }
+        });
+
+        // Drag and drop handlers
+        uploadDropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadDropZone.classList.add('drag-over');
+        });
+
+        uploadDropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadDropZone.classList.remove('drag-over');
+        });
+
+        uploadDropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadDropZone.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                    file.type === 'application/vnd.ms-excel') {
+                    fileInput.files = files;
+                    displaySelectedFile(file);
+                } else {
+                    alert('Please select a valid Excel file (.xlsx or .xls)');
+                }
+            }
+        });
+
+        function displaySelectedFile(file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            selectedFile.classList.add('show');
+            uploadButton.disabled = false;
+        }
+
+        function removeSelectedFile() {
+            fileInput.value = '';
+            selectedFile.classList.remove('show');
+            uploadButton.disabled = true;
+            uploadProgress.classList.remove('show');
+            uploadProgressBar.style.width = '0%';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Form submission with progress
+        document.getElementById('excelForm').addEventListener('submit', function(e) {
+            if (fileInput.files.length > 0) {
+                uploadProgress.classList.add('show');
+                // Simulate upload progress
+                let progress = 0;
+                const interval = setInterval(function() {
+                    progress += Math.random() * 15;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                    }
+                    uploadProgressBar.style.width = progress + '%';
+                }, 200);
+            }
+        });
+    </script>
 
 </body>
 </html>
