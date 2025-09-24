@@ -1082,22 +1082,9 @@ def health_check():
             'timestamp': datetime.now().isoformat()
         }), 500
 
+
 if __name__ == '__main__':
-    app.run(debug=True) csv.writer(output)
-        writer.writerow(['Roll Number', 'Name', 'Department', 'Class'])
-        writer.writerows(rows)
-
-        csv_data = output.getvalue()
-
-        return Response(
-            csv_data,
-            mimetype='text/csv',
-            headers={'Content-Disposition': 'attachment; filename=valid_records.csv'}
-        )
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'message': 'An error occurred while generating the CSV'}), 500
-
+    app.run(debug=True)
 # Download error records as CSV
 @app.route('/error-records-csv', methods=['GET'])
 def download_error_csv():
@@ -1130,7 +1117,6 @@ def download_error_csv():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'message': 'An error occurred while generating the CSV'}), 500
-# Get row count by uploader name
 # Get row count by uploader name
 @app.route('/upload-history/row-count', methods=['GET'])
 @login_required
