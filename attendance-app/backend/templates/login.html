@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Attendance Portal</title>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body class="login-page">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Logging you in...</div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <i class='bx bx-menu' id="hamburger-toggle" style="font-size: 24px; cursor: pointer; margin: 10px;"></i>
+        <h1 class="page-title">Attendance Portal Login</h1>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar close">
+        <div class="menu-bar">
+            <div class="menu">
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="/">
+                            <i class='fas fa-home'></i>
+                            <span class="text nav-text">Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/dashboard">
+                            <i class='fas fa-chart-bar icon'></i>
+                            <span class="text nav-text">Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-link has-submenu">
+                        <a href="javascript:void(0)" onclick="toggleSubMenu(this)">
+                            <i class='fas fa-download'></i>
+                            <span class="text nav-text">Update Data</span>
+                            <i class="bx bx-chevron-down submenu-arrow" style="margin-left:auto;"></i>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="/admin-students"><i class='fas fa-user-graduate'></i> Student</a></li>
+                            <li><a href="/admin-teacher"><i class='fas fa-chalkboard-teacher'></i> Teacher</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-link">
+                        <a href="/attendance">
+                            <i class='bx bx-pie-chart-alt icon'></i>
+                            <span class="text nav-text">Attendance Tracker</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/login" style="background: #004aad;color: #fff;border-radius: 5px;">
+                            <i class='bx bx-log-in icon'></i>
+                            <span class="text nav-text">Login</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="sidebar-toggle-backdrop" onclick="closeSidebar()"></div>
+
+            <div class="bottom-content">
+                <li class="mode">
+                    <div class="sun-moon">
+                        <i class='bx bx-moon icon moon'></i>
+                        <i class='bx bx-sun icon sun'></i>
+                    </div>
+                    <span class="mode-text text">Dark mode</span>
+                    <div class="toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h2>Welcome Back</h2>
+                <p>Please sign in to your account</p>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Enter your email"
+                        required
+                        autocomplete="email"
+                    >
+                    <span class="input-highlight"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Password
+                    </label>
+                    <div class="password-input-container">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="fas fa-eye" id="password-eye"></i>
+                        </button>
+                    </div>
+                    <span class="input-highlight"></span>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <span class="checkmark"></span>
+                        Remember me
+                    </label>
+                    <a href="#" class="forgot-password" onclick="showForgotPassword()">
+                        Forgot Password?
+                    </a>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span class="btn-text">Sign In</span>
+                    <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+
+                <div class="login-footer">
+                    <p>Don't have an account? <a href="#" onclick="showRegister()">Create Account</a></p>
+                </div>
+            </form>
+
+            <!-- Alternative Login Methods -->
+            <div class="login-divider">
+                <span>or continue with</span>
+            </div>
+
+            <div class="social-login">
+                <button type="button" class="social-btn google-btn" onclick="loginWithGoogle()">
+                    <i class="fab fa-google"></i>
+                    Google
+                </button>
+                <button type="button" class="social-btn microsoft-btn" onclick="loginWithMicrosoft()">
+                    <i class="fab fa-microsoft"></i>
+                    Microsoft
+                </button>
+            </div>
+        </div>
+
+        <!-- Security Features -->
+        <div class="security-info">
+            <div class="security-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secure Login</span>
+            </div>
+            <div class="security-item">
+                <i class="fas fa-lock"></i>
+                <span>Encrypted Data</span>
+            </div>
+            <div class="security-item">
+                <i class="fas fa-user-shield"></i>
+                <span>Privacy Protected</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup for messages -->
+    <div id="popup-box" class="popup hidden">
+        <p id="popupMessage">Login Successful</p>
+        <button id="close-popup">Close</button>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgot-password-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Reset Password</h3>
+                <button type="button" class="close-modal" onclick="closeForgotPassword()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="forgotPasswordForm">
+                <div class="form-group">
+                    <label for="reset-email">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                    </label>
+                    <input 
+                        type="email" 
+                        id="reset-email" 
+                        name="reset-email" 
+                        placeholder="Enter your email for password reset"
+                        required
+                    >
+                </div>
+                <button type="submit" class="reset-btn">
+                    Send Reset Link
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/sidebar.js"></script>
+    <script src="/static/login.js"></script>
+</body>
+</html>
