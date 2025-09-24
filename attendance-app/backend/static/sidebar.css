@@ -81,12 +81,12 @@
 }
 
 .sidebar .menu {
-  margin-top: 60px;
+  margin-top: 80px;
 }
 
 .sidebar li a {
   list-style: none;
-  color: purple;
+  color: White;
   background-color: transparent;
   display: flex;
   align-items: center;
@@ -138,7 +138,7 @@ body.dark .sidebar li a:hover .text {
   padding: 10px;
   border-radius: 6px;
   background-color: #e1e1e1;
-  margin-top: 20px;
+  margin-top: 60px;
   cursor: pointer;
   position: relative;
   transition: background-color 0.3s ease;
@@ -460,7 +460,7 @@ body.dark .sidebar header .toggle {
 }
 
 .sidebar .menu {
-    margin-top: 40px;
+    margin-top: 80px;
 }
 
 .sidebar li.search-box {
@@ -486,7 +486,7 @@ body.dark .sidebar header .toggle {
 .sidebar li a {
     list-style: none;
     height: 100%;
-    color: purple;
+    color: White;
     background-color: transparent;
     display: flex;
     align-items: center;
@@ -534,7 +534,7 @@ body.dark .sidebar li a:hover .text {
     padding: 10px;
     border-radius: 6px;
     background-color: #e1e1e1;
-    margin-top: 20px;
+    margin-top: 60px;
     cursor: pointer;
     position: relative;
     transition: background-color 0.3s ease;
@@ -622,7 +622,7 @@ body.dark .toggle-switch .switch {
   position: absolute;
   top: 15px;
   right: -20px; /* Adjust this for alignment */
-  background: purple;
+  background: White;
   color: white;
   border-radius: 5px;
   padding: 5px 10px;
@@ -683,7 +683,7 @@ body.dark .has-submenu .submenu li a {
 
     .sidebar.open {
         transform: translateX(0);
-        background: purple;/* Slide in when open */
+        background: White;/* Slide in when open */
     }
 
     .home,
@@ -762,3 +762,4 @@ body.dark .sidebar.open li a:hover {
 body.dark .has-submenu .submenu li a {
   color: #fff;
 }
+
