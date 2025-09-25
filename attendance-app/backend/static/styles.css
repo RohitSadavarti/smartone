@@ -829,6 +829,18 @@ body.dark #rows-per-page {
     border: 1px solid #ccc;
 }
 
+
+.separator {
+    border: none;
+    height: 1px;
+    background-color: #444; /* Dark gray for dark mode */
+    margin: 25px 0; /* Adds space above and below the line */
+}
+
+body.dark .separator {
+    background-color: #ddd; /* Lighter gray for light mode */
+}
+
 /* Mobile Responsive */
 @media screen and (max-width: 768px) {
     /* Header adjustments for mobile */
