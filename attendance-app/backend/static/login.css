@@ -1,4 +1,4 @@
-/* Login Page Specific Styles - Updated for Flask Integration */
+/* Login Page Specific Styles - Updated for Flask Integration with Fixed Spinner */
 .login-page {
     background: #18191a;
     min-height: 100vh;
@@ -596,11 +596,6 @@ body.dark .close-modal:hover {
     }
 }
 
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
 /* Loading Overlay */
 #loading-overlay {
     position: fixed;
@@ -621,6 +616,34 @@ body.dark .close-modal:hover {
 .loading-text {
     margin-top: 20px;
     font-weight: 500;
+}
+
+/* FIXED LOADER STYLES */
+.loader {
+    border: 8px solid rgba(255, 255, 255, 0.2);
+    border-top: 8px solid #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Keyframe animation for the login container */
+@keyframes fadeInZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Mobile Responsive */
@@ -718,42 +741,4 @@ body.dark .close-modal:hover {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
-}
-
-/* Keyframe animation for the login container */
-@keyframes fadeInZoom {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* New Loader Styles */
-.loader {
-  border: 8px solid rgba(255, 255, 255, 0.2);
-  border-top: 8px solid #fff;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-}
-.loader::before,
-.loader::after {
-    content: "";
-    grid-area: 1/1;
-    border-radius: 50%;
-    background: inherit;
-    opacity: 0.915;
-    transform: rotate(30deg);
-}
-.loader::after {
-    opacity: 0.83;
-    transform: rotate(60deg);
-}
-@keyframes l23 {
-  100% {transform: rotate(360deg);}
 }
