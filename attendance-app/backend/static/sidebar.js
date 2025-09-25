@@ -138,3 +138,11 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeLogout();
     updateSidebarForUserRole();
 });
+
+// NEW: Add this function to handle submenu toggling
+function toggleSubMenu(element) {
+    const parentLi = element.closest('.has-submenu');
+    if (parentLi) {
+        parentLi.classList.toggle('active');
+    }
+}
