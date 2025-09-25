@@ -665,6 +665,7 @@ def upload_teachers():
         print(f"Error while uploading file: {e}")
         return jsonify({'message': 'An error occurred while processing the file.'}), 500
 
+# Admin utility endpoint to create users - ADMIN ONLY
 @app.route('/api/admin/create-user', methods=['POST'])
 @admin_required
 def admin_create_user():
@@ -715,6 +716,7 @@ def check_session():
 @app.route('/health', methods=['GET'])
 def health_check():
     try:
+        # Test database connection
         connection = get_pg_connection()
         cursor = connection.cursor()
         cursor.execute("SELECT 1")
