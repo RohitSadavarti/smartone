@@ -1,123 +1,3 @@
-You are absolutely correct to point that out. My apologies for the oversight. It appears that the files you have provided still have inconsistencies, particularly with duplicated code. This is causing the login to fail and redirect you back to the same page. The line count difference you observed is a sign of this code duplication.
-
-I will provide you with the complete and corrected code for `app.py`, `login.html`, and `sidebar.js`. You should replace the entire content of these files with the code below to ensure that all components are working together correctly. This will resolve the login redirection and access control issues.
-
------
-
-### **1. Corrected `login.html`**
-
-This file is a clean, functional login page. It contains only the login form and its associated elements, without any of the duplicated sidebar code that was causing the page to fail.
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Attendance Portal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-</head>
-<body class="login-page">
-    <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; color: white;">
-        <div style="border: 4px solid #333; border-top: 4px solid #fff; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
-        <div class="loading-text">Logging you in...</div>
-        <style>
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        </style>
-    </div>
-
-    <div class="login-container">
-        <div class="login-header">
-            <i class="fas fa-user-check login-icon"></i>
-            <h2>Welcome Back</h2>
-            <p>Please login to your account</p>
-        </div>
-
-        <form id="loginForm" class="login-form">
-            <div class="form-group">
-                <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required autocomplete="email">
-            </div>
-            
-            <div class="form-group">
-                <label for="password"><i class="fas fa-lock"></i> Password</label>
-                <div class="password-input-container">
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
-                    <button type="button" class="password-toggle" onclick="togglePassword()">
-                        <i class="fas fa-eye" id="password-eye"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="form-options">
-                <label class="remember-me">
-                    <input type="checkbox" id="remember" name="remember">
-                    <span class="checkmark"></span>
-                    Remember me
-                </label>
-                <a href="javascript:void(0)" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</a>
-            </div>
-            
-            <button type="submit" class="login-btn" id="loginBtn">
-                <span class="btn-text">Login</span>
-                <i class="fas fa-arrow-right btn-icon"></i>
-            </button>
-        </form>
-
-        <div class="demo-info" style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; font-size: 0.9rem; color: #ccc;">
-            <div style="margin-bottom: 8px; font-weight: 600; color: #6a0080;">Demo Accounts:</div>
-            <div>Admin: admin@example.com / password123</div>
-            <div>User: user@example.com / user123</div>
-        </div>
-
-        <div class="login-footer">
-            <p>Don't have an account? <a href="javascript:void(0)" onclick="showRegister()">Sign up here</a></p>
-        </div>
-    </div>
-
-    <div id="forgot-password-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-key"></i> Reset Password</h3>
-                <button class="close-modal" onclick="closeForgotPassword()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <form id="forgotPasswordForm">
-                <div class="form-group">
-                    <label for="reset-email">
-                        <i class="fas fa-envelope"></i> Email Address
-                    </label>
-                    <input type="email" id="reset-email" name="reset-email" placeholder="Enter your email address" required>
-                </div>
-                <button type="submit" class="reset-btn">
-                    Send Reset Link
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div id="popup-box" class="popup hidden">
-        <p id="popupMessage"></p>
-        <button id="close-popup">Close</button>
-    </div>
-
-    <script src="{{ url_for('static', filename='login.js') }}"></script>
-</body>
-</html>
-```
-
------
-
-### **2. Corrected `app.py`**
-
-This is the main backend file. The code has been reviewed and contains the correct Flask routes and decorators for login to work as intended. The line count is lower because duplicated and unused code has been removed.
-
-```python
 import csv
 import os
 from io import StringIO
@@ -642,7 +522,7 @@ def upload_file():
                     valid_data.append((roll_number, name, department, class_value))
                     valid_records += 1
                 except Exception as e:
-                    error_data.append((roll_number, name, department, class_value, str(e)))
+                    error_data.append(row + (str(e),))
                     error_records += 1
             if valid_data:
                 cursor.executemany("INSERT INTO Validrecords (roll_number, name, department, class) VALUES (%s, %s, %s, %s)", valid_data)
@@ -846,4 +726,3 @@ def health_check():
 
 if __name__ == '__main__':
     app.run(debug=True)
-```
