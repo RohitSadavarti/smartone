@@ -91,12 +91,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
-                // --- NEW CODE START ---
                 // Store user role in local storage
                 if (response.user && response.user.role) {
                     localStorage.setItem('user_role', response.user.role);
                 }
-                // --- NEW CODE END ---
                 
                 // Redirect after short delay
                 setTimeout(() => {
@@ -280,8 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loginBtn.classList.remove('loading');
             const btnText = loginBtn.querySelector('.btn-text');
             const btnIcon = loginBtn.querySelector('.btn-icon');
-            if (btnText) btnText.style.opacity = '1';
-            if (btnIcon) btnIcon.className = 'fas fa-arrow-right btn-icon';
+            if (btnText) btnIcon.className = 'fas fa-arrow-right btn-icon';
         }
     }
     
@@ -766,4 +763,6 @@ if (!document.querySelector('#popup-styles')) {
     styleSheet.id = 'popup-styles';
     styleSheet.textContent = popupStyles;
     document.head.appendChild(styleSheet);
+}
+
 }
