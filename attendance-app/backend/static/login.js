@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closePopup = document.getElementById('close-popup');
     
     // Check if we're on the login page or other pages
-    const isLoginPage = window.location.pathname === '/login';
+    const isLoginPage = window.location.pathname === '/login' || window.location.pathname === '/';
     
     if (isLoginPage) {
         // Login page specific initialization
@@ -764,4 +764,3 @@ if (!document.querySelector('#popup-styles')) {
     styleSheet.textContent = popupStyles;
     document.head.appendChild(styleSheet);
 }
-});
