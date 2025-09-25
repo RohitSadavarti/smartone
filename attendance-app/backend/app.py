@@ -309,13 +309,14 @@ def get_subjects():
 import logging # Make sure this is at the top of your file
 from datetime import datetime # And this too
 
+import logging # Make sure this is at the top of your file
+
 @app.route('/time-slots', methods=['GET'])
 @login_required
 def get_time_slots():
     connection = get_pg_connection()
     cursor = connection.cursor()
     
-    # 1. Fetch all unique time slots without trying to sort in SQL.
     cursor.execute("SELECT DISTINCT time_slot FROM Teachers WHERE time_slot IS NOT NULL AND time_slot != ''")
     time_slots_raw = cursor.fetchall()
     cursor.close()
@@ -323,23 +324,28 @@ def get_time_slots():
 
     time_slots_list = [item[0] for item in time_slots_raw]
     
-    # 2. Sort the list in Python.
+    # This new sort key understands PM times
     def sort_key(time_slot_str):
         try:
-            # Extract the start time before the hyphen
             start_time_str = time_slot_str.split('-')[0].strip()
-            # Convert to a time object for correct sorting
-            return datetime.strptime(start_time_str, '%H:%M').time()
+            hour, minute = map(int, start_time_str.split(':'))
+            
+            # **THE FIX:** If the hour is less than 8, treat it as PM by adding 12.
+            # For example, 01:30 becomes 13:30 for sorting.
+            if hour < 8:
+                hour += 12
+            
+            # Return a tuple for sorting. (9, 0) comes before (13, 30).
+            return (hour, minute)
+
         except (ValueError, IndexError):
-            # If format is wrong (e.g., "TBA", missing hyphen),
-            # return a time far in the future to place it last.
-            logging.warning(f"Could not parse time slot: '{time_slot_str}'. Placing it at the end of the list.")
-            return datetime.strptime('23:59', '%H:%M').time()
+            logging.warning(f"Could not parse time slot: '{time_slot_str}'. Placing it at the end.")
+            # Return a tuple that will always be sorted last
+            return (23, 59)
 
     sorted_time_slots = sorted(time_slots_list, key=sort_key)
     
-    return jsonify(sorted_time_slots)
-    
+    return jsonify(sorted_time_slots)    
 
 @app.route('/students', methods=['GET'])
 @login_required
