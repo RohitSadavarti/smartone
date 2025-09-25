@@ -659,20 +659,20 @@ window.authenticatedFetch = async function(url, options = {}) {
 
 // Password toggle functionality
 function togglePassword() {
-    const passwordField = document.getElementById('password');
-    const passwordEye = document.getElementById('password-eye');
+    const field = document.getElementById('password');
+    const icon = document.getElementById('password-eye');
     
-    if (passwordField && passwordEye) {
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            passwordEye.className = 'fas fa-eye-slash';
-        } else {
-            passwordField.type = 'password';
-            passwordEye.className = 'fas fa-eye';
-        }
+    if (!field || !icon) return;
+    
+    // Simple toggle without layout changes
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        field.type = 'password';
+        icon.className = 'fas fa-eye';
     }
 }
-
 // Show forgot password modal
 function showForgotPassword() {
     const modal = document.getElementById('forgot-password-modal');
