@@ -91,6 +91,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
+                // --- NEW CODE START ---
+                // Store user role in local storage
+                if (response.user && response.user.role) {
+                    localStorage.setItem('user_role', response.user.role);
+                }
+                // --- NEW CODE END ---
+                
                 // Redirect after short delay
                 setTimeout(() => {
                     window.location.href = response.redirect || '/';
