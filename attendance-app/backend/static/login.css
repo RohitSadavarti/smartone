@@ -609,7 +609,6 @@ body.dark .close-modal:hover {
     height: 50px;
     animation: spin 1s linear infinite; /* This line makes it spin! */
 }
-
 /* Loading Overlay */
 #loading-overlay {
     position: fixed;
