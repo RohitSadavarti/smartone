@@ -7,14 +7,51 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="{{ url_for('static', filename='login.js') }}" as="script">
+    <!-- EMBEDDED CSS FOR GUARANTEED WORKING SPINNER -->
+    <style>
+        /* CRITICAL: Spinner that WILL work */
+        @keyframes spin-animation {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .working-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #333;
+            border-top: 6px solid #6a0080;
+            border-radius: 50%;
+            animation: spin-animation 1s linear infinite;
+        }
+        
+        .spinner-text {
+            color: white;
+            margin-top: 20px;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body class="login-page">
-    <!-- Fixed Loading Overlay with proper structure -->
-    <div id="loading-overlay" style="display: none;">
-        <div class="loader"></div>
-        <div class="loading-text">Logging you in...</div>
+    
+    <!-- SIMPLE WORKING LOADING OVERLAY -->
+    <div id="loading-overlay">
+        <div class="working-spinner"></div>
+        <div class="spinner-text">Logging you in...</div>
     </div>
 
     <div class="login-container">
@@ -95,13 +132,73 @@
         <button id="close-popup">Close</button>
     </div>
 
-    <!-- Debug Console (for testing - remove in production) -->
+    <!-- EMBEDDED JAVASCRIPT FOR GUARANTEED WORKING SPINNER -->
     <script>
-        // You can call this in browser console to test the spinner
-        // testLoadingSpinner();
-        console.log('Login page loaded. You can test the loading animation by typing: testLoadingSpinner() in the console');
+        // SIMPLE WORKING FUNCTIONS
+        function showSimpleLoading() {
+            console.log('🔄 Showing simple loading...');
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                console.log('✅ Loading overlay shown');
+            }
+            
+            // Disable button
+            const btn = document.getElementById('loginBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+                const btnText = btn.querySelector('.btn-text');
+                if (btnText) btnText.textContent = 'Logging in...';
+            }
+        }
+        
+        function hideSimpleLoading() {
+            console.log('⏹️ Hiding simple loading...');
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+            
+            // Enable button
+            const btn = document.getElementById('loginBtn');
+            if (btn) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                const btnText = btn.querySelector('.btn-text');
+                if (btnText) btnText.textContent = 'Login';
+            }
+        }
+        
+        // Test function
+        function testSpinner() {
+            console.log('🧪 Testing spinner...');
+            showSimpleLoading();
+            setTimeout(() => {
+                hideSimpleLoading();
+                console.log('✅ Test complete');
+            }, 3000);
+        }
+        
+        // Make functions global
+        window.showSimpleLoading = showSimpleLoading;
+        window.hideSimpleLoading = hideSimpleLoading;
+        window.testSpinner = testSpinner;
+        
+        console.log('🎯 Simple spinner ready! Test with: testSpinner()');
     </script>
 
     <script src="{{ url_for('static', filename='login.js') }}"></script>
+    
+    <!-- OVERRIDE LOGIN.JS FUNCTIONS -->
+    <script>
+        // Override the problematic functions in login.js
+        document.addEventListener('DOMContentLoaded', function() {
+            // Replace the existing functions
+            window.showLoadingState = showSimpleLoading;
+            window.hideLoadingState = hideSimpleLoading;
+            console.log('🔧 Loading functions overridden with working versions');
+        });
+    </script>
 </body>
 </html>
