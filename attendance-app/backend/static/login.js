@@ -255,35 +255,72 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Show loading state
     function showLoadingState() {
-        if (loadingOverlay) {
-            loadingOverlay.style.display = 'flex';
-        }
+    console.log('Showing loading state...'); // Debug log
+    
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'flex';
+        console.log('Loading overlay displayed'); // Debug log
+    }
+    
+    if (loginBtn) {
+        loginBtn.disabled = true;
+        loginBtn.classList.add('loading');
         
-        if (loginBtn) {
-            loginBtn.disabled = true;
-            loginBtn.classList.add('loading');
-            const btnText = loginBtn.querySelector('.btn-text');
-            const btnIcon = loginBtn.querySelector('.btn-icon');
-            if (btnText) btnText.style.opacity = '0';
-            if (btnIcon) btnIcon.className = 'fas fa-spinner btn-icon';
+        // Update button content properly
+        const btnText = loginBtn.querySelector('.btn-text');
+        const btnIcon = loginBtn.querySelector('.btn-icon');
+        
+        if (btnText) {
+            btnText.textContent = 'Logging in...'; // Change text instead of hiding
+            btnText.style.opacity = '1'; // Keep text visible
+        }
+        if (btnIcon) {
+            btnIcon.className = 'fas fa-spinner btn-icon'; // Change to spinner
         }
     }
+}
     
     // Hide loading state
     function hideLoadingState() {
-        if (loadingOverlay) {
-            loadingOverlay.style.display = 'none';
-        }
-        
-        if (loginBtn) {
-            loginBtn.disabled = false;
-            loginBtn.classList.remove('loading');
-            const btnText = loginBtn.querySelector('.btn-text');
-            const btnIcon = loginBtn.querySelector('.btn-icon');
-            if (btnText) btnIcon.className = 'fas fa-arrow-right btn-icon';
-        }
+    console.log('Hiding loading state...'); // Debug log
+    
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'none';
     }
     
+    if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtn.classList.remove('loading');
+        
+        // Restore button content properly
+        const btnText = loginBtn.querySelector('.btn-text');
+        const btnIcon = loginBtn.querySelector('.btn-icon');
+        
+        if (btnText) {
+            btnText.textContent = 'Login'; // Restore original text
+            btnText.style.opacity = '1'; // Ensure text is visible
+        }
+        if (btnIcon) {
+            btnIcon.className = 'fas fa-arrow-right btn-icon'; // Restore original icon
+        }
+    }
+}
+
+    function testLoadingSpinner() {
+    console.log('Testing loading spinner...');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'flex';
+        console.log('Loading overlay should be visible now');
+        
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+            console.log('Loading overlay hidden');
+        }, 3000);
+    } else {
+        console.log('Loading overlay element not found!');
+    }
+}
     // Show popup message (for login page)
     function showPopup(message, type = 'info') {
         if (popup && popupMessage) {
