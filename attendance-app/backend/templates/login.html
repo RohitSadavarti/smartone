@@ -8,6 +8,11 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Attendance Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
   <header>
@@ -15,6 +20,7 @@
     <h1 class="page-title">Attendance Portal</h1>
   </header>
 
+  <!-- Sidebar -->
   <nav class="sidebar close">
     <div class="menu-bar">
       <div class="menu">
@@ -32,7 +38,7 @@
             </a>
           </li>
 
-          <li class="nav-link has-submenu" id="admin-links">
+          <li class="nav-link has-submenu">
             <a href="javascript:void(0)" onclick="toggleSubMenu(this)">
               <i class='fas fa-download'></i>
               <span class="text nav-text">Update Data</span>
@@ -44,7 +50,7 @@
             </ul>
           </li>
 
-          <li class="nav-link" id="attendance-tab">
+          <li class="nav-link">
             <a href="/attendance">
               <i class='bx bx-pie-chart-alt icon'></i>
               <span class="text nav-text">Attendance Tracker</span>
@@ -62,7 +68,7 @@
 
       <div class="bottom-content">
         <li>
-          <a href="#">
+          <a href="#" id="logout-btn">
             <i class='bx bx-log-out icon'></i>
             <span class="text nav-text">Logout</span>
           </a>
@@ -78,9 +84,48 @@
           </div>
         </li>
       </div>
-    </div>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-header">
+            <i class="fas fa-user-check login-icon"></i>
+            <h2>Welcome Back</h2>
+            <p>Please login to your account</p>
+        </div>
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Password</label>
+                <div class="password-input-container">
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                        <i class="fas fa-eye" id="password-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember">
+                    <span class="checkmark"></span>
+                    Remember me
+                </label>
+                <a href="javascript:void(0)" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</a>
+            </div>
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span class="btn-text">Login</span>
+                <i class="fas fa-arrow-right btn-icon"></i>
+            </button>
+        </form>
+        <div id="popup-box" class="popup hidden">
+            <p id="popupMessage"></p>
+            <button id="close-popup">Close</button>
+        </div>
+</div>
   </nav>
 
+  <!-- Main Content -->
   <div class="main-content">
     <form id="filter-form">
       <div class="form-group">
@@ -149,5 +194,161 @@
   <script src="/static/sidebar.js"></script>
   <script src="/static/script.js"></script>
 
+  <!-- Logout JavaScript -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      console.log('Setting up logout functionality...');
+      
+      // Wait for sidebar to load
+      setTimeout(() => {
+          setupLogout();
+      }, 500);
+      
+      function setupLogout() {
+          // Find the logout button
+          const logoutBtn = document.getElementById('logout-btn');
+          const logoutLinks = document.querySelectorAll('.bottom-content li a');
+          
+          // Setup logout button by ID
+          if (logoutBtn) {
+              console.log('Found logout button by ID');
+              logoutBtn.addEventListener('click', handleLogout);
+          }
+          
+          // Backup: Find logout by icon
+          logoutLinks.forEach(link => {
+              const icon = link.querySelector('.bx-log-out');
+              const text = link.textContent;
+              
+              if (icon || text.toLowerCase().includes('logout')) {
+                  console.log('Found logout link by icon/text');
+                  link.addEventListener('click', handleLogout);
+              }
+          });
+      }
+      
+      function handleLogout(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Logout clicked!');
+          
+          // Confirm logout
+          if (confirm('Are you sure you want to logout?')) {
+              performLogout();
+          }
+      }
+      
+      async function performLogout() {
+          console.log('Performing logout...');
+          
+          // Show loading overlay
+          const loadingDiv = document.createElement('div');
+          loadingDiv.id = 'logout-loading';
+          loadingDiv.style.cssText = `
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0,0,0,0.8);
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              z-index: 10000;
+              color: white;
+              font-size: 18px;
+              flex-direction: column;
+          `;
+          loadingDiv.innerHTML = `
+              <div style="border: 4px solid #333; border-top: 4px solid #fff; 
+                          border-radius: 50%; width: 50px; height: 50px; 
+                          animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
+              <div>Logging out...</div>
+              <style>
+                  @keyframes spin {
+                      0% { transform: rotate(0deg); }
+                      100% { transform: rotate(360deg); }
+                  }
+              </style>
+          `;
+          document.body.appendChild(loadingDiv);
+          
+          try {
+              console.log('Calling logout API...');
+              const response = await fetch('/api/logout', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  }
+              });
+              
+              console.log('Response status:', response.status);
+              const data = await response.json();
+              console.log('Response data:', data);
+              
+              if (data.success) {
+                  // Clear browser storage
+                  try {
+                      localStorage.clear();
+                      sessionStorage.clear();
+                      console.log('Storage cleared');
+                  } catch (e) {
+                      console.warn('Could not clear storage');
+                  }
+                  
+                  // Show success message
+                  loadingDiv.innerHTML = `
+                      <div style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); 
+                                  padding: 30px; border-radius: 15px; text-align: center;
+                                  box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                          <div style="font-size: 48px; margin-bottom: 15px;">✓</div>
+                          <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">
+                              Logged out successfully!
+                          </div>
+                          <div style="font-size: 16px; opacity: 0.9;">
+                              Redirecting to login page...
+                          </div>
+                      </div>
+                  `;
+                  
+                  // Redirect to login
+                  setTimeout(() => {
+                      console.log('Redirecting to login page...');
+                      window.location.href = '/login';
+                  }, 2000);
+                  
+              } else {
+                  throw new Error(data.message || 'Logout failed');
+              }
+              
+          } catch (error) {
+              console.error('Logout error:', error);
+              
+              // Remove loading overlay
+              document.body.removeChild(loadingDiv);
+              
+              // Show error message
+              const errorDiv = document.createElement('div');
+              errorDiv.style.cssText = `
+                  position: fixed; top: 20px; right: 20px; 
+                  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+                  color: white; padding: 15px 20px; border-radius: 8px;
+                  z-index: 10001; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+              `;
+              errorDiv.textContent = 'Logout failed: ' + error.message;
+              document.body.appendChild(errorDiv);
+              
+              // Remove error message after 5 seconds
+              setTimeout(() => {
+                  if (errorDiv.parentNode) {
+                      document.body.removeChild(errorDiv);
+                  }
+              }, 5000);
+          }
+      }
+  });
+  </script>
+
+    <script src="{{ url_for('static', filename='login.js') }}"></script>
 </body>
 </html>
