@@ -861,7 +861,7 @@ body.dark .separator {
         margin-top: 50px;
         width: 100%;
         padding: 15px 10px;
-        height: calc(100vh - 50px);
+        height: calc(175vh - 50px);
     }
 
     h1 {
