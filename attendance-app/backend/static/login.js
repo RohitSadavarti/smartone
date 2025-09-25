@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await loginUser(email, password, remember);
             
             if (response.success) {
-                showPopup('Login successful! Redirecting...', 'success');
+                // The loading animation will now show until the page redirects
                 
                 // Store user session if remember me is checked
                 if (remember) {
@@ -96,20 +96,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     localStorage.setItem('user_role', response.user.role);
                 }
                 
-                // Redirect after short delay
+                // Redirect after a short delay to allow the animation to be seen
                 setTimeout(() => {
                     window.location.href = response.redirect || '/';
                 }, 1500);
                 
             } else {
+                // If login fails, hide the loading animation and show an error
+                hideLoadingState();
                 showPopup(response.message || 'Login failed. Please check your credentials.', 'error');
             }
             
         } catch (error) {
+            // If there's an error, hide the loading animation and show an error
+            hideLoadingState();
             console.error('Login error:', error);
             showPopup('Login failed. Please try again later.', 'error');
-        } finally {
-            hideLoadingState();
         }
     }
     
