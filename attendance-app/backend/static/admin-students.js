@@ -1,25 +1,25 @@
 // ✅ Hide skeleton overlay after full page load
 window.addEventListener("load", () => {
-  const overlay = document.getElementById("skeleton-overlay");
+  const overlay = document.getElementById("loading-overlay");
   if (overlay) {
     overlay.style.display = "none";
   }
 });
 
 // ✅ Also ensure DOM is ready before anything (fallback for some browsers)
-document.addEventListener("DOMContentLoaded", () => {
-  const overlay = document.getElementById("skeleton-overlay");
-  if (overlay) {
-    overlay.style.display = "none";
-  }
-});
+//document.addEventListener("DOMContentLoaded", () => {
+//  const overlay = document.getElementById("skeleton-overlay");
+//  if (overlay) {
+//    overlay.style.display = "none";
+//  }
+//});
 
 // Handle Manual Entry Submission
 document.getElementById('studentForm').addEventListener('submit', async (event) => {
     event.preventDefault();
-    const overlay = document.getElementById("skeleton-overlay");
+    const overlay = document.getElementById("loading-overlay");
     overlay.style.display = "flex";
-
+  
     const rollNumber = document.getElementById('rollNumber').value.trim();
     const name = document.getElementById('name').value.trim();
     const department = document.getElementById('department').value;
@@ -81,9 +81,9 @@ document.getElementById('studentForm').addEventListener('submit', async (event) 
 // Handle Excel File Upload
 document.getElementById('excelForm').addEventListener('submit', async (event) => {
     event.preventDefault();
-    const overlay = document.getElementById("skeleton-overlay");
+    const overlay = document.getElementById("loading-overlay");
     overlay.style.display = "flex";
-
+  
     const fileInput = document.getElementById('excelFile');
     const file = fileInput.files[0];
 
@@ -128,9 +128,9 @@ document.getElementById("rows-per-page").addEventListener("change", (event) => {
 });
 
 async function fetchUploadHistory() {
-    const overlay = document.getElementById("skeleton-overlay");
+    const overlay = document.getElementById("loading-overlay");
     overlay.style.display = "flex";
-
+  
     try {
         const response = await fetch("/upload-history");
         const history = await response.json();
@@ -172,7 +172,7 @@ async function downloadCSV(uploadId, recordType) {
         return;
     }
 
-    const overlay = document.getElementById("skeleton-overlay");
+    const overlay = document.getElementById("loading-overlay");
     overlay.style.display = "flex";
 
     try {
