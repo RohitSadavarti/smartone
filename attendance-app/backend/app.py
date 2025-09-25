@@ -51,62 +51,50 @@ def get_pg_connection():
     )
 
 def get_user_from_db(email):
-    """Fetch user from users table by email"""
     try:
         connection = get_pg_connection()
         cursor = connection.cursor()
-        
         cursor.execute("""
             SELECT id, email, password_hash, created_at, role
             FROM users 
             WHERE email = %s
         """, (email,))
-        
         user_row = cursor.fetchone()
         cursor.close()
         connection.close()
-        
         if user_row:
             return {
                 'id': user_row[0],
                 'email': user_row[1],
                 'password_hash': user_row[2],
                 'created_at': user_row[3],
-                'role': user_row[4] if user_row[4] else 'user',  # Use role from database
-                'name': user_row[1].split('@')[0].replace('.', ' ').title(),  # Use email prefix as name
+                'role': user_row[4] if user_row[4] else 'user',
+                'name': user_row[1].split('@')[0].replace('.', ' ').title(),
             }
         return None
-        
     except Exception as e:
         app.logger.error(f"Database error in get_user_from_db: {e}")
         return None
-
+        
 def verify_password_crypt(password, password_hash):
-    """Verify password using PostgreSQL crypt function"""
     try:
         connection = get_pg_connection()
         cursor = connection.cursor()
-        
         cursor.execute("""
             SELECT crypt(%s, %s) = %s AS password_match
         """, (password, password_hash, password_hash))
-        
         result = cursor.fetchone()
         cursor.close()
         connection.close()
-        
         return result[0] if result else False
-        
     except Exception as e:
         app.logger.error(f"Password verification error: {e}")
         return False
-
+        
 def create_user_with_crypt(email, password, role='user'):
-    """Create a new user with crypt hashed password"""
     try:
         connection = get_pg_connection()
         cursor = connection.cursor()
-        
         cursor.execute("""
             INSERT INTO users (email, password_hash, role)
             VALUES (%s, crypt(%s, gen_salt('bf')), %s)
@@ -114,73 +102,47 @@ def create_user_with_crypt(email, password, role='user'):
             SET password_hash = crypt(EXCLUDED.password_hash, gen_salt('bf')), 
                 role = EXCLUDED.role
         """, (email, password, role))
-        
         connection.commit()
         cursor.close()
         connection.close()
-        
         return True
-        
     except Exception as e:
         app.logger.error(f"Error creating user: {e}")
         return False
-
+        
 # Enhanced authentication decorator
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        app.logger.info(f"Checking authentication for route: {request.endpoint}")
-        app.logger.info(f"Session keys: {list(session.keys())}")
-        app.logger.info(f"'user_id' in session: {'user_id' in session}")
-        
         if 'user_id' not in session:
-            app.logger.info("User not authenticated, redirecting to login")
-            
-            # If it's an AJAX request, return JSON error
             if request.is_json or request.headers.get('Content-Type') == 'application/json' or 'api/' in request.path:
                 return jsonify({'error': 'Authentication required', 'redirect': '/login'}), 401
-            # Otherwise redirect to login page
             return redirect(url_for('login_page'))
-        
-        app.logger.info(f"User authenticated: {session.get('user_id')}")
         return f(*args, **kwargs)
     return decorated_function
-
+    
 # NEW: Admin role required decorator
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # First check if user is logged in
         if 'user_id' not in session:
-            app.logger.info("User not authenticated, redirecting to login")
-            
-            # If it's an AJAX request, return JSON error
             if request.is_json or request.headers.get('Content-Type') == 'application/json' or 'api/' in request.path:
                 return jsonify({'error': 'Authentication required', 'redirect': '/login'}), 401
-            # Otherwise redirect to login page
             return redirect(url_for('login_page'))
         
-        # Check if user has admin role
         user_role = session.get('user_role', 'user')
-        app.logger.info(f"Checking admin access for user: {session.get('user_id')}, role: {user_role}")
-        
         if user_role != 'admin':
-            app.logger.warning(f"Access denied for user {session.get('user_id')} with role {user_role}")
-            
-            # If it's an AJAX request, return JSON error
             if request.is_json or request.headers.get('Content-Type') == 'application/json' or 'api/' in request.path:
                 return jsonify({
                     'error': 'Admin access required', 
                     'message': 'You do not have permission to access this resource',
                     'redirect': '/'
                 }), 403
-            
-            # For regular requests, redirect to home page with error
             return redirect(url_for('home'))
         
-        app.logger.info(f"Admin access granted for user: {session.get('user_id')}")
         return f(*args, **kwargs)
     return decorated_function
+
 
 # ROUTES - Order is important!
 
