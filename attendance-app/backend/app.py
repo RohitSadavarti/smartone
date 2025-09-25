@@ -306,24 +306,40 @@ def get_subjects():
     connection.close()
     return jsonify([subject[0] for subject in subjects])
 
+import logging # Make sure this is at the top of your file
+from datetime import datetime # And this too
+
 @app.route('/time-slots', methods=['GET'])
 @login_required
 def get_time_slots():
     connection = get_pg_connection()
     cursor = connection.cursor()
-    # MODIFIED QUERY: Added a WHERE clause to filter for valid time slot formats before sorting.
-    query = """
-        SELECT DISTINCT time_slot 
-        FROM Teachers 
-        WHERE time_slot ~ '^\d{2}:\d{2}-\d{2}:\d{2}$'
-        ORDER BY CAST(split_part(time_slot, '-', 1) AS TIME) ASC
-    """
-    cursor.execute(query)
-    time_slots = cursor.fetchall()
+    
+    # 1. Fetch all unique time slots without trying to sort in SQL.
+    cursor.execute("SELECT DISTINCT time_slot FROM Teachers WHERE time_slot IS NOT NULL AND time_slot != ''")
+    time_slots_raw = cursor.fetchall()
     cursor.close()
     connection.close()
-    return jsonify([time_slot[0] for time_slot in time_slots])
 
+    time_slots_list = [item[0] for item in time_slots_raw]
+    
+    # 2. Sort the list in Python.
+    def sort_key(time_slot_str):
+        try:
+            # Extract the start time before the hyphen
+            start_time_str = time_slot_str.split('-')[0].strip()
+            # Convert to a time object for correct sorting
+            return datetime.strptime(start_time_str, '%H:%M').time()
+        except (ValueError, IndexError):
+            # If format is wrong (e.g., "TBA", missing hyphen),
+            # return a time far in the future to place it last.
+            logging.warning(f"Could not parse time slot: '{time_slot_str}'. Placing it at the end of the list.")
+            return datetime.strptime('23:59', '%H:%M').time()
+
+    sorted_time_slots = sorted(time_slots_list, key=sort_key)
+    
+    return jsonify(sorted_time_slots)
+    
 
 @app.route('/students', methods=['GET'])
 @login_required
