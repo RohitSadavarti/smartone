@@ -15,7 +15,6 @@
     <h1 class="page-title">Attendance Data</h1>
   </header>
 
-  <!-- Sidebar -->
   <nav class="sidebar close">
     <div class="menu-bar">
       <div class="menu">
@@ -33,14 +32,7 @@
             </a>
           </li>
 
-          <li class="nav-link has-submenu">
-            <a href="javascript:void(0)" onclick="toggleSubMenu(this)">
-              <i class='fas fa-download'></i>
-              <span class="text nav-text">Update Data</span>
-              <i class="bx bx-chevron-down submenu-arrow" style="margin-left:auto;"></i>
-            </a>
-            <ul class="submenu">
-              <li class="nav-link has-submenu" id="admin-links">
+          <li class="nav-link has-submenu" id="admin-links">
             <a href="javascript:void(0)" onclick="toggleSubMenu(this)">
               <i class='fas fa-download'></i>
               <span class="text nav-text">Update Data</span>
@@ -51,7 +43,8 @@
               <li><a href="/admin-teacher"><i class='fas fa-chalkboard-teacher'></i> Teacher</a></li>
             </ul>
           </li>
-          <li class="nav-link">
+
+          <li class="nav-link" id="attendance-tab">
             <a href="/attendance" style="background: #004aad;color: #fff;border-radius: 5px;">
               <i class='bx bx-pie-chart-alt icon'></i>
               <span class="text nav-text">Attendance Tracker</span>
