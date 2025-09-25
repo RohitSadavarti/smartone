@@ -743,6 +743,7 @@ body.dark .close-modal:hover {
     linear-gradient(90deg,rgb(255 255 255/25%) 30%,#0000 0 70%,rgb(255 255 255/75% ) 0) 50%/100% 8%;
   background-repeat: no-repeat;
   animation: l23 1s infinite steps(12);
+  transform-origin: center;
 }
 .loader::before,
 .loader::after {
@@ -758,5 +759,5 @@ body.dark .close-modal:hover {
     transform: rotate(60deg);
 }
 @keyframes l23 {
-  100% {transform: rotate(1turn)}
+  100% {transform: rotate(360deg);}
 }
