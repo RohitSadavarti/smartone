@@ -428,7 +428,7 @@ def download_attendance_csv():
         writer.writerow(['Date', 'Roll Number', 'Name', 'Department', 'Class', 'Attendance', 'Lecture Time'])
         writer.writerows(rows)
         output.seek(0)
-        return Response(output.getvalue(), mimetype='text/csv', headers={'Content-Disposition': f'attachment; filename=attendance_{start_date}_to_{end_date}.csv'})
+        return Response(output.getvalue(), mimetype='text/csv', headers={'Content-Disposition': 'attachment; filename=attendance_data.csv'})
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'message': 'An error occurred while generating the CSV'}), 500
@@ -522,7 +522,7 @@ def upload_file():
                     valid_data.append((roll_number, name, department, class_value))
                     valid_records += 1
                 except Exception as e:
-                    error_data.append((roll_number, name, department, class_value, str(e)))
+                    error_data.append(row + (str(e),))
                     error_records += 1
             if valid_data:
                 cursor.executemany("INSERT INTO Validrecords (roll_number, name, department, class) VALUES (%s, %s, %s, %s)", valid_data)
@@ -535,7 +535,7 @@ def upload_file():
             connection.close()
             return jsonify({'message': 'File processed successfully.', 'total_records': total_records, 'valid_records': valid_records, 'error_records': error_records}), 200
         else:
-            return jsonify({'message': 'Invalid file type.'}), 400
+            return jsonify({'message': 'Invalid file type. Only .xlsx, .xls, and .csv files are allowed.'}), 400
     except Exception as e:
         print(f"Error while uploading file: {e}")
         return jsonify({'message': 'An error occurred while processing the file.'}), 500
