@@ -57,7 +57,7 @@ def get_user_from_db(email):
         cursor = connection.cursor()
         
         cursor.execute("""
-            SELECT id, email, password_hash, created_at
+            SELECT id, email, password_hash, created_at, role
             FROM users 
             WHERE email = %s
         """, (email,))
@@ -72,8 +72,8 @@ def get_user_from_db(email):
                 'email': user_row[1],
                 'password_hash': user_row[2],
                 'created_at': user_row[3],
+                'role': user_row[4] if user_row[4] else 'user',  # Use role from database
                 'name': user_row[1].split('@')[0].replace('.', ' ').title(),  # Use email prefix as name
-                'role': 'admin' if 'admin' in user_row[1].lower() else 'user'  # Simple role assignment
             }
         return None
         
@@ -101,18 +101,19 @@ def verify_password_crypt(password, password_hash):
         app.logger.error(f"Password verification error: {e}")
         return False
 
-def create_user_with_crypt(email, password):
+def create_user_with_crypt(email, password, role='user'):
     """Create a new user with crypt hashed password"""
     try:
         connection = get_pg_connection()
         cursor = connection.cursor()
         
         cursor.execute("""
-            INSERT INTO users (email, password_hash)
-            VALUES (%s, crypt(%s, gen_salt('bf')))
+            INSERT INTO users (email, password_hash, role)
+            VALUES (%s, crypt(%s, gen_salt('bf')), %s)
             ON CONFLICT (email) DO UPDATE 
-            SET password_hash = crypt(EXCLUDED.password_hash, gen_salt('bf'))
-        """, (email, password))
+            SET password_hash = crypt(EXCLUDED.password_hash, gen_salt('bf')), 
+                role = EXCLUDED.role
+        """, (email, password, role))
         
         connection.commit()
         cursor.close()
@@ -124,7 +125,7 @@ def create_user_with_crypt(email, password):
         app.logger.error(f"Error creating user: {e}")
         return False
 
-# FIXED: Enhanced authentication decorator
+# Enhanced authentication decorator
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -142,6 +143,42 @@ def login_required(f):
             return redirect(url_for('login_page'))
         
         app.logger.info(f"User authenticated: {session.get('user_id')}")
+        return f(*args, **kwargs)
+    return decorated_function
+
+# NEW: Admin role required decorator
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # First check if user is logged in
+        if 'user_id' not in session:
+            app.logger.info("User not authenticated, redirecting to login")
+            
+            # If it's an AJAX request, return JSON error
+            if request.is_json or request.headers.get('Content-Type') == 'application/json' or 'api/' in request.path:
+                return jsonify({'error': 'Authentication required', 'redirect': '/login'}), 401
+            # Otherwise redirect to login page
+            return redirect(url_for('login_page'))
+        
+        # Check if user has admin role
+        user_role = session.get('user_role', 'user')
+        app.logger.info(f"Checking admin access for user: {session.get('user_id')}, role: {user_role}")
+        
+        if user_role != 'admin':
+            app.logger.warning(f"Access denied for user {session.get('user_id')} with role {user_role}")
+            
+            # If it's an AJAX request, return JSON error
+            if request.is_json or request.headers.get('Content-Type') == 'application/json' or 'api/' in request.path:
+                return jsonify({
+                    'error': 'Admin access required', 
+                    'message': 'You do not have permission to access this resource',
+                    'redirect': '/'
+                }), 403
+            
+            # For regular requests, redirect to home page with error
+            return redirect(url_for('home'))
+        
+        app.logger.info(f"Admin access granted for user: {session.get('user_id')}")
         return f(*args, **kwargs)
     return decorated_function
 
@@ -200,11 +237,11 @@ def api_login():
             session.clear()  # Clear any existing session data
             session['user_id'] = user['email']
             session['user_name'] = user['name']
-            session['user_role'] = user['role']
+            session['user_role'] = user['role']  # Store role from database
             session['user_db_id'] = user['id']
             session.permanent = remember  # Remember session if checkbox was checked
             
-            app.logger.info(f"Login successful for user: {email}")
+            app.logger.info(f"Login successful for user: {email} with role: {user['role']}")
             app.logger.info(f"Session created: {dict(session)}")
             
             return jsonify({
@@ -281,6 +318,11 @@ def api_register():
         data = request.get_json()
         email = data.get('email', '').strip().lower()
         password = data.get('password', '')
+        role = data.get('role', 'user')  # Allow role to be specified, default to 'user'
+        
+        # Validate role
+        if role not in ['admin', 'user']:
+            role = 'user'
         
         if not email or not password:
             return jsonify({
@@ -303,7 +345,7 @@ def api_register():
             }), 409
         
         # Create new user with crypt
-        if create_user_with_crypt(email, password):
+        if create_user_with_crypt(email, password, role):
             return jsonify({
                 'success': True,
                 'message': 'User registered successfully'
@@ -343,13 +385,14 @@ def home():
 def attendance_tracker():
     return render_template("Attendance.html")
 
+# ADMIN-ONLY ROUTES - Use admin_required decorator
 @app.route("/admin-students")
-@login_required
+@admin_required
 def admin_student():
     return render_template("admin-students.html")
 
 @app.route("/admin-teacher")
-@login_required
+@admin_required
 def admin_teacher():
     return render_template("admin-teacher.html")
 
@@ -639,9 +682,9 @@ def get_student_departments():
     connection.close()
     return jsonify([dept[0] for dept in departments])
 
-# Manual Student Submission
+# Manual Student Submission - ADMIN ONLY
 @app.route('/submit', methods=['POST'])
-@login_required
+@admin_required
 def submit_student():
     try:
         data = request.json
@@ -680,7 +723,7 @@ def submit_student():
         print(f"Error: {e}")
         return jsonify({'success': False, 'message': 'Failed to submit student data'}), 500
 
-# Upload Excel File
+# Upload Excel File - ADMIN ONLY
 def process_excel(file_path):
     """
     Parses the Excel file and returns the data as a list of rows.
@@ -700,7 +743,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 @app.route('/upload-file', methods=['POST'])
-@login_required
+@admin_required
 def upload_file():
     try:
         file = request.files.get('file')
@@ -795,9 +838,9 @@ def upload_file():
         print(f"Error while uploading file: {e}")
         return jsonify({'message': 'An error occurred while processing the file.'}), 500
 
-# Upload history route
+# Upload history route - ADMIN ONLY
 @app.route('/upload-history', methods=['GET'])
-@login_required
+@admin_required
 def upload_history():
     try:
         connection = get_pg_connection()
@@ -827,9 +870,9 @@ def upload_history():
         print(f"Error: {e}")
         return jsonify({'message': 'Failed to fetch upload history'}), 500
 
-# Download valid records as CSV
+# Download valid records as CSV - ADMIN ONLY
 @app.route('/valid-records-csv', methods=['GET'])
-@login_required
+@admin_required
 def download_valid_csv():
     try:
         connection = get_pg_connection()
@@ -847,7 +890,7 @@ def download_valid_csv():
         # Generate CSV
         output = StringIO()
         writer = csv.writer(output)
-        writer.writerow(['Roll Number', 'Name', 'Department', 'Class', 'Error Message'])
+        writer.writerow(['Roll Number', 'Name', 'Department', 'Class'])
         writer.writerows(rows)
 
         csv_data = output.getvalue()
@@ -855,15 +898,15 @@ def download_valid_csv():
         return Response(
             csv_data,
             mimetype='text/csv',
-            headers={'Content-Disposition': 'attachment; filename=error_records.csv'}
+            headers={'Content-Disposition': 'attachment; filename=valid_records.csv'}
         )
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'message': 'An error occurred while generating the CSV'}), 500
 
-# Get row count by uploader name
+# Get row count by uploader name - ADMIN ONLY
 @app.route('/upload-history/row-count', methods=['GET'])
-@login_required
+@admin_required
 def get_row_count():
     try:
         uploader_name = request.args.get('uploader_name', '').strip()
@@ -888,9 +931,9 @@ def get_row_count():
         print(f"Error: {e}")
         return jsonify({'message': 'An error occurred while fetching row count'}), 500
 
-# Save teacher manually
+# Save teacher manually - ADMIN ONLY
 @app.route('/teachers', methods=['POST'])
-@login_required
+@admin_required
 def save_teacher():
     try:
         data = request.json
@@ -924,9 +967,9 @@ def save_teacher():
         print(f"Error saving teacher: {e}")
         return jsonify({'message': 'Failed to save teacher data'}), 500
 
-# Upload teachers in bulk via file
+# Upload teachers in bulk via file - ADMIN ONLY
 @app.route('/upload-teachers', methods=['POST'])
-@login_required
+@admin_required
 def upload_teachers():
     try:
         file = request.files.get('file')
@@ -999,21 +1042,19 @@ def upload_teachers():
         print(f"Error: {e}")
         return jsonify({'message': 'An error occurred while processing the file.'}), 500
 
-# Admin utility endpoint to create users (optional - for development/testing)
+# Admin utility endpoint to create users - ADMIN ONLY
 @app.route('/api/admin/create-user', methods=['POST'])
-@login_required
+@admin_required
 def admin_create_user():
-    # Check if user has admin role
-    if session.get('user_role') != 'admin':
-        return jsonify({
-            'success': False,
-            'message': 'Admin access required'
-        }), 403
-    
     try:
         data = request.get_json()
         email = data.get('email', '').strip().lower()
         password = data.get('password', '')
+        role = data.get('role', 'user')
+        
+        # Validate role
+        if role not in ['admin', 'user']:
+            role = 'user'
         
         if not email or not password:
             return jsonify({
@@ -1021,10 +1062,10 @@ def admin_create_user():
                 'message': 'Email and password are required'
             }), 400
         
-        if create_user_with_crypt(email, password):
+        if create_user_with_crypt(email, password, role):
             return jsonify({
                 'success': True,
-                'message': f'User {email} created successfully'
+                'message': f'User {email} created successfully with role {role}'
             })
         else:
             return jsonify({
@@ -1038,6 +1079,24 @@ def admin_create_user():
             'success': False,
             'message': 'Failed to create user'
         }), 500
+
+# NEW: API endpoint to check user permissions
+@app.route('/api/user-permissions', methods=['GET'])
+@login_required
+def api_user_permissions():
+    user_role = session.get('user_role', 'user')
+    
+    permissions = {
+        'can_access_admin_students': user_role == 'admin',
+        'can_access_admin_teachers': user_role == 'admin',
+        'can_upload_files': user_role == 'admin',
+        'can_manage_students': user_role == 'admin',
+        'can_manage_teachers': user_role == 'admin',
+        'can_view_upload_history': user_role == 'admin',
+        'user_role': user_role
+    }
+    
+    return jsonify(permissions)
 
 # Debug routes (remove in production)
 @app.route('/debug/session')
@@ -1081,7 +1140,6 @@ def health_check():
             'error': str(e),
             'timestamp': datetime.now().isoformat()
         }), 500
-
 
 
 if __name__ == '__main__':
