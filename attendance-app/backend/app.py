@@ -311,12 +311,13 @@ def get_subjects():
 def get_time_slots():
     connection = get_pg_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT DISTINCT time_slot FROM Teachers ORDER BY time_slot ASC")
+    # MODIFIED LINE: Cast the start of the time_slot to a TIME type for proper sorting.
+    cursor.execute("SELECT DISTINCT time_slot FROM Teachers ORDER BY CAST(split_part(time_slot, '-', 1) AS TIME) ASC")
     time_slots = cursor.fetchall()
     cursor.close()
     connection.close()
     return jsonify([time_slot[0] for time_slot in time_slots])
-
+    
 @app.route('/students', methods=['GET'])
 @login_required
 def get_students():
