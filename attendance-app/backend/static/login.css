@@ -601,6 +601,15 @@ body.dark .close-modal:hover {
     to { transform: rotate(360deg); }
 }
 
+.loading-spinner {
+    border: 4px solid #333;
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite; /* This line makes it spin! */
+}
+
 /* Loading Overlay */
 #loading-overlay {
     position: fixed;
