@@ -1,3 +1,6 @@
+Based on your request, here is the complete `sidebar.js` code with the `checkUserRole` function included to hide the admin links for non-admin users.
+
+```javascript
 document.addEventListener("DOMContentLoaded", () => {
     const body = document.querySelector("body");
     const sidebar = document.querySelector("nav.sidebar");
@@ -5,6 +8,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const backdrop = document.querySelector(".sidebar-toggle-backdrop");
     const modeSwitch = document.querySelector(".toggle-switch");
     const modeText = document.querySelector(".mode-text");
+
+    function checkUserRole() {
+        const adminLinks = document.getElementById('admin-links');
+        const role = localStorage.getItem('user_role');
+        
+        if (adminLinks) {
+            if (role === 'admin') {
+                adminLinks.style.display = ''; // Show the links
+            } else {
+                adminLinks.style.display = 'none'; // Hide the links
+            }
+        }
+    }
 
     // Initialize sidebar state
     if (sidebar) {
@@ -21,6 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initialize logout functionality
     initializeLogout();
+
+    // Check user role on page load
+    checkUserRole();
 
     // Sidebar toggle functionality
     if (toggle && sidebar) {
@@ -365,3 +384,4 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 });
+```
