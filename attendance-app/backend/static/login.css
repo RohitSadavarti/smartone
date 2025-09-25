@@ -583,6 +583,7 @@ body.dark .close-modal:hover {
     animation: slideIn 0.3s ease-out;
     font-size: 0.8rem;
     margin-top: 5px;
+    color: #e53e3e;
 }
 
 @keyframes slideIn {
@@ -596,7 +597,7 @@ body.dark .close-modal:hover {
     }
 }
 
-/* Loading Overlay */
+/* Loading Overlay - FIXED */
 #loading-overlay {
     position: fixed;
     top: 0;
@@ -611,39 +612,57 @@ body.dark .close-modal:hover {
     flex-direction: column;
     color: white;
     font-size: 16px;
+    backdrop-filter: blur(5px);
 }
 
 .loading-text {
     margin-top: 20px;
     font-weight: 500;
+    font-size: 16px;
 }
 
-/* FIXED LOADER STYLES */
+/* FIXED LOADER STYLES - This is the spinning circle */
 .loader {
-    border: 8px solid rgba(255, 255, 255, 0.2);
-    border-top: 8px solid #fff;
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top: 6px solid #6a0080;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
     animation: spin 1s linear infinite;
-    margin: 0 auto;
+    margin: 0;
 }
 
+/* CRITICAL: This is the spin animation - was missing or broken */
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% { 
+        transform: rotate(0deg); 
+    }
+    100% { 
+        transform: rotate(360deg); 
+    }
+}
+
+/* Additional spinner for button */
+.login-btn .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
 }
 
 /* Keyframe animation for the login container */
 @keyframes fadeInZoom {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Mobile Responsive */
@@ -685,6 +704,12 @@ body.dark .close-modal:hover {
         top: 10px;
         max-width: none;
     }
+    
+    .loader {
+        width: 50px;
+        height: 50px;
+        border-width: 5px;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -717,6 +742,12 @@ body.dark .close-modal:hover {
         right: 12px;
         font-size: 0.9rem;
     }
+    
+    .loader {
+        width: 40px;
+        height: 40px;
+        border-width: 4px;
+    }
 }
 
 /* High contrast mode support */
@@ -736,6 +767,14 @@ body.dark .close-modal:hover {
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+    .loader {
+        animation: none;
+    }
+    
+    .login-btn.loading .btn-icon {
+        animation: none;
+    }
+    
     * {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
