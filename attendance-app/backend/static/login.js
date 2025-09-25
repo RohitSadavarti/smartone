@@ -764,5 +764,3 @@ if (!document.querySelector('#popup-styles')) {
     styleSheet.textContent = popupStyles;
     document.head.appendChild(styleSheet);
 }
-
-}
