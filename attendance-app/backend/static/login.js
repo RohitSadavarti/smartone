@@ -1,4 +1,4 @@
-// Complete Login Page JavaScript with Authentication Utilities
+// Complete Login Page JavaScript with Fixed Loading Animation
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const forgotPasswordForm = document.getElementById('forgotPasswordForm');
@@ -80,8 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await loginUser(email, password, remember);
             
             if (response.success) {
-                // The loading animation will now show until the page redirects
-                
                 // Store user session if remember me is checked
                 if (remember) {
                     try {
@@ -96,7 +94,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     localStorage.setItem('user_role', response.user.role);
                 }
                 
-                // Redirect after a short delay to allow the animation to be seen
+                // Show success message briefly
+                showPopup('Login successful! Redirecting...', 'success');
+                
+                // Redirect after a delay to allow the success message to be seen
                 setTimeout(() => {
                     window.location.href = response.redirect || '/';
                 }, 1500);
@@ -126,6 +127,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Show loading on reset button
+        const resetBtn = document.querySelector('.reset-btn');
+        const originalText = resetBtn.textContent;
+        resetBtn.textContent = 'Sending...';
+        resetBtn.disabled = true;
+        
         try {
             // Real API call to Flask backend
             const response = await resetPassword(email);
@@ -140,6 +147,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Password reset error:', error);
             showPopup('Failed to send reset link. Please try again.', 'error');
+        } finally {
+            // Restore reset button
+            resetBtn.textContent = originalText;
+            resetBtn.disabled = false;
         }
     }
     
@@ -253,74 +264,85 @@ document.addEventListener('DOMContentLoaded', function() {
         return emailRegex.test(email);
     }
     
-    // Show loading state
+    // Show loading state - FIXED
     function showLoadingState() {
-    console.log('Showing loading state...'); // Debug log
-    
-    if (loadingOverlay) {
-        loadingOverlay.style.display = 'flex';
-        console.log('Loading overlay displayed'); // Debug log
+        console.log('Showing loading state...');
+        
+        // Show the overlay with spinning animation
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'flex';
+            console.log('Loading overlay displayed');
+        }
+        
+        // Update login button
+        if (loginBtn) {
+            loginBtn.disabled = true;
+            loginBtn.classList.add('loading');
+            
+            // Create spinner element
+            const spinner = document.createElement('div');
+            spinner.className = 'spinner';
+            
+            // Update button content
+            const btnText = loginBtn.querySelector('.btn-text');
+            const btnIcon = loginBtn.querySelector('.btn-icon');
+            
+            if (btnText) {
+                btnText.textContent = 'Logging in...';
+            }
+            if (btnIcon) {
+                btnIcon.style.display = 'none';
+                // Insert spinner before the text
+                loginBtn.insertBefore(spinner, btnText);
+            }
+        }
     }
     
-    if (loginBtn) {
-        loginBtn.disabled = true;
-        loginBtn.classList.add('loading');
-        
-        // Update button content properly
-        const btnText = loginBtn.querySelector('.btn-text');
-        const btnIcon = loginBtn.querySelector('.btn-icon');
-        
-        if (btnText) {
-            btnText.textContent = 'Logging in...'; // Change text instead of hiding
-            btnText.style.opacity = '1'; // Keep text visible
-        }
-        if (btnIcon) {
-            btnIcon.className = 'fas fa-spinner btn-icon'; // Change to spinner
-        }
-    }
-}
-    
-    // Hide loading state
+    // Hide loading state - FIXED
     function hideLoadingState() {
-    console.log('Hiding loading state...'); // Debug log
-    
-    if (loadingOverlay) {
-        loadingOverlay.style.display = 'none';
+        console.log('Hiding loading state...');
+        
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
+        
+        if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.classList.remove('loading');
+            
+            // Remove spinner
+            const spinner = loginBtn.querySelector('.spinner');
+            if (spinner) {
+                spinner.remove();
+            }
+            
+            // Restore button content
+            const btnText = loginBtn.querySelector('.btn-text');
+            const btnIcon = loginBtn.querySelector('.btn-icon');
+            
+            if (btnText) {
+                btnText.textContent = 'Login';
+            }
+            if (btnIcon) {
+                btnIcon.style.display = '';
+            }
+        }
     }
     
-    if (loginBtn) {
-        loginBtn.disabled = false;
-        loginBtn.classList.remove('loading');
-        
-        // Restore button content properly
-        const btnText = loginBtn.querySelector('.btn-text');
-        const btnIcon = loginBtn.querySelector('.btn-icon');
-        
-        if (btnText) {
-            btnText.textContent = 'Login'; // Restore original text
-            btnText.style.opacity = '1'; // Ensure text is visible
-        }
-        if (btnIcon) {
-            btnIcon.className = 'fas fa-arrow-right btn-icon'; // Restore original icon
-        }
-    }
-}
-
+    // Test function for debugging - you can call this in console
     function testLoadingSpinner() {
-    console.log('Testing loading spinner...');
-    const loadingOverlay = document.getElementById('loading-overlay');
-    if (loadingOverlay) {
-        loadingOverlay.style.display = 'flex';
-        console.log('Loading overlay should be visible now');
+        console.log('Testing loading spinner...');
+        showLoadingState();
         
         setTimeout(() => {
-            loadingOverlay.style.display = 'none';
-            console.log('Loading overlay hidden');
+            hideLoadingState();
+            console.log('Test completed');
         }, 3000);
-    } else {
-        console.log('Loading overlay element not found!');
     }
-}
+    
+    // Make test function global for debugging
+    window.testLoadingSpinner = testLoadingSpinner;
+    
     // Show popup message (for login page)
     function showPopup(message, type = 'info') {
         if (popup && popupMessage) {
@@ -328,9 +350,11 @@ document.addEventListener('DOMContentLoaded', function() {
             popup.className = `popup ${type}`;
             popup.style.display = 'block';
             
-            // Auto-hide success messages after 3 seconds
+            // Auto-hide success messages after 4 seconds
             if (type === 'success') {
-                setTimeout(hidePopup, 3000);
+                setTimeout(hidePopup, 4000);
+            } else if (type === 'error') {
+                setTimeout(hidePopup, 6000);
             }
         }
     }
@@ -694,23 +718,29 @@ function loginWithGoogle() {
             loadingOverlay.style.display = 'none';
         }
         alert('Google login would be implemented here');
-    }, 1000);
+    }, 2000);
 }
 
 function loginWithMicrosoft() {
     const loadingOverlay = document.getElementById('loading-overlay');
     if (loadingOverlay) {
         loadingOverlay.style.display = 'flex';
-        loadingOverlay.querySelector('.loading-text').textContent = 'Connecting to Microsoft...';
+        const loadingText = loadingOverlay.querySelector('.loading-text');
+        if (loadingText) {
+            loadingText.textContent = 'Connecting to Microsoft...';
+        }
     }
     
     setTimeout(() => {
         if (loadingOverlay) {
             loadingOverlay.style.display = 'none';
-            loadingOverlay.querySelector('.loading-text').textContent = 'Logging you in...';
+            const loadingText = loadingOverlay.querySelector('.loading-text');
+            if (loadingText) {
+                loadingText.textContent = 'Logging you in...';
+            }
         }
         alert('Microsoft login would be implemented here');
-    }, 1000);
+    }, 2000);
 }
 
 // Close modal when clicking outside
@@ -732,74 +762,18 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Add CSS for popup styling (if not already in CSS)
-const popupStyles = `
-    .popup {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #333;
-        color: white;
-        padding: 15px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        z-index: 10001;
-        display: none;
-        max-width: 300px;
+// Preload check - ensure elements exist before proceeding
+document.addEventListener('DOMContentLoaded', function() {
+    // Verify critical elements exist
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (!loadingOverlay) {
+        console.warn('Loading overlay not found in DOM');
     }
     
-    .popup.success {
-        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    const loginBtn = document.getElementById('loginBtn');
+    if (!loginBtn) {
+        console.warn('Login button not found in DOM');
     }
     
-    .popup.error {
-        background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-    }
-    
-    .popup.info {
-        background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-    }
-    
-    .popup button {
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-top: 10px;
-        float: right;
-    }
-    
-    .popup button:hover {
-        background: rgba(255,255,255,0.3);
-    }
-    
-    .error-message {
-        animation: slideIn 0.3s ease-out;
-    }
-    
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-`;
-
-// Inject styles if they don't exist
-if (!document.querySelector('#popup-styles')) {
-    const styleSheet = document.createElement('style');
-    styleSheet.id = 'popup-styles';
-    styleSheet.textContent = popupStyles;
-    document.head.appendChild(styleSheet);
-}
+    console.log('Login page JavaScript initialized successfully');
+});
