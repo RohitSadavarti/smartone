@@ -30,7 +30,7 @@
     .iframe-container {
       position: relative;
       width: 100%;
-      height: 45vh; /* Adjust height for multiple iframes */
+      height: 80vh; 
       border: 1px solid #ccc;
       border-radius: 8px;
       overflow: hidden;
@@ -147,22 +147,14 @@
 
   <div class="main-content">
     <div class="iframe-wrapper">
-        <div class="iframe-title">Plot 1</div>
+        <div class="iframe-title">Attendance Dashboard</div>
         <div class="iframe-container">
             <button class="fullscreen-btn" onclick="toggleFullscreen(this)"><i class="fas fa-expand"></i></button>
-            <iframe src="https://test-opwl.onrender.com" frameborder="0"></iframe>
+            <iframe src="http://localhost:8501" frameborder="0"></iframe>
         </div>
     </div>
 
-    <div class="iframe-wrapper">
-        <div class="iframe-title">Plot 2</div>
-        <div class="iframe-container">
-            <button class="fullscreen-btn" onclick="toggleFullscreen(this)"><i class="fas fa-expand"></i></button>
-            <iframe src="https://test-opwl.onrender.com" frameborder="0"></iframe>
-        </div>
-    </div>
-    
-    </div>
+  </div>
 
    <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
   <script src="{{ url_for('static', filename='script.js') }}"></script>
