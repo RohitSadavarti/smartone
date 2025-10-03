@@ -17,16 +17,26 @@
       position: relative;
     }
 
+    .iframe-wrapper {
+        margin-bottom: 20px;
+    }
+
+    .iframe-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
     .iframe-container {
       position: relative;
       width: 100%;
-      height: 90vh;
+      height: 45vh; /* Adjust height for multiple iframes */
       border: 1px solid #ccc;
       border-radius: 8px;
       overflow: hidden;
     }
 
-    #content-frame {
+    .iframe-container iframe {
       width: 100%;
       height: 100%;
       border: none;
@@ -135,23 +145,31 @@
     </div>
   </nav>
 
-  <div class="main-content iframe-container">
-    <div class="iframe-controls">
+  <div class="main-content">
+    <div class="iframe-wrapper">
+        <div class="iframe-title">Plot 1</div>
+        <div class="iframe-container">
+            <button class="fullscreen-btn" onclick="toggleFullscreen(this)"><i class="fas fa-expand"></i></button>
+            <iframe src="https://test-opwl.onrender.com" frameborder="0"></iframe>
+        </div>
     </div>
-    <iframe id="content-frame"
-            src="https://test-opwl.onrender.com"
-            frameborder="0"
-            width="100%"
-            height="800px"
-            style="min-height: 100vh;"></iframe>
-  </div>
+
+    <div class="iframe-wrapper">
+        <div class="iframe-title">Plot 2</div>
+        <div class="iframe-container">
+            <button class="fullscreen-btn" onclick="toggleFullscreen(this)"><i class="fas fa-expand"></i></button>
+            <iframe src="https://test-opwl.onrender.com" frameborder="0"></iframe>
+        </div>
+    </div>
+    
+    </div>
 
    <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
   <script src="{{ url_for('static', filename='script.js') }}"></script>
   <script>
-    function toggleFullscreen() {
-      const iframeContainer = document.getElementById("iframe-container");
-      const icon = document.getElementById("fullscreen-icon");
+    function toggleFullscreen(button) {
+      const iframeContainer = button.parentElement;
+      const icon = button.querySelector("i");
 
       if (iframeContainer.classList.contains("fullscreen")) {
         iframeContainer.classList.remove("fullscreen");
