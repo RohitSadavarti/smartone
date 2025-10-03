@@ -376,28 +376,59 @@ def save_attendance():
     data = request.json
     connection = get_pg_connection()
     cursor = connection.cursor()
+    
     for record in data['attendance_records']:
-        cursor.execute(""" 
-            INSERT INTO Attendance (date, roll_number, name, department, class, subject, teacher_name, lecture_time, attendance)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT (date, lecture_time, roll_number) 
-            DO UPDATE SET attendance = EXCLUDED.attendance
-        """, (
-            record['date'], 
-            record['roll_number'], 
-            record['name'], 
-            record['department'], 
-            record['class'], 
-            record['subject'], 
-            record['teacher_name'], 
-            record['lecture_time'], 
-            record['attendance']
-        ))
+        # First check if record exists
+        cursor.execute("""
+            SELECT id FROM Attendance 
+            WHERE date = %s AND lecture_time = %s AND roll_number = %s
+        """, (record['date'], record['lecture_time'], record['roll_number']))
+        
+        existing = cursor.fetchone()
+        
+        if existing:
+            # Update existing record
+            cursor.execute("""
+                UPDATE Attendance 
+                SET attendance = %s,
+                    name = %s,
+                    department = %s,
+                    class = %s,
+                    subject = %s,
+                    teacher_name = %s
+                WHERE date = %s AND lecture_time = %s AND roll_number = %s
+            """, (
+                record['attendance'],
+                record['name'],
+                record['department'],
+                record['class'],
+                record['subject'],
+                record['teacher_name'],
+                record['date'],
+                record['lecture_time'],
+                record['roll_number']
+            ))
+        else:
+            # Insert new record (let id auto-generate)
+            cursor.execute("""
+                INSERT INTO Attendance (date, roll_number, name, department, class, subject, teacher_name, lecture_time, attendance)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                record['date'],
+                record['roll_number'],
+                record['name'],
+                record['department'],
+                record['class'],
+                record['subject'],
+                record['teacher_name'],
+                record['lecture_time'],
+                record['attendance']
+            ))
+    
     connection.commit()
     cursor.close()
     connection.close()
     return jsonify({"status": "success"})
-
 @app.route('/attendance-data', methods=['GET'])
 @login_required
 def get_attendance_data():
