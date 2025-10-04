@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Portal</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+ <style>
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .iframe-container {
+      position: relative;
+      width: 100%;
+      height: 90vh;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #content-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .fullscreen-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      z-index: 10;
+      font-size: 22px;
+      background: #004aad;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    .fullscreen {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999;
+      margin: 0 !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+    }
+
+    .fullscreen-btn i {
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+<nav class="sidebar">
+    <header>
+      <i class='bx bx-chevron-right toggle'></i>
+    </header>
+    <div class="menu-bar">
+      <div class="menu">
+<ul class="menu-links">
+  <li class="nav-link">
+    <a href="/">
+      <i class='fas fa-home'></i>
+      <span class="text nav-text">Home</span>
+    </a>
+  </li>
+<li class="nav-link">
+  <a href="/dashboard">
+    <i class='fas fa-chart-bar icon'></i>
+    <span class="text nav-text">Dashboard</span>
+  </a>
+</li>
+
+   <li class="nav-link has-submenu" id="admin-links">
+  <a href="javascript:void(0)" onclick="toggleSubMenu(this)">
+    <i class='fas fa-download'></i>
+    <span class="text nav-text">Update Data</span>
+    <i class="bx bx-chevron-down submenu-arrow" style="margin-left:auto;"></i>
+  </a>
+  <ul class="submenu">
+    <li><a href="/admin-students">Student</a></li>
+    <li><a href="/admin-teacher">Teacher</a></li>
+  </ul>
+</li>
+
+          <li class="nav-link" id="attendance-tab">
+    <a href="/attendance">
+      <i class='bx bx-pie-chart-alt icon'></i>
+      <span class="text nav-text">Attendance Tracker</span>
+    </a>
+  </li>
+  <li class="nav-link">
+    <a href="/" style="background: #004aad;color: #fff;border-radius: 5px;">
+      <i class='bx bx-pencil icon'></i>
+      <span class="text nav-text">Update Attendance</span>
+    </a>
+  </li>
+
+        </ul>
+      </div>
+      <div class="sidebar-toggle-backdrop" onclick="closeSidebar()"></div>
+
+      <div class="bottom-content">
+        <li>
+          <a href="#">
+            <i class='bx bx-log-out icon'></i>
+            <span class="text nav-text">Logout</span>
+          </a>
+        </li>
+        <li class="mode">
+          <div class="sun-moon">
+            <i class='bx bx-moon icon moon'></i>
+            <i class='bx bx-sun icon sun'></i>
+          </div>
+          <span class="mode-text text">Dark mode</span>
+          <div class="toggle-switch">
+            <span class="switch"></span>
+          </div>
+        </li>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-content iframe-container">
+    <div class="iframe-controls">
+    </div>
+    <iframe id="content-frame"
+            src="https://test-opwl.onrender.com"
+            frameborder="0"
+            width="100%"
+            height="800px"
+            style="min-height: 100vh;"></iframe>
+  </div>
+
+   <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script>
+    function toggleFullscreen() {
+      const iframeContainer = document.getElementById("iframe-container");
+      const icon = document.getElementById("fullscreen-icon");
+
+      if (iframeContainer.classList.contains("fullscreen")) {
+        iframeContainer.classList.remove("fullscreen");
+        icon.classList.remove("fa-compress");
+        icon.classList.add("fa-expand");
+      } else {
+        iframeContainer.classList.add("fullscreen");
+        icon.classList.remove("fa-expand");
+        icon.classList.add("fa-compress");
+      }
+    }
+
+    function toggleSubMenu(el) {
+      el.classList.toggle("active");
+      const submenu = el.nextElementSibling;
+      submenu.style.display = submenu.style.display === "block" ? "none" : "block";
+    }
+  </script>
+</body>
+</html>

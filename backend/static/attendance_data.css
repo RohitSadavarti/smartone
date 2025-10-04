@@ -1,0 +1,514 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+:root {
+    --tran-03: all 0.2s ease;
+    --tran-05: all 0.3s ease;
+    --body-color: #f4f4f9;
+    --sidebar-color: #11101d;
+    --primary-color: #695cfe;
+    --primary-color-light: #f6f5ff;
+    --toggle-color: #ddd;
+    --text-color: #707070;
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--body-color);
+    color: #333;
+    line-height: 1.6;
+    display: flex;
+    transition: var(--tran-05);
+}
+
+/* Set dark mode as default */
+body {
+    --body-color: #18191a;
+    --sidebar-color: #242526;
+    --primary-color: #3a3b3c;
+    --primary-color-light: #3a3b3c;
+    --toggle-color: #fff;
+    --text-color: #ccc;
+    background-color: var(--body-color);
+    color: var(--text-color);
+}
+
+body.dark {
+    /* Light mode styles when dark class is toggled */
+    --body-color: #f4f4f9;
+    --sidebar-color: #11101d;
+    --primary-color: #695cfe;
+    --primary-color-light: #f6f5ff;
+    --toggle-color: #ddd;
+    --text-color: #707070;
+    background-color: var(--body-color);
+    color: #333;
+}
+
+/* Loading Overlay - Default dark mode */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+}
+
+body.dark #loading-overlay {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.loading-spinner {
+    border: 4px solid #333;
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+body.dark .loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid purple;
+}
+
+.loading-text {
+    font-size: 18px;
+    color: #fff;
+    font-weight: 500;
+}
+
+body.dark .loading-text {
+    color: #333;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Header Styling - Match index.html exactly */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    background-color: var(--body-color);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    border-bottom: 1px solid #ddd;
+    transition: var(--tran-05);
+}
+
+body.dark header {
+    background-color: var(--body-color);
+    border-bottom: 1px solid #444;
+}
+
+#hamburger-toggle {
+    font-size: 24px !important;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    color: #fff !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative;
+    z-index: 1002;
+    min-width: 40px;
+    min-height: 40px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+body.dark #hamburger-toggle {
+    color: #333 !important;
+}
+
+#hamburger-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark #hamburger-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Main Content - Adjusted for sidebar collapsed by default */
+.main-content {
+    margin-left: 88px; /* Collapsed sidebar width */
+    margin-top: 60px; /* Space for fixed header */
+    width: calc(100% - 88px);
+    padding: 20px;
+    background: var(--body-color);
+    transition: margin-left 0.3s ease, width 0.3s ease;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* When sidebar is expanded */
+body:not(.sidebar-closed) .main-content {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+}
+
+/* Main page title - same as index.html */
+h1 {
+    text-align: center;
+    margin: 0 auto 20px auto;
+    font-size: 2rem;
+    color: white;
+/*    background-color: black;*/
+    padding: 10px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    width: fit-content;
+    display: block;}
+
+body.dark h1 {
+    background-color: black;
+}
+
+/* Form Styling - Default dark mode */
+form {
+    max-width: 100%;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    background: #2a2a2a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: end;
+    flex-shrink: 0;
+}
+
+body.dark form {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #ccc;
+}
+
+body.dark label {
+    color: #333;
+}
+
+select, input[type="date"], input[type="text"], button {
+    padding: 10px 12px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    font-size: 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+    background: #3a3a3a;
+    color: #ccc;
+}
+
+body.dark select, 
+body.dark input[type="date"], 
+body.dark input[type="text"] {
+    background: white;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border-color: purple;
+    box-shadow: 0 0 5px rgba(128, 0, 128, 0.3);
+}
+
+button {
+    background-color: purple;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 500;
+}
+
+button:hover {
+    background-color: #6a0080;
+}
+
+/* Search Section - Default dark mode */
+.search-section {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 15px;
+    align-items: end;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #2a2a2a;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+body.dark .search-section {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Container - Default dark mode */
+.table-container {
+    flex: 1;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: #2a2a2a;
+    overflow-y: auto;
+    overflow-x: auto;
+    position: relative;
+}
+
+body.dark .table-container {
+    background: white;
+}
+
+.search-section .form-group {
+    min-width: 200px;
+}
+
+#search, #clear-search {
+    min-width: 120px;
+    height: 42px;
+    margin-left: 0;
+}
+
+/* Table Styling - Default dark mode */
+table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+    background: transparent;
+}
+
+/* Sticky Table Header - Default dark mode */
+thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #1a1a1a;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    padding: 15px 12px;
+    text-align: center;
+    border-bottom: 2px solid #333;
+    cursor: pointer;
+}
+
+body.dark thead th {
+    background: purple;
+    border-bottom: 2px solid #fff;
+}
+
+thead th:hover {
+    background: #333;
+}
+
+body.dark thead th:hover {
+    background: #6a0080;
+}
+
+td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #444;
+    color: #ccc;
+}
+
+body.dark td {
+    border-bottom: 1px solid #eee;
+    color: #333;
+}
+
+tbody tr:nth-child(even) {
+    background: #333;
+}
+
+body.dark tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+tbody tr:hover {
+    background: #444;
+}
+
+body.dark tbody tr:hover {
+    background: #f1f1f1;
+}
+
+/* Dark Mode Button Support - Default dark mode */
+button {
+    background-color: #1a1a1a;
+    color: white;
+    border: 1px solid #444;
+}
+
+button:hover {
+    background-color: #333;
+    color: white;
+}
+
+body.dark button {
+    background-color: purple;
+    color: white;
+    border: none;
+}
+
+body.dark button:hover {
+    background-color: #6a0080;
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 768px) {
+    /* Header adjustments for mobile */
+    header {
+        padding: 12px 15px;
+        height: 50px;
+    }
+
+    /* Main content for mobile */
+    .main-content {
+        margin-left: 0;
+        margin-top: 50px;
+        width: 100%;
+        padding: 15px 10px;
+        height: calc(100vh - 50px);
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        padding: 10px;
+    }
+
+    /* Form adjustments */
+    form {
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 15px;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Search section adjustments */
+    .search-section {
+        position: sticky;
+        top: 160px;
+        z-index: 200;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 15px;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-section .form-group {
+        min-width: unset;
+    }
+
+    #search, #clear-search {
+        margin-top: 10px;
+        min-width: unset;
+        width: 100%;
+    }
+
+    /* Table container for mobile */
+    .table-container {
+        flex: 1;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    table {
+        min-width: 100%;
+        font-size: 14px;
+    }
+
+    thead th {
+        padding: 10px 6px;
+        font-size: 12px;
+    }
+
+    tbody td {
+        padding: 8px 6px;
+        font-size: 13px;
+    }
+}
+
+/* Very small screens */
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 1.2rem;
+        padding: 8px;
+    }
+
+    .main-content {
+        margin-top: 45px;
+        height: calc(100vh - 45px);
+        padding: 10px 5px;
+    }
+
+    form {
+        top: 0;
+        padding: 10px;
+    }
+
+    .search-section {
+        top: 140px;
+        padding: 10px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    thead th {
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+
+    tbody td {
+        padding: 6px 4px;
+        font-size: 12px;
+    }
+}
