@@ -201,41 +201,34 @@
   <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
   <script src="{{ url_for('static', filename='filter.js') }}"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     document.getElementById('download-pdf-btn').addEventListener('click', function () {
-        // --- 1. SELECT ONLY THE CONTENT FOR THE REPORT ---
-        // We clone the title and the plot container to create a clean report
-        const reportTitle = document.querySelector('.main-content h1').cloneNode(true);
-        const plotContainer = document.querySelector('.plot-container').cloneNode(true);
+        // --- 1. IDENTIFY ELEMENTS ---
+        const reportContent = document.getElementById('dashboard-content');
+        const filterContainer = document.querySelector('.filter-container'); // The element to hide
+        const btn = document.getElementById('download-pdf-btn');
 
-        // --- 2. CREATE A TEMPORARY ELEMENT FOR THE PDF ---
-        // This element will only contain the title and plots
-        const reportElement = document.createElement('div');
-        reportElement.style.padding = '20px'; // Add some padding for better looks
-        reportElement.appendChild(reportTitle);
-        reportElement.appendChild(plotContainer);
-
-        // --- 3. CONFIGURE PDF OPTIONS ---
+        // --- 2. CONFIGURE PDF OPTIONS ---
         const options = {
             margin:       [0.5, 0.5, 0.5, 0.5],
             filename:     'attendance_dashboard_report.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#18191a' },
             jsPDF:        { unit: 'in', format: 'a3', orientation: 'portrait' },
-            // This is the magic part: it tells the PDF generator to avoid cutting off plots
-            pagebreak:    { mode: 'avoid-all', before: '.plot-item.full-width' }
+            pagebreak:    { mode: 'avoid-all', before: '.plot-item' }
         };
 
-        // --- 4. SHOW LOADING STATE ON BUTTON ---
-        const btn = document.getElementById('download-pdf-btn');
+        // --- 3. HIDE FILTERS & SHOW LOADING STATE ---
+        filterContainer.style.display = 'none'; // Hide the filter section
         const originalBtnText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
         btn.disabled = true;
 
-        // --- 5. GENERATE AND SAVE THE PDF ---
-        html2pdf().set(options).from(reportElement).save().then(() => {
-            // Restore the button after the PDF is generated
+        // --- 4. GENERATE AND SAVE THE PDF ---
+        html2pdf().set(options).from(reportContent).save().then(() => {
+            // --- 5. RESTORE THE VIEW ---
+            filterContainer.style.display = 'block'; // Show the filter section again
             btn.innerHTML = originalBtnText;
             btn.disabled = false;
         });
