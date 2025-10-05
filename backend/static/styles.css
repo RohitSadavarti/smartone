@@ -181,15 +181,16 @@ body.dark .home .text {
 }
 
 /* Main Content - Adjusted for sidebar collapsed by default */
+
 .main-content {
-    margin-left: 88px; /* Collapsed sidebar width */
-    margin-top: 60px; /* Space for fixed header */
+    margin-left: 88px;
+    margin-top: 60px;
     width: calc(100% - 88px);
     padding: 20px;
     background: var(--body-color);
     transition: margin-left 0.3s ease, width 0.3s ease;
-    height: calc(100vh - 60px);
-    overflow: hidden;
+    min-height: calc(100vh - 60px); /* Changed height to min-height */
+    overflow-y: auto; /* Changed overflow to allow vertical scrolling */
     display: flex;
     flex-direction: column;
 }
@@ -1026,3 +1027,4 @@ body.dark .separator {
         min-width: 40px;
     }
 }
+
