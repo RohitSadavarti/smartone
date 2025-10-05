@@ -925,4 +925,40 @@ def plot_generator(plot_name):
             ax.grid(False) # Remove grid lines
             hue_col = "class" if plot_name == 'bar_by_day_class' else "department"
             title = f"Attendance % by Day and {hue_col.title()}"
-            pct_df = filtered_df.groupby(["day", hue_col]).agg(total=('attendance', 'count'), present=('attendance', lambda x: (x
+            pct_df = filtered_df.groupby(["day", hue_col]).agg(total=('attendance', 'count'), present=('attendance', lambda x: x.str.upper().eq('P').sum())).reset_index()
+            if not pct_df.empty and pct_df['total'].sum() > 0:
+                pct_df["attendance_pct"] = ((pct_df["present"] / pct_df["total"]) * 100).round(2)
+                weekday_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+                sns.barplot(data=pct_df, x="day", y="attendance_pct", hue=hue_col, ax=ax, order=weekday_order, palette=color_palette)
+            ax.set_title(title)
+            ax.set_ylim(0, 100)
+            if ax.get_legend(): ax.get_legend().get_title().set_color('white')
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', transparent=True)
+    plt.close(fig)
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
+
+@app.route('/api/table/<table_name>')
+def table_generator(table_name):
+    filtered_df = get_filtered_data(request.args)
+    if filtered_df.empty:
+        return jsonify([])
+
+    if table_name == 'top_defaulters':
+        filtered_df["is_absent"] = filtered_df["attendance"].str.upper() == "A"
+        summary = filtered_df.groupby(["name", "department", "class"]).agg(total_attendance=('attendance', 'count'), total_absent=('is_absent', 'sum')).reset_index()
+        if not summary.empty and summary['total_attendance'].sum() > 0:
+            summary["absent_pct"] = round((summary["total_absent"] / summary["total_attendance"]) * 100, 2)
+            summary = summary.sort_values("absent_pct", ascending=False).head(10)
+            summary["absent_pct_formatted"] = summary["absent_pct"].apply(
+                lambda val: f'<span style="color:{"red" if val > 80 else "orange" if val > 50 else "lightgreen"}; font-weight:bold">{"🔺" if val > 50 else "🔻"} {val:.2f}%</span>'
+            )
+            summary = summary.rename(columns={"name": "Name", "department": "Department", "class": "Class", "total_attendance": "Total Lectures", "total_absent": "Total Absent", "absent_pct_formatted": "Absent %"})
+            return jsonify(summary[["Name", "Department", "Class", "Total Lectures", "Total Absent", "Absent %"]].to_dict(orient='records'))
+
+    return jsonify([])
+
+if __name__ == '__main__':
+    app.run(debug=True)
