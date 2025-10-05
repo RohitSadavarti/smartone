@@ -890,3 +890,16 @@ body.dark .has-submenu .submenu li a {
 }
 
 
+
+/* ADD THIS CODE TO sidebar.css */
+
+/* Style for the active navigation link */
+.sidebar li.active-link > a {
+  background: #004aad;
+  color: #fff;
+}
+
+.sidebar li.active-link > a .icon,
+.sidebar li.active-link > a .text {
+  color: #fff;
+}
