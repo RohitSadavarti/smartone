@@ -1,149 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
-    <style>
-        :root {
-            --body-color: #18191a;
-            --sidebar-color: #242526;
-            --text-color: #ccc;
-            --card-bg: #242526;
-        }
-        body {
-            background-color: var(--body-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0; color: var(--text-color);
-        }
-        .main-content {
-            padding: 20px;
-        }
-        h1, h3 { color: var(--text-color); }
-        .filter-container {
-            background-color: var(--card-bg); padding: 20px;
-            border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;
-        }
-        .filter-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px; align-items: end;
-        }
-        .filter-item label { display: block; margin-bottom: 5px; font-weight: 500; }
-        .filter-item input {
-            width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #555;
-            background-color: #333; color: white; box-sizing: border-box;
-            color-scheme: dark;
-        }
-        .filter-item button {
-            width: 100%; padding: 10px; border: none; border-radius: 4px;
-            background-color: #007bff; color: white; font-size: 16px; cursor: pointer;
-        }
-        .custom-select-wrapper { position: relative; width: 100%; }
-        .custom-select-display {
-            background-color: #333; border: 1px solid #555; border-radius: 4px;
-            padding: 8px; cursor: pointer; white-space: nowrap;
-            overflow: hidden; text-overflow: ellipsis;
-            user-select: none;
-        }
-        .custom-select-options {
-            display: none; position: absolute; top: 100%; left: 0; right: 0;
-            background-color: #333; border: 1px solid #555; border-radius: 4px;
-            max-height: 200px; overflow-y: auto; z-index: 1000;
-        }
-        .custom-select-options.open { display: block; }
-        .custom-select-option {
-            padding: 8px 12px; cursor: pointer; display: flex; align-items: center;
-            user-select: none;
-        }
-        .custom-select-option:hover { background-color: #444; }
-        .custom-select-option input[type="checkbox"] { margin-right: 8px; }
-        .custom-select-option label { margin-bottom: 0; font-weight: normal; }
-        #select-all-container { font-weight: bold; border-bottom: 1px solid #555; }
-        
-        .plot-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-        
-        /* --- FIX STARTS HERE --- */
-        .plot-item {
-            border-radius: 8px; background: var(--card-bg);
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: flex-start; /* Changed from 'center' to align content to the top */
-            min-height: 400px;
-            border: 1px solid #333; padding: 10px; overflow-x: auto;
-        }
-
-        .table-container { 
-            width: 100%; 
-            overflow: auto; /* Changed from 'overflow-x' to enable vertical scroll */
-        }
-        /* --- FIX ENDS HERE --- */
-
-        .plot-item.full-width {
-            grid-column: 1 / -1; /* Make item span all columns */
-        }
-        .plot-item h3 { text-align: center; width: 100%; margin-top: 10px; }
-        .plot-item img { max-width: 100%; height: auto; }
-        .loading-spinner {
-            border: 4px solid #f3f3f3; border-top: 4px solid #3498db;
-            border-radius: 50%; width: 40px; height: 40px;
-            animation: spin 1s linear infinite; margin: auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        table { width: 100%; border-collapse: collapse; font-family: Arial; }
-        thead { background-color: #007bff; color: white; font-weight: bold; }
-        td, th { text-align: center; padding: 8px; border: 1px solid #444; }
-        tbody tr:nth-child(even) { background-color: #333; }
-
-        @media (max-width: 992px) {
-            .plot-container {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+  
+  <style>
+    /* These styles are specific to the dashboard content */
+    :root {
+        --body-color: #18191a;
+        --sidebar-color: #242526;
+        --text-color: #ccc;
+        --card-bg: #242526;
+    }
+    .filter-container {
+        background-color: var(--card-bg); padding: 20px;
+        border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;
+    }
+    .filter-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px; align-items: end;
+    }
+    .filter-item label { display: block; margin-bottom: 5px; font-weight: 500; }
+    .filter-item input {
+        width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #555;
+        background-color: #333; color: white; box-sizing: border-box;
+        color-scheme: dark;
+    }
+    .filter-item button {
+        width: 100%; padding: 10px; border: none; border-radius: 4px;
+        background-color: #007bff; color: white; font-size: 16px; cursor: pointer;
+    }
+    .custom-select-wrapper { position: relative; width: 100%; }
+    .custom-select-display {
+        background-color: #333; border: 1px solid #555; border-radius: 4px;
+        padding: 8px; cursor: pointer; white-space: nowrap;
+        overflow: hidden; text-overflow: ellipsis;
+        user-select: none;
+    }
+    .custom-select-options {
+        display: none; position: absolute; top: 100%; left: 0; right: 0;
+        background-color: #333; border: 1px solid #555; border-radius: 4px;
+        max-height: 200px; overflow-y: auto; z-index: 1000;
+    }
+    .custom-select-options.open { display: block; }
+    .custom-select-option {
+        padding: 8px 12px; cursor: pointer; display: flex; align-items: center;
+        user-select: none;
+    }
+    .custom-select-option:hover { background-color: #444; }
+    .custom-select-option input[type="checkbox"] { margin-right: 8px; }
+    .custom-select-option label { margin-bottom: 0; font-weight: normal; }
+    #select-all-container { font-weight: bold; border-bottom: 1px solid #555; }
+    
+    .plot-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+    }
+    
+    .plot-item {
+        border-radius: 8px; background: var(--card-bg);
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: flex-start; /* FIX: Aligns content to top */
+        min-height: 400px;
+        border: 1px solid #333; padding: 10px;
+    }
+    .plot-item.full-width {
+        grid-column: 1 / -1;
+    }
+    .plot-item h3 { text-align: center; width: 100%; margin-top: 10px; }
+    .plot-item img { max-width: 100%; height: auto; }
+    .loading-spinner {
+        border: 4px solid #f3f3f3; border-top: 4px solid #3498db;
+        border-radius: 50%; width: 40px; height: 40px;
+        animation: spin 1s linear infinite; margin: auto;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .table-container { 
+        width: 100%; 
+        overflow: auto; /* FIX: Enables vertical and horizontal scroll */
+        max-height: 500px; /* Example max height */
+    }
+    
+    table { width: 100%; border-collapse: collapse; }
+    thead { background-color: #007bff; color: white; font-weight: bold; position: sticky; top: 0; }
+    td, th { text-align: center; padding: 8px; border: 1px solid #444; }
+    tbody tr:nth-child(even) { background-color: #333; }
+  </style>
 </head>
 <body>
-    <section class="main-content">
-        <h1>📊 Attendance Dashboard</h1>
-        <div class="filter-container">
-            <h3>Filters</h3>
-            <form id="filter-form">
-                <div class="filter-grid">
-                    <div class="filter-item"><label for="start-date">Start Date</label><input type="date" id="start-date" name="start_date"></div>
-                    <div class="filter-item"><label for="end-date">End Date</label><input type="date" id="end-date" name="end_date"></div>
-                    
-                    <div class="filter-item" data-filter-id="department"><label for="department">Department</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Department...</div><div class="custom-select-options"></div></div></div>
-                    <div class="filter-item" data-filter-id="class"><label for="class">Class</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Class...</div><div class="custom-select-options"></div></div></div>
-                    <div class="filter-item" data-filter-id="teacher"><label for="teacher">Teacher</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Teacher...</div><div class="custom-select-options"></div></div></div>
-                    <div class="filter-item" data-filter-id="subject"><label for="subject">Subject</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Subject...</div><div class="custom-select-options"></div></div></div>
-                    <div class="filter-item" data-filter-id="student"><label for="student">Student</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Student...</div><div class="custom-select-options"></div></div></div>
-                    <div class="filter-item" data-filter-id="lecture_time"><label for="lecture_time">Lecture Time</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Time...</div><div class="custom-select-options"></div></div></div>
-                    <div class="filter-item" data-filter-id="day"><label for="day">Day</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Day...</div><div class="custom-select-options"></div></div></div>
 
-                    <div class="filter-item"><button type="submit">Apply Filters</button></div>
-                </div>
-            </form>
-        </div>
-        <div class="plot-container">
-            <div class="plot-item"><h3>Present Percentage</h3><img id="present_gauge_img" src="/plot/present_gauge" alt="Loading..."></div>
-            <div class="plot-item"><h3>Absent Percentage</h3><img id="absent_gauge_img" src="/plot/absent_gauge" alt="Loading..."></div>
-            <div class="plot-item"><h3>Absenteeism by Department</h3><img id="absentee_by_dept_img" src="/plot/absentee_by_dept" alt="Loading..."></div>
-            <div class="plot-item"><h3>Absenteeism by Class</h3><img id="absentee_by_class_img" src="/plot/absentee_by_class" alt="Loading..."></div>
-            <div class="plot-item"><h3>Attendance by Class</h3><img id="donut_by_class_img" src="/plot/donut_by_class" alt="Loading..."></div>
-            <div class="plot-item"><h3>Attendance by Lecture Time</h3><img id="donut_by_time_img" src="/plot/donut_by_time" alt="Loading..."></div>
-            <div class="plot-item"><h3>Daily Attendance % by Class</h3><img id="bar_by_day_class_img" src="/plot/bar_by_day_class" alt="Loading..."></div>
-            <div class="plot-item"><h3>Daily Attendance % by Department</h3><img id="bar_by_day_dept_img" src="/plot/bar_by_day_dept" alt="Loading..."></div>
-             <div class="plot-item full-width">
-                <h3>🚨 Top 10 Defaulters</h3>
-                <div id="defaulters-table-container" class="table-container"></div>
-            </div>
-        </div>
-    </section>
-    <script src="{{ url_for('static', filename='filter.js') }}"></script>
+  <header>
+    <i class='bx bx-menu' id="hamburger-toggle"></i>
+    <h1 class="page-title">Attendance Dashboard</h1>
+  </header>
+
+  <nav class="sidebar close">
+    <div class="menu-bar">
+      <div class="menu">
+        <ul class="menu-links">
+          <li class="nav-link">
+            <a href="/">
+              <i class='fas fa-home icon'></i>
+              <span class="text nav-text">Home</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="/dashboard">
+              <i class='fas fa-chart-bar icon'></i>
+              <span class="text nav-text">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-link has-submenu" id="admin-links">
+            <a href="javascript:void(0)" onclick="toggleSubMenu(this)">
+              <i class='fas fa-download icon'></i>
+              <span class="text nav-text">Update Data</span>
+              <i class="bx bx-chevron-down submenu-arrow" style="margin-left:auto;"></i>
+            </a>
+            <ul class="submenu">
+              <li><a href="/admin-students"><i class='fas fa-user-graduate icon'></i> Student</a></li>
+              <li><a href="/admin-teacher"><i class='fas fa-chalkboard-teacher icon'></i> Teacher</a></li>
+            </ul>
+          </li>
+          <li class="nav-link" id="attendance-tab">
+            <a href="/attendance">
+              <i class='bx bx-pie-chart-alt icon'></i>
+              <span class="text nav-text">Attendance Tracker</span>
+            </a>
+          </li>
+          <li class="nav-link">
+            <a href="/">
+              <i class='bx bx-pencil icon'></i>
+              <span class="text nav-text">Update Attendance</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar-toggle-backdrop"></div>
+      <div class="bottom-content">
+        <li>
+          <a href="#">
+            <i class='bx bx-log-out icon'></i>
+            <span class="text nav-text">Logout</span>
+          </a>
+        </li>
+        <li class="mode">
+          <div class="sun-moon">
+            <i class='bx bx-moon icon moon'></i>
+            <i class='bx bx-sun icon sun'></i>
+          </div>
+          <span class="mode-text text">Dark mode</span>
+          <div class="toggle-switch">
+            <span class="switch"></span>
+          </div>
+        </li>
+      </div>
+    </div>
+  </nav>
+  <section class="main-content">
+      <div class="filter-container">
+          <h3>Filters</h3>
+          <form id="filter-form">
+              <div class="filter-grid">
+                  <div class="filter-item"><label for="start-date">Start Date</label><input type="date" id="start-date" name="start_date"></div>
+                  <div class="filter-item"><label for="end-date">End Date</label><input type="date" id="end-date" name="end_date"></div>
+                  <div class="filter-item" data-filter-id="department"><label for="department">Department</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Department...</div><div class="custom-select-options"></div></div></div>
+                  <div class="filter-item" data-filter-id="class"><label for="class">Class</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Class...</div><div class="custom-select-options"></div></div></div>
+                  <div class="filter-item" data-filter-id="teacher"><label for="teacher">Teacher</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Teacher...</div><div class="custom-select-options"></div></div></div>
+                  <div class="filter-item" data-filter-id="subject"><label for="subject">Subject</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Subject...</div><div class="custom-select-options"></div></div></div>
+                  <div class="filter-item" data-filter-id="student"><label for="student">Student</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Student...</div><div class="custom-select-options"></div></div></div>
+                  <div class="filter-item" data-filter-id="lecture_time"><label for="lecture_time">Lecture Time</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Time...</div><div class="custom-select-options"></div></div></div>
+                  <div class="filter-item" data-filter-id="day"><label for="day">Day</label><div class="custom-select-wrapper"><div class="custom-select-display">Select Day...</div><div class="custom-select-options"></div></div></div>
+                  <div class="filter-item"><button type="submit">Apply Filters</button></div>
+              </div>
+          </form>
+      </div>
+      <div class="plot-container">
+          <div class="plot-item"><h3>Present Percentage</h3><img id="present_gauge_img" src="/plot/present_gauge" alt="Loading..."></div>
+          <div class="plot-item"><h3>Absent Percentage</h3><img id="absent_gauge_img" src="/plot/absent_gauge" alt="Loading..."></div>
+          <div class="plot-item"><h3>Absenteeism by Department</h3><img id="absentee_by_dept_img" src="/plot/absentee_by_dept" alt="Loading..."></div>
+          <div class="plot-item"><h3>Absenteeism by Class</h3><img id="absentee_by_class_img" src="/plot/absentee_by_class" alt="Loading..."></div>
+          <div class="plot-item"><h3>Attendance by Class</h3><img id="donut_by_class_img" src="/plot/donut_by_class" alt="Loading..."></div>
+          <div class="plot-item"><h3>Attendance by Lecture Time</h3><img id="donut_by_time_img" src="/plot/donut_by_time" alt="Loading..."></div>
+          <div class="plot-item"><h3>Daily Attendance % by Class</h3><img id="bar_by_day_class_img" src="/plot/bar_by_day_class" alt="Loading..."></div>
+          <div class="plot-item"><h3>Daily Attendance % by Department</h3><img id="bar_by_day_dept_img" src="/plot/bar_by_day_dept" alt="Loading..."></div>
+           <div class="plot-item full-width">
+              <h3>🚨 Top 10 Defaulters</h3>
+              <div id="defaulters-table-container" class="table-container"></div>
+          </div>
+      </div>
+  </section>
+
+  <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+  <script src="{{ url_for('static', filename='filter.js') }}"></script>
 </body>
 </html>
