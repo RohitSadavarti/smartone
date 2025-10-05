@@ -146,3 +146,33 @@ function toggleSubMenu(element) {
         parentLi.classList.toggle('active');
     }
 }
+
+// ADD THIS CODE TO THE END OF sidebar.js
+
+// Function to set the active link in the sidebar
+function setActiveLink() {
+    const path = window.location.pathname;
+    const links = document.querySelectorAll('.menu-links a');
+
+    links.forEach(link => {
+        const linkPath = new URL(link.href).pathname;
+        const parentLi = link.parentElement;
+
+        // Remove active state from all links first
+        parentLi.classList.remove('active-link');
+
+        // Check for an exact match or if it's the home/root path
+        if (path === linkPath || (path === '/home' && linkPath === '/')) {
+            parentLi.classList.add('active-link');
+
+            // If the active link is inside a submenu, open the submenu
+            const submenu = parentLi.closest('.submenu');
+            if (submenu) {
+                submenu.parentElement.classList.add('active');
+            }
+        }
+    });
+}
+
+// Call the function when the DOM is loaded
+document.addEventListener("DOMContentLoaded", setActiveLink);
