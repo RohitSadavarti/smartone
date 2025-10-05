@@ -79,7 +79,7 @@
     </a>
   </li>
 <li class="nav-link">
-  <a href="/dashboard">
+  <a href="/dashboard" style="background: #004aad;color: #fff;border-radius: 5px;">
     <i class='fas fa-chart-bar icon'></i>
     <span class="text nav-text">Dashboard</span>
   </a>
@@ -92,8 +92,8 @@
     <i class="bx bx-chevron-down submenu-arrow" style="margin-left:auto;"></i>
   </a>
   <ul class="submenu">
-    <li><a href="/admin-students">Student</a></li>
-    <li><a href="/admin-teacher">Teacher</a></li>
+    <li><a href="/admin-students"><i class='fas fa-user-graduate'></i> Student</a></li>
+    <li><a href="/admin-teacher"><i class='fas fa-chalkboard-teacher'></i> Teacher</a></li>
   </ul>
 </li>
 
@@ -104,7 +104,7 @@
     </a>
   </li>
   <li class="nav-link">
-    <a href="/" style="background: #004aad;color: #fff;border-radius: 5px;">
+    <a href="/">
       <i class='bx bx-pencil icon'></i>
       <span class="text nav-text">Update Attendance</span>
     </a>
@@ -162,12 +162,6 @@
         icon.classList.remove("fa-expand");
         icon.classList.add("fa-compress");
       }
-    }
-
-    function toggleSubMenu(el) {
-      el.classList.toggle("active");
-      const submenu = el.nextElementSibling;
-      submenu.style.display = submenu.style.display === "block" ? "none" : "block";
     }
   </script>
 </body>
