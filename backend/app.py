@@ -181,6 +181,11 @@ def home():
 def attendance_tracker():
     return render_template("Attendance.html")
 
+@app.route("/update-attendance")
+@login_required
+def update_attendance_page():
+    return render_template("update_attendance.html")
+
 @app.route("/admin-students")
 @admin_required
 def admin_student():
