@@ -1,12 +1,6 @@
-# Exclude Python cache and virtual environment directories
-__pycache__
-venv
-.venv
-
-# Exclude the uploads folder content entirely
-# The app will recreate the 'uploads' folder on the fly if needed
+# backend/.vercelignore
 uploads/
-
-# Exclude any other large files or caches if they were temporarily created
+__pycache__
+*.pyc
 *.sqlite
 *.db
