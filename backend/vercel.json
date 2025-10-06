@@ -6,7 +6,8 @@
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "250mb",
-        "runtime": "python3.12" 
+        "runtime": "python3.12",
+        "installCommand": "pip install -r requirements.txt --target . && find . -name 'tests' -type d -exec rm -rf {} + && find . -name 'docs' -type d -exec rm -rf {} + && find . -name '__pycache__' -type d -exec rm -rf {} +"
       }
     }
   ],
