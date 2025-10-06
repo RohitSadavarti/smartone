@@ -30,16 +30,17 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIONS'] = {'xlsx', 'xls', 'csv'}
-app.config['PG_HOST'] = 'aws-0-ap-south-1.pooler.supabase.com'
-app.config['PG_USER'] = 'postgres.avqpzwgdylnklbkyqukp'
-app.config['PG_PASSWORD'] = 'asBjLmDfKfoZPVt9'
-app.config['PG_DB'] = 'postgres'
-app.config['sslmode']='require'
+app.config['PG_HOST'] = os.getenv('PG_HOST', 'aws-0-ap-south-1.pooler.supabase.com')
+app.config['PG_USER'] = os.getenv('PG_USER', 'postgres.avqpzwgdylnklbkyqukp')
+app.config['PG_PASSWORD'] = os.getenv('PG_PASSWORD', 'asBjLmDfKfoZPVt9')
+app.config['PG_DB'] = os.getenv('PG_DB', 'postgres')
+app.config['sslmode'] = os.getenv('PG_SSLMODE', 'require')
+app.config['PG_PORT'] = int(os.getenv('PG_PORT', 6543)) 
 
 logging.basicConfig(level=logging.INFO)
 
 # --- Database Connection for Dashboard---
-DATABASE_URL = f"postgresql+psycopg2://{app.config['PG_USER']}:{app.config['PG_PASSWORD']}@{app.config['PG_HOST']}/{app.config['PG_DB']}?sslmode=require"
+DATABASE_URL = f"postgresql+psycopg2://{app.config['PG_USER']}:{app.config['PG_PASSWORD']}@{app.config['PG_HOST']}:{app.config['PG_PORT']}/{app.config['PG_DB']}?sslmode={app.config['sslmode']}"
 engine = create_engine(DATABASE_URL)
 
 _df_cache = None
