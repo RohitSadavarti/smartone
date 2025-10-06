@@ -7,7 +7,7 @@
       "config": {
         "maxLambdaSize": "250mb",
         "runtime": "python3.12",
-        "installCommand": "pip install -r requirements.txt --target . && find . -name 'tests' -type d -exec rm -rf {} + && find . -name 'docs' -type d -exec rm -rf {} + && find . -name '__pycache__' -type d -exec rm -rf {} +"
+        "installCommand": "pip install -r requirements.txt --target . --no-cache-dir && find . -name 'tests' -type d -exec rm -rf {} + && find . -name 'docs' -type d -exec rm -rf {} + && find . -name '__pycache__' -type d -exec rm -rf {} +"
       }
     }
   ],
