@@ -10,15 +10,7 @@ from openpyxl import load_workbook
 import psycopg2
 from functools import wraps
 from werkzeug.security import generate_password_hash
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import matplotlib
-matplotlib.use('Agg') # Use non-interactive backend for web servers
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches # Import patches for gauge chart
-from sqlalchemy import create_engine
-import io
+# REMOVED: Heavy imports (numpy, pandas, matplotlib, seaborn, sqlalchemy, io) moved to _get_dashboard_tools()
 
 app = Flask(__name__)
 CORS(app)
@@ -39,25 +31,51 @@ app.config['PG_PORT'] = int(os.getenv('PG_PORT', 6543))
 
 logging.basicConfig(level=logging.INFO)
 
-# --- Database Connection for Dashboard---
-DATABASE_URL = f"postgresql+psycopg2://{app.config['PG_USER']}:{app.config['PG_PASSWORD']}@{app.config['PG_HOST']}:{app.config['PG_PORT']}/{app.config['PG_DB']}?sslmode={app.config['sslmode']}"
-engine = create_engine(DATABASE_URL)
+# --- Dashboard Global State (Lazy Initialization) ---
+_dashboard_state = {
+    "engine": None,
+    "df_cache": None
+}
 
-_df_cache = None
+def _get_dashboard_tools():
+    """Lazily imports heavy libraries and initializes database engine."""
+    # Local imports for heavy libraries to avoid global load
+    import numpy as np
+    import pandas as pd
+    import seaborn as sns
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as patches
+    from sqlalchemy import create_engine
+    import io
+    
+    if _dashboard_state["engine"] is None:
+        # Initialize engine only when first requested
+        DATABASE_URL = f"postgresql+psycopg2://{app.config['PG_USER']}:{app.config['PG_PASSWORD']}@{app.config['PG_HOST']}:{app.config['PG_PORT']}/{app.config['PG_DB']}?sslmode={app.config['sslmode']}"
+        _dashboard_state["engine"] = create_engine(DATABASE_URL)
+    
+    # Return the necessary tools
+    return np, pd, sns, plt, patches, create_engine, io, _dashboard_state["engine"]
+
 def get_data():
-    """Fetches and caches data from the database."""
-    global _df_cache
-    if _df_cache is None:
+    """Fetches and caches data from the database, runs heavy imports and data load only once."""
+    # Ensure tools are imported and engine is ready
+    np, pd, sns, plt, patches, create_engine, io, engine = _get_dashboard_tools() 
+    
+    if _dashboard_state["df_cache"] is None:
         try:
-            df = pd.read_sql("SELECT * FROM attendance;", engine)
+            # SLOW OPERATION: Reads entire table. Only happens once here.
+            df = pd.read_sql("SELECT * FROM attendance;", engine) 
             if not df.empty:
                 df["date"] = pd.to_datetime(df["date"])
                 df["day"] = df["date"].dt.day_name()
-            _df_cache = df
+            _dashboard_state["df_cache"] = df
         except Exception as e:
-            print(f"Error loading data: {e}")
+            app.logger.error(f"Error loading data: {e}")
             return pd.DataFrame()
-    return _df_cache
+    return _dashboard_state["df_cache"]
+# --- End Dashboard Logic ---
 
 def get_pg_connection():
     return psycopg2.connect(
@@ -800,7 +818,7 @@ def check_session():
 @app.route('/health', methods=['GET'])
 def health_check():
     try:
-        # Test database connection
+        # Test database connection is a minimal operation for the pinger
         connection = get_pg_connection()
         cursor = connection.cursor()
         cursor.execute("SELECT 1")
@@ -812,6 +830,7 @@ def health_check():
 
 # --- Plotting Functions ---
 def create_gauge(percentage, title, main_color, bg_color='#404040'):
+    np, pd, sns, plt, patches, create_engine, io, engine = _get_dashboard_tools()
     fig, ax = plt.subplots(figsize=(3, 3), facecolor='none')
     ax.set_facecolor('none')
     center, radius, start_angle, end_angle = (0.5, 0.5), 0.3, 200, -20
@@ -832,6 +851,7 @@ def create_gauge(percentage, title, main_color, bg_color='#404040'):
 # --- Helper function for filtering data ---
 def get_filtered_data(args):
     """Applies all filters to the main dataframe based on request arguments."""
+    np, pd, sns, plt, patches, create_engine, io, engine = _get_dashboard_tools()
     df = get_data()
     if df.empty:
         return df
@@ -853,6 +873,7 @@ def get_filtered_data(args):
 @app.route('/api/filters')
 def get_filters_api():
     """Provides all unique filter options to the frontend."""
+    np, pd, sns, plt, patches, create_engine, io, engine = _get_dashboard_tools()
     df = get_data()
     if df.empty:
         return jsonify({"departments": [], "classes": [], "teachers": [], "subjects": [], "students": [], "lecture_times": [], "days": []})
@@ -875,6 +896,7 @@ def get_filters_api():
 
 @app.route('/plot/<plot_name>')
 def plot_generator(plot_name):
+    np, pd, sns, plt, patches, create_engine, io, engine = _get_dashboard_tools()
     filtered_df = get_filtered_data(request.args)
     fig = None
     color_palette = sns.color_palette("viridis", 15)
@@ -948,6 +970,7 @@ def plot_generator(plot_name):
 
 @app.route('/api/table/<table_name>')
 def table_generator(table_name):
+    np, pd, sns, plt, patches, create_engine, io, engine = _get_dashboard_tools()
     filtered_df = get_filtered_data(request.args)
     if filtered_df.empty:
         return jsonify([])
