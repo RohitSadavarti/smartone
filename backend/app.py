@@ -695,6 +695,8 @@ def get_row_count():
 @app.route('/teachers', methods=['POST'])
 @admin_required
 def save_teacher():
+    connection = None
+    cursor = None
     try:
         data = request.json
         teacher_name = data.get('teacher_name')
@@ -723,26 +725,33 @@ def save_teacher():
             cursor.execute("""
                 UPDATE Teachers 
                 SET teacher_name = %s, day = %s
-                WHERE subject = %s AND time_slot = %s AND department = %s AND class = %s
-            """, (teacher_name, day, subject, time_slot, department, class_value))
+                WHERE id = %s
+            """, (teacher_name, day, existing[0]))
         else:
-            # Insert new record
+            # Insert new record - let database auto-generate the id
             cursor.execute("""
                 INSERT INTO Teachers (teacher_name, day, subject, time_slot, department, class) 
                 VALUES (%s, %s, %s, %s, %s, %s)
             """, (teacher_name, day, subject, time_slot, department, class_value))
         
         connection.commit()
-        cursor.close()
-        connection.close()
         return jsonify({'message': 'Teacher data saved successfully'})
     except Exception as e:
-        print(f"Error saving teacher: {e}")
-        return jsonify({'message': 'Failed to save teacher data'}), 500
+        if connection:
+            connection.rollback()
+        app.logger.error(f"Error saving teacher: {e}")
+        return jsonify({'message': f'Failed to save teacher data: {str(e)}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 @app.route('/upload-teachers', methods=['POST'])
 @admin_required
 def upload_teachers():
+    connection = None
+    cursor = None
     try:
         file = request.files.get('file')
         if not file or file.filename == '':
@@ -760,6 +769,7 @@ def upload_teachers():
             error_data = []
             connection = get_pg_connection()
             cursor = connection.cursor()
+            
             for row in data:
                 try:
                     teacher_name, day, subject, time_slot, department, class_value = row
@@ -777,10 +787,10 @@ def upload_teachers():
                         cursor.execute("""
                             UPDATE Teachers 
                             SET teacher_name = %s, day = %s
-                            WHERE subject = %s AND time_slot = %s AND department = %s AND class = %s
-                        """, (teacher_name, day, subject, time_slot, department, class_value))
+                            WHERE id = %s
+                        """, (teacher_name, day, existing[0]))
                     else:
-                        # Insert new record
+                        # Insert new record - let database auto-generate the id
                         cursor.execute("""
                             INSERT INTO Teachers (teacher_name, day, subject, time_slot, department, class) 
                             VALUES (%s, %s, %s, %s, %s, %s)
@@ -789,24 +799,50 @@ def upload_teachers():
                     valid_data.append((teacher_name, day, subject, time_slot, department, class_value))
                     valid_records += 1
                 except Exception as e:
+                    app.logger.error(f"Error processing row {row}: {e}")
                     error_data.append(row + (str(e),))
                     error_records += 1
             
             connection.commit()
             
+            # Log valid and error records
             if valid_data:
-                cursor.executemany("INSERT INTO ValidTeachers (teacher_name, day, subject, time_slot, department, class) VALUES (%s, %s, %s, %s, %s, %s)", valid_data)
+                try:
+                    cursor.executemany("""
+                        INSERT INTO ValidTeachers (teacher_name, day, subject, time_slot, department, class) 
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                    """, valid_data)
+                except Exception as e:
+                    app.logger.warning(f"Could not log valid records: {e}")
+                    
             if error_data:
-                cursor.executemany("INSERT INTO ErrorTeachers (teacher_name, day, subject, time_slot, department, class, error_message) VALUES (%s, %s, %s, %s, %s, %s, %s)", error_data)
+                try:
+                    cursor.executemany("""
+                        INSERT INTO ErrorTeachers (teacher_name, day, subject, time_slot, department, class, error_message) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """, error_data)
+                except Exception as e:
+                    app.logger.warning(f"Could not log error records: {e}")
+                    
             connection.commit()
-            cursor.close()
-            connection.close()
-            return jsonify({'message': 'File processed successfully.', 'total_records': total_records, 'valid_records': valid_records, 'error_records': error_records}), 200
+            return jsonify({
+                'message': 'File processed successfully.', 
+                'total_records': total_records, 
+                'valid_records': valid_records, 
+                'error_records': error_records
+            }), 200
         else:
             return jsonify({'message': 'Invalid file type. Only .xlsx, .xls, and .csv files are allowed.'}), 400
     except Exception as e:
-        print(f"Error while uploading file: {e}")
+        if connection:
+            connection.rollback()
+        app.logger.error(f"Error while uploading file: {e}")
         return jsonify({'message': 'An error occurred while processing the file.'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 # Admin utility endpoint to create users - ADMIN ONLY
 @app.route('/api/admin/create-user', methods=['POST'])
