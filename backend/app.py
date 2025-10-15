@@ -80,6 +80,7 @@ def get_pg_connection():
         sslmode=app.config['sslmode']
     )
 
+
 def get_user_from_db(email):
     try:
         connection = get_pg_connection()
@@ -140,6 +141,17 @@ def create_user_with_crypt(email, password, role='user'):
         app.logger.error(f"Error creating user: {e}")
         return False
 
+@app.route('/classes', methods=['GET'])
+@login_required
+def get_classes():
+    connection = get_pg_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT DISTINCT class FROM Teachers ORDER BY class ASC")
+    classes = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return jsonify([c[0] for c in classes])
+    
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
