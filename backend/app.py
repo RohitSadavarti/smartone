@@ -844,6 +844,62 @@ def upload_teachers():
         if connection:
             connection.close()
 
+@app.route('/api/admin/fix-sequences', methods=['POST'])
+@admin_required
+def fix_database_sequences():
+    """Admin endpoint to fix database sequences that are out of sync"""
+    connection = None
+    cursor = None
+    try:
+        connection = get_pg_connection()
+        cursor = connection.cursor()
+        
+        results = {}
+        
+        # Fix Teachers table sequence
+        try:
+            cursor.execute("SELECT MAX(id) FROM Teachers")
+            max_id = cursor.fetchone()[0] or 0
+            cursor.execute(f"SELECT setval(pg_get_serial_sequence('teachers', 'id'), {max_id + 1}, false)")
+            results['teachers'] = f"Reset to {max_id + 1}"
+        except Exception as e:
+            results['teachers'] = f"Error: {str(e)}"
+        
+        # Fix Students table sequence
+        try:
+            cursor.execute("SELECT MAX(id) FROM Students")
+            max_id = cursor.fetchone()[0] or 0
+            cursor.execute(f"SELECT setval(pg_get_serial_sequence('students', 'id'), {max_id + 1}, false)")
+            results['students'] = f"Reset to {max_id + 1}"
+        except Exception as e:
+            results['students'] = f"Error: {str(e)}"
+        
+        # Fix Attendance table sequence
+        try:
+            cursor.execute("SELECT MAX(id) FROM Attendance")
+            max_id = cursor.fetchone()[0] or 0
+            cursor.execute(f"SELECT setval(pg_get_serial_sequence('attendance', 'id'), {max_id + 1}, false)")
+            results['attendance'] = f"Reset to {max_id + 1}"
+        except Exception as e:
+            results['attendance'] = f"Error: {str(e)}"
+        
+        connection.commit()
+        return jsonify({
+            'success': True, 
+            'message': 'Database sequences fixed successfully',
+            'details': results
+        })
+    except Exception as e:
+        if connection:
+            connection.rollback()
+        app.logger.error(f"Error fixing sequences: {e}")
+        return jsonify({'success': False, 'message': f'Failed to fix sequences: {str(e)}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
 # Admin utility endpoint to create users - ADMIN ONLY
 @app.route('/api/admin/create-user', methods=['POST'])
 @admin_required
