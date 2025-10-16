@@ -80,7 +80,6 @@ def get_pg_connection():
         sslmode=app.config['sslmode']
     )
 
-
 def get_user_from_db(email):
     try:
         connection = get_pg_connection()
@@ -141,17 +140,7 @@ def create_user_with_crypt(email, password, role='user'):
         app.logger.error(f"Error creating user: {e}")
         return False
 
-@app.route('/classes', methods=['GET'])
-@login_required
-def get_classes():
-    connection = get_pg_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT DISTINCT class FROM Teachers ORDER BY class ASC")
-    classes = cursor.fetchall()
-    cursor.close()
-    connection.close()
-    return jsonify([c[0] for c in classes])
-    
+# DEFINE DECORATORS BEFORE USING THEM
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -182,6 +171,19 @@ def admin_required(f):
 
         return f(*args, **kwargs)
     return decorated_function
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+def process_excel(file_path):
+    data = []
+    workbook = load_workbook(file_path)
+    sheet = workbook.active
+    for row in sheet.iter_rows(min_row=2, values_only=True):
+        data.append(row)
+    return data
+
+# NOW DEFINE ROUTES - DECORATORS ARE ALREADY DEFINED ABOVE
 
 @app.route('/login')
 def login_page():
@@ -281,76 +283,6 @@ def api_forgot_password():
     except Exception as e:
         return jsonify({'success': False, 'message': 'Failed to send reset link'}), 500
 
-# Add these endpoints to your backend/app.py file
-
-# Endpoint to get classes filtered by department and teacher
-@app.route('/api/classes-by-teacher', methods=['GET'])
-@login_required
-def get_classes_by_teacher():
-    """Returns classes for a specific department and teacher"""
-    department = request.args.get('department', '').strip()
-    teacher_name = request.args.get('teacher_name', '').strip()
-    
-    if not department or not teacher_name:
-        return jsonify({'error': 'Department and teacher_name are required'}), 400
-    
-    try:
-        connection = get_pg_connection()
-        cursor = connection.cursor()
-        
-        cursor.execute("""
-            SELECT DISTINCT class 
-            FROM Teachers 
-            WHERE department = %s AND teacher_name = %s 
-            ORDER BY class ASC
-        """, (department, teacher_name))
-        
-        classes = cursor.fetchall()
-        cursor.close()
-        connection.close()
-        
-        return jsonify([c[0] for c in classes])
-        
-    except Exception as e:
-        app.logger.error(f"Error fetching classes by teacher: {e}")
-        return jsonify({'error': 'Failed to fetch classes'}), 500
-
-# Optional: Get all teacher data for more efficient filtering
-@app.route('/api/all-teachers-data', methods=['GET'])
-@login_required
-def get_all_teachers_data():
-    """Returns all teacher records with department, class, subject, and teacher_name for cascading filters"""
-    try:
-        connection = get_pg_connection()
-        cursor = connection.cursor()
-        
-        cursor.execute("""
-            SELECT DISTINCT teacher_name, department, class, subject, time_slot 
-            FROM Teachers 
-            ORDER BY department, teacher_name, class, subject
-        """)
-        
-        rows = cursor.fetchall()
-        cursor.close()
-        connection.close()
-        
-        # Convert to list of dictionaries
-        teacher_data = [
-            {
-                'teacher_name': row[0],
-                'department': row[1],
-                'class': row[2],
-                'subject': row[3],
-                'time_slot': row[4]
-            }
-            for row in rows
-        ]
-        
-        return jsonify(teacher_data)
-        
-    except Exception as e:
-        app.logger.error(f"Error fetching teacher data: {e}")
-        return jsonify({'message': 'Failed to fetch teacher data'}), 500
 @app.route('/api/register', methods=['POST'])
 def api_register():
     try:
@@ -406,6 +338,49 @@ def get_teachers():
     cursor.close()
     connection.close()
     return jsonify([teacher[0] for teacher in teachers])
+
+@app.route('/classes', methods=['GET'])
+@login_required
+def get_classes():
+    connection = get_pg_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT DISTINCT class FROM Teachers ORDER BY class ASC")
+    classes = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return jsonify([c[0] for c in classes])
+
+# NEW ENDPOINT FOR CASCADING FILTERS
+@app.route('/api/classes-by-teacher', methods=['GET'])
+@login_required
+def get_classes_by_teacher():
+    """Returns classes for a specific department and teacher"""
+    department = request.args.get('department', '').strip()
+    teacher_name = request.args.get('teacher_name', '').strip()
+    
+    if not department or not teacher_name:
+        return jsonify({'error': 'Department and teacher_name are required'}), 400
+    
+    try:
+        connection = get_pg_connection()
+        cursor = connection.cursor()
+        
+        cursor.execute("""
+            SELECT DISTINCT class 
+            FROM Teachers 
+            WHERE department = %s AND teacher_name = %s 
+            ORDER BY class ASC
+        """, (department, teacher_name))
+        
+        classes = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        
+        return jsonify([c[0] for c in classes])
+        
+    except Exception as e:
+        app.logger.error(f"Error fetching classes by teacher: {e}")
+        return jsonify({'error': 'Failed to fetch classes'}), 500
 
 @app.route('/student-classes', methods=['GET'])
 @login_required
@@ -545,6 +520,9 @@ def save_attendance():
     cursor.close()
     connection.close()
     return jsonify({"status": "success"})
+
+# Continue with rest of the routes...
+# (Include all remaining routes from your original file)
 
 @app.route('/attendance-data', methods=['GET'])
 @login_required
