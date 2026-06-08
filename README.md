@@ -178,6 +178,81 @@ vercel deploy
 
 ---
 
-## License
+##Application Screenshots
+##Login Page
+Provides secure authentication using encrypted credentials, ensuring that only authorized users can access the platform.
+ <img width="840" height="948" alt="image" src="https://github.com/user-attachments/assets/e6002876-f368-4b3e-8ac8-273a0ecffea2" />
 
-This project is licensed under the MIT License.
+
+ 
+Attendance Portal/Update Attendance
+It’s the page where teacher can login and mark attendance for the students will be save directly to the database based on the filter selected below 
+1-Department
+2-Teacher (Name)
+3-Class
+4-Subject
+5-Time (Lecture timeslot)
+6-Date
+<img width="975" height="456" alt="image" src="https://github.com/user-attachments/assets/8da53bea-b6e3-48c4-9d84-3245644b73ac" />
+<img width="975" height="459" alt="image" src="https://github.com/user-attachments/assets/f406912e-7f57-4d46-a900-7a09aa8d30cf" />
+
+ 
+ 
+ 
+Attendance Data/Attendance Tracker
+In this Page the user (teaching/College faculty) can access the attendance data that have been updated in the portal, They can view or download the report in excel format.
+Even they can check the attendance is updated or not properly.
+
+Initial state
+<img width="975" height="335" alt="image" src="https://github.com/user-attachments/assets/b3e48119-f33b-47a8-9b9e-35bdc5d45db2" />
+ 
+
+After Selection
+<img width="975" height="358" alt="image" src="https://github.com/user-attachments/assets/c1091636-ed07-406c-8e7a-4bc979ebe9da" />
+<img width="975" height="339" alt="image" src="https://github.com/user-attachments/assets/234d9e23-a9d7-461a-ac37-44a1b45083a1" />
+<img width="975" height="393" alt="image" src="https://github.com/user-attachments/assets/eeaebd46-ecc5-4b18-a503-4f34f68552bb" />
+<img width="975" height="369" alt="image" src="https://github.com/user-attachments/assets/1a539890-178e-400e-9260-76d8c2584ac0" />
+<img width="975" height="399" alt="image" src="https://github.com/user-attachments/assets/08a47adc-6315-47ef-b268-307d1ffc3958" />
+ 
+ 
+ 
+ 
+ 
+
+ 
+CSV Download
+ <img width="975" height="456" alt="image" src="https://github.com/user-attachments/assets/129d08bb-fe87-4ded-be90-c9f6e33089f7" />
+<img width="975" height="505" alt="image" src="https://github.com/user-attachments/assets/7c1da896-2827-4c6f-b722-00113fc3c561" />
+
+ 
+
+Update Date
+It is very important to keep database updated as it is automated system that take all load of manual work and provide user a way to perform its task in simplest way and in flash of time,
+Here we have two different pages where user need to update data as admin,
+ <img width="975" height="458" alt="image" src="https://github.com/user-attachments/assets/86ee509d-79bb-4562-9664-2b3e8a45c283" />
+
+1. Student Data:
+●	Adding the new arrived/ admission student detail in database so teacher can mark the attendance for the student.
+●	Admin can update the student detail manually and if the bulk amount of data is available then they can upload excel file directly so all records can save in database at once.
+<img width="975" height="449" alt="image" src="https://github.com/user-attachments/assets/3fdae188-e600-420e-9bb1-f4c44f906a3b" />
+
+  
+2.	Teacher Data: 
+●	Here admin can update details for new teachers like there Name, Lecture timing, Teaching Subject, Department, Class so the teacher can mark attendance easily.
+●	Admin can update the Teachers detail manually and if the bulk amount of data is available then they can upload excel file directly so all records can save in database at once.
+<img width="975" height="446" alt="image" src="https://github.com/user-attachments/assets/f4ddf874-c105-4352-9431-362a510e9fe9" />
+
+ 
+
+Dashboard
+<img width="975" height="455" alt="image" src="https://github.com/user-attachments/assets/0116d38b-ceca-4bbc-82f7-3f1dfee5b88d" />
+<img width="975" height="466" alt="image" src="https://github.com/user-attachments/assets/cf28ae8a-82d5-4ec5-806f-e2acbaf92a48" />
+<img width="975" height="441" alt="image" src="https://github.com/user-attachments/assets/c092c94a-8358-4030-ac3d-d22454a13424" />
+<img width="975" height="349" alt="image" src="https://github.com/user-attachments/assets/5f9f2f3e-d76c-43f3-9cef-3bb2fd14bd52" />
+<img width="975" height="462" alt="image" src="https://github.com/user-attachments/assets/b9511572-0591-452a-bb9c-8917f32ae503" />
+
+ 
+ 
+ 
+ 
+ 
